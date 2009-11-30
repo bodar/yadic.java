@@ -7,4 +7,5 @@ trait Container {
   def add[A <: Object](aClass:Class[A], activator:() => A ): Unit
   def decorate[I <: Object, C <: I](interface:Class[I], concrete:Class[C]): Unit
   def resolve( aClass:Class[_] ): Object
+  def resolveType[A <: Object]( aClass:Class[A] ): A
 }
