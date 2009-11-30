@@ -2,9 +2,9 @@ package com.googlecode.yadic
 
 
 trait Container {
-  def add(concrete:Class[_]): Unit
-  def add(interface:Class[_], concrete:Class[_]): Unit
-  def add(aClass:Class[_], activator:() => Object ): Unit
-  def decorate(interface:Class[_], concrete:Class[_]): Unit
+  def add[C <: Object](concrete:Class[C]): Unit
+  def add[I <: Object, C <: I](interface:Class[I], concrete:Class[C]): Unit
+  def add[A <: Object](aClass:Class[A], activator:() => A ): Unit
+  def decorate[I <: Object, C <: I](interface:Class[I], concrete:Class[C]): Unit
   def resolve( aClass:Class[_] ): Object
 }
