@@ -1,6 +1,4 @@
 syntax: glob
-java/out
-java/*.iws
-java/build/artifacts
-*.*~
-*.*orig
+out
+*.iws
+build/artifacts
