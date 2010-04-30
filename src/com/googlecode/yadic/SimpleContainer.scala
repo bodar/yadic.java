@@ -3,48 +3,48 @@ package com.googlecode.yadic
 import java.lang.Class
 import java.util.HashMap
 
-class SimpleContainer(missingHandler: (Class[_]) => Object) extends Container {
+class SimpleContainer(missingHandler: (Class[_]) => Any) extends Container {
   def this() = this ((aClass:Class[_]) => {throw new ContainerException(aClass.getName + " not found in container")})
 
-  val activators = new HashMap[Class[_], Activator]
+  val activators = new HashMap[Class[_], Activator[_]]
 
-  def resolve(aClass: Class[_]) = {
+  def resolve(aClass: Class[_]) = resolveType(aClass).asInstanceOf[Object]
+
+  def resolveType[A]( aClass:Class[A] ): A = {
     activators.get(aClass) match {
-      case null => missingHandler(aClass)
-      case activator:Activator[_] => activator.activate()
+      case null => missingHandler(aClass).asInstanceOf[A]
+      case activator:Activator[A] => activator.activate()
     }
   }
 
-  def resolveType[A]( aClass:Class[A] ): A = resolve(aClass).asInstanceOf[A]
+  def add[C](concrete: Class[C]) : Unit = add(concrete, () => createInstance(concrete) )
 
-  def add(concrete: Class[_]): Unit = add(concrete, () => createInstance(concrete) )
+  def add[I, C <: I](interface: Class[I], concrete: Class[C]): Unit = add(interface, () => createInstance(concrete) )
 
-  def add(interface: Class[_], concrete: Class[_]): Unit = add(interface, () => createInstance(concrete) )
+  def add[T](a: Class[T], activator: Activator[T]):Unit = add(a, () => activator.activate() )
 
-  def add(a: Class[_], activator: Activator):Unit = add(a, () => activator.activate() )
-
-  def add(aClass: Class[_], activator: () => Object): Unit = {
+  def add[T](aClass: Class[T], activator: () => T): Unit = {
     activators.containsKey(aClass) match {
       case true => throw new ContainerException(aClass.getName + " already added to container")
-      case false => activators.put(aClass, new LazyActivator(activator))
+      case false => activators.put(aClass, new LazyActivator[T](activator))
     }
   }
 
-  def decorate(interface: Class[_], concrete: Class[_]) = {
+  def decorate[I, C <: I](interface: Class[I], concrete: Class[C]): Unit = {
     val existing = activators.get(interface)
-    activators.put(interface, new LazyActivator(() => createInstance(concrete, (aClass: Class[_]) => {
-      if(aClass.equals(interface)) existing.activate else resolve(aClass)
+    activators.put(interface, new LazyActivator[I](() => createInstance(concrete, (aClass: Class[_]) => {
+      if(aClass.equals(interface)) existing.activate() else resolveType(aClass)
     })))
   }
 
-  def createInstance(aClass: Class[_]): Object = createInstance(aClass, resolve(_))
+  def createInstance[T](aClass: Class[T]): T = createInstance(aClass, resolve)
 
-  def createInstance(aClass: Class[_], resolver: (Class[_]) => Object ): Object = {
+  def createInstance[T](aClass: Class[T], resolver: (Class[_]) => Any ): T = {
     val constructors = aClass.getConstructors.toList.sort(_.getParameterTypes.length > _.getParameterTypes.length)
     constructors.foreach( constructor => {
       try {
-        val instances = constructor.getParameterTypes.map( resolver(_) )
-        return constructor.newInstance(instances: _*).asInstanceOf[Object]
+        val instances = constructor.getParameterTypes.map( resolver(_).asInstanceOf[Object] )
+        return constructor.newInstance(instances: _*).asInstanceOf[T]
       } catch {
         case e:ContainerException =>
       }

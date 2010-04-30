@@ -17,8 +17,8 @@ public class JavaTest {
     public void shouldSupportDifferentActivators() {
         Container container = new SimpleContainer();
         final int[] count = {0};
-        container.add(NoDependancies.class, new Activator(){
-            public Object activate() {
+        container.add(NoDependancies.class, new Activator<NoDependancies>(){
+            public NoDependancies activate() {
                 count[0]++;
                 return new NoDependancies();
             }

@@ -1,5 +1,5 @@
 package com.googlecode.yadic;
 
-public interface Activator {
-  Object activate();
+public interface Activator<T> {
+  T activate();
 }
