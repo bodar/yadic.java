@@ -1,5 +1,5 @@
 package com.googlecode.yadic
 
-class LazyActivator(activator: () => Object) extends Activator {
+class LazyActivator[T](activator: () => T) extends Activator[T] {
   lazy val activate = activator()
 }
