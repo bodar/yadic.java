@@ -3,12 +3,14 @@ package com.googlecode.yadic
 import java.lang.Class
 import java.util.HashMap
 
-class SimpleContainer(missingHandler: (Class[_]) => Any) extends Container {
+class SimpleContainer(missingHandler: (Class[_]) => Any) extends Container with Resolver {
   def this() = this ((aClass: Class[_]) => {throw new ContainerException(aClass.getName + " not found in container")})
+
+  def this(resolver: Resolver) = this ((aCLass: Class[_]) => resolver.resolve(aCLass))
 
   val activators = new HashMap[Class[_], Activator[_]]
 
-  def resolve(aClass: Class[_]) = resolveType(aClass).asInstanceOf[Object]
+  def resolve(aClass: Class[_]): Object = resolveType(aClass).asInstanceOf[Object]
 
   def resolveType[A](aClass: Class[A]): A = {
     activators.get(aClass) match {
