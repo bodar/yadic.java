@@ -14,6 +14,20 @@ public class JavaTest {
     }
 
     @Test
+    public void shouldSupportUserDefinedResolver() {
+        final int[] count = {0};
+        Container container = new SimpleContainer(new Resolver(){
+            public Object resolve(Class aClass) {
+                count[0]++;
+                return new Dependacy();
+            }
+        });
+        container.add(Depends.class);
+        assertNotNull(container.resolveType(Depends.class));
+        assertEquals(1, count[0]);
+    }
+
+    @Test
     public void shouldSupportDifferentActivators() {
         Container container = new SimpleContainer();
         final int[] count = {0};
@@ -28,5 +42,10 @@ public class JavaTest {
     }
 
     static public class NoDependancies {}
+    static public class Dependacy {}
+    static public class Depends {
+        public Depends(Dependacy dependacy) {
+        }
+    }
 
 }

@@ -56,7 +56,7 @@ class SimpleContainerTest {
     val parent = new SimpleContainer
     parent.add(classOf[Thing], classOf[ThingWithNoDependencies])
 
-    val child = new SimpleContainer(parent.resolve)
+    val child = new SimpleContainer(parent)
 
     val thing = child.resolveType(classOf[Thing])
 

@@ -5,6 +5,5 @@ public interface Container {
   <I, C extends I> Container add(Class<I> aInterface, Class<C> concrete);
   <T> Container add(Class<T> aClass, Activator<T> activator );
   <I, C extends I> Container decorate(Class<I> i, Class<C> concrete);
-  Object resolve(Class aClass);
   <T> T resolveType(Class<T> aClass);
 }
