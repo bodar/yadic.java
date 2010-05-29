@@ -87,7 +87,7 @@ class SimpleContainerTest {
     val container = new SimpleContainer((_) =>
             {
               wasCalled = true
-              return null
+              null
             })
     container.resolveType(classOf[Thing])
 
@@ -101,7 +101,7 @@ class SimpleContainerTest {
 
     container.add(classOf[Thing], () => {
       count = count + 1
-      return new ThingWithNoDependencies
+      new ThingWithNoDependencies
     })
 
     container.resolveType(classOf[Thing])
@@ -120,6 +120,15 @@ class SimpleContainerTest {
 
     assertThat(thing, is(instanceOf(classOf[DecoratedThing])))
     assertThat(thing.dependency, is(instanceOf(classOf[ThingWithNoDependencies])))
+  }
+
+  @Test
+  def canAddObjectInstance {
+    val container = new SimpleContainer
+    val instance = new ThingWithNoDependencies
+    container.add(instance)
+
+    assertThat(container.resolveType(classOf[ThingWithNoDependencies]), is(instance))
   }
 
   @Test

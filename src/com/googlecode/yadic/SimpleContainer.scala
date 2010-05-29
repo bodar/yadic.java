@@ -24,6 +24,8 @@ class SimpleContainer(missingHandler: (Class[_]) => Object) extends Container {
 
   def add[T](a: Class[T], activator: Activator[T]): Container = add(a, () => activator.activate())
 
+  def add(instance:Object): Container = add(instance.getClass.asInstanceOf[Class[Object]], () => instance)
+
   def add[T](aClass: Class[T], activator: () => T): Container = {
     activators.containsKey(aClass) match {
       case true => throw new ContainerException(aClass.getName + " already added to container")
