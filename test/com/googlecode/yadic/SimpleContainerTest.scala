@@ -9,6 +9,14 @@ import java.util.List
 import java.util.concurrent.{TimeUnit, Future, Executors, Callable}
 
 class SimpleContainerTest {
+  @Test
+   def shouldBeAbleToRemove {
+     val container = new SimpleContainer
+     container.add(classOf[MyThing])
+     val activator = container.remove(classOf[MyThing])
+     container.add(classOf[MyThing])
+   }
+
   @Test {val expected = classOf[ContainerException]}
   def resolveShouldThrowExceptionIfConstructorIsNotSatifiable {
     val container = new SimpleContainer

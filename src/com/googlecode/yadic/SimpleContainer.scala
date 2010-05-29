@@ -3,7 +3,7 @@ package com.googlecode.yadic
 import java.lang.Class
 import java.util.HashMap
 
-class SimpleContainer(missingHandler: (Class[_]) => Object) extends Container with Resolver {
+class SimpleContainer(missingHandler: (Class[_]) => Object) extends Container {
   def this() = this ((aClass: Class[_]) => {throw new ContainerException(aClass.getName + " not found in container")})
 
   def this(resolver: Resolver) = this ((aCLass: Class[_]) => resolver.resolve(aCLass))
@@ -39,6 +39,8 @@ class SimpleContainer(missingHandler: (Class[_]) => Object) extends Container wi
     })))
     this
   }
+
+  def remove[T](aClass: Class[T]):Activator[T] = activators.remove(aClass).asInstanceOf[Activator[T]]
 
   def createInstance[C](concrete: Class[C]): C = createInstance(concrete, resolve)
 
