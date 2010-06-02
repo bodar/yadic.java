@@ -7,7 +7,7 @@ trait Container extends Resolver {
 
   def add[T](a: Class[T], activator: Activator[T]): Container
 
-  def add(instance: Object): Container
+  def addInstance(instance: Object): Container
   
   def add[T](aClass: Class[T], activator: () => T): Container
 
