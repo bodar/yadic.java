@@ -10,12 +10,21 @@ import java.util.concurrent.{TimeUnit, Future, Executors, Callable}
 
 class SimpleContainerTest {
   @Test
-   def shouldBeAbleToRemove {
-     val container = new SimpleContainer
-     container.add(classOf[MyThing])
-     val activator = container.remove(classOf[MyThing])
-     container.add(classOf[MyThing])
-   }
+  def shouldBeAbleToDetectExisting {
+    val container = new SimpleContainer
+    container.add(classOf[MyThing])
+    assertThat(container.contains(classOf[MyThing]), is(true))
+    container.remove(classOf[MyThing])
+    assertThat(container.contains(classOf[MyThing]), is(false))
+  }
+
+  @Test
+  def shouldBeAbleToRemove {
+    val container = new SimpleContainer
+    container.add(classOf[MyThing])
+    val activator = container.remove(classOf[MyThing])
+    container.add(classOf[MyThing])
+  }
 
   @Test {val expected = classOf[ContainerException]}
   def resolveShouldThrowExceptionIfConstructorIsNotSatifiable {
@@ -41,12 +50,12 @@ class SimpleContainerTest {
     val collection = new ArrayList[Callable[Thing]]
     collection.add(new Creator(container))
     collection.add(new Creator(container))
-    val results:List[Future[Thing]] = service.invokeAll(collection)
+    val results: List[Future[Thing]] = service.invokeAll(collection)
     service.shutdown
     service.awaitTermination(50, TimeUnit.MILLISECONDS)
 
-    assertThat( count, is(1) )
-    assertSame( results.get(0).get, results.get(1).get)
+    assertThat(count, is(1))
+    assertSame(results.get(0).get, results.get(1).get)
   }
 
   @Test
@@ -85,10 +94,10 @@ class SimpleContainerTest {
   def shouldCallMissingMethodWhenItemNotFound {
     var wasCalled = false
     val container = new SimpleContainer((_) =>
-            {
-              wasCalled = true
-              null
-            })
+      {
+        wasCalled = true
+        null
+      })
     container.resolveType(classOf[Thing])
 
     assertTrue(wasCalled)
@@ -132,7 +141,7 @@ class SimpleContainerTest {
   }
 
   @Test
-  def shouldAddAndReolveByConcrete {
+  def shouldAddAndResolveByConcrete {
     val container = new SimpleContainer
     container.add(classOf[Thing], () => new ThingWithNoDependencies)
 
@@ -238,7 +247,7 @@ class SimpleContainerTest {
 }
 
 object SimpleContainerTest {
-  class Creator(container:SimpleContainer) extends Callable[Thing] {
+  class Creator(container: SimpleContainer) extends Callable[Thing] {
     def call = container.resolveType(classOf[Thing])
   }
 

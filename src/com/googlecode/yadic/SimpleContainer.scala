@@ -44,6 +44,8 @@ class SimpleContainer(missingHandler: (Class[_]) => Object) extends Container {
 
   def remove[T](aClass: Class[T]):Activator[T] = activators.remove(aClass).asInstanceOf[Activator[T]]
 
+  def contains[T](aClass: Class[T]):Boolean = activators.containsKey(aClass)
+
   def createInstance[C](concrete: Class[C]): C = createInstance(concrete, resolve)
 
   def createInstance[C](concrete: Class[C], resolver: (Class[_]) => Any): C = {
