@@ -134,8 +134,8 @@ class SimpleContainerTest {
   @Test
   def canAddObjectInstance {
     val container = new SimpleContainer
-    val instance = new ThingWithNoDependencies
-    container.add(instance)
+    val instance:Object = new ThingWithNoDependencies
+    container.addInstance(instance)
 
     assertThat(container.resolveType(classOf[ThingWithNoDependencies]), is(instance))
   }
