@@ -15,5 +15,7 @@ trait Container extends Resolver {
 
   def remove[T](aClass: Class[T]): Activator[T]
 
+  def contains[T](aClass: Class[T]):Boolean
+
   def resolveType[A](aClass: Class[A]): A
 }
