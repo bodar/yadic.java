@@ -10,6 +10,14 @@ import java.util.concurrent.{TimeUnit, Future, Executors, Callable}
 
 class SimpleContainerTest {
   @Test
+  def shouldBeAbleAddClassAndAnActivatorClass {
+    val container = new SimpleContainer
+    container.addActivator(classOf[MyThing], classOf[MyThingActivator])
+    val thing = container.resolveType(classOf[MyThing])
+    assertThat(thing.dependency, is(nullValue(classOf[MyDependency])))
+  }
+
+  @Test
   def shouldBeAbleToDetectExisting {
     val container = new SimpleContainer
     container.add(classOf[MyThing])
@@ -247,6 +255,10 @@ class SimpleContainerTest {
 }
 
 object SimpleContainerTest {
+  class MyThingActivator extends Activator[MyThing]{
+    def activate = new MyThing(null)
+  }
+
   class Creator(container: SimpleContainer) extends Callable[Thing] {
     def call = container.resolveType(classOf[Thing])
   }
