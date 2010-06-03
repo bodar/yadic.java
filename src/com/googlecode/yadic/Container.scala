@@ -8,6 +8,8 @@ trait Container extends Resolver {
   def add[T](a: Class[T], activator: Activator[T]): Container
 
   def addInstance(instance: Object): Container
+
+  def addActivator[T, A <: Activator[T]](aClass: Class[T], activator: Class[A]): Container
   
   def add[T](aClass: Class[T], activator: () => T): Container
 
