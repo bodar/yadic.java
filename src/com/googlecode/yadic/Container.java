@@ -1,17 +1,21 @@
 package com.googlecode.yadic;
 
-public interface Container<T extends Container<T>> extends Resolver{
-  <C> T add(Class<C> concrete); 
+import scala.Function0;
 
-  <I, C extends I> T add(Class<I> anInterface, Class<C> concrete);
+public interface Container extends Resolver{
+  <C> Container add(Class<C> concrete); 
 
-  <C> T add(Class<C> aClass, Activator<C> activator);
+  <I, C extends I> Container add(Class<I> anInterface, Class<C> concrete);
 
-  T addInstance(Object instance);
+  <C> Container add(Class<C> aClass, Activator<C> activator);
 
-  <C, A extends Activator<C>> T addActivator(Class<C> aClass, Class<A> activator);
+  Container addInstance(Object instance);
 
-  <I, C extends I> T decorate(Class<I> anInterface, Class<C> concrete);
+  <C, A extends Activator<C>> Container addActivator(Class<C> aClass, Class<A> activator);
+    
+  <C> Container add(Class<C> aClass, Function0<C> activator);
+
+  <I, C extends I> Container decorate(Class<I> anInterface, Class<C> concrete);
 
   <C> Activator<C> remove(Class<C> aClass);
 

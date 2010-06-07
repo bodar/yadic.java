@@ -2,9 +2,8 @@ package com.googlecode.yadic
 
 import java.lang.Class
 import java.util.HashMap
-import java.lang.reflect.ParameterizedType
 
-class SimpleContainer(missingHandler: (Class[_]) => Object) extends ScalaContainer {
+class SimpleContainer(missingHandler: (Class[_]) => Object) extends Container {
   def this() = this ((aClass: Class[_]) => {throw new ContainerException(aClass.getName + " not found in container")})
 
   def this(resolver: Resolver) = this ((aCLass: Class[_]) => resolver.resolve(aCLass))
@@ -19,17 +18,17 @@ class SimpleContainer(missingHandler: (Class[_]) => Object) extends ScalaContain
 
   def resolveType[A](aClass: Class[A]): A = resolve(aClass).asInstanceOf[A]
 
-  def add[C](concrete: Class[C]): ScalaContainer = add(concrete, () => createInstance(concrete))
+  def add[C](concrete: Class[C]): Container = add(concrete, () => createInstance(concrete))
 
-  def add[I, C <: I](interface: Class[I], concrete: Class[C]): ScalaContainer = add(interface, () => createInstance(concrete))
+  def add[I, C <: I](interface: Class[I], concrete: Class[C]): Container = add(interface, () => createInstance(concrete))
 
-  def add[T](a: Class[T], activator: Activator[T]): ScalaContainer = add(a, () => activator.activate())
+  def add[T](a: Class[T], activator: Activator[T]): Container = add(a, () => activator.activate())
 
-  def addInstance(instance: Object): ScalaContainer = add(instance.getClass.asInstanceOf[Class[Object]], () => instance)
+  def addInstance(instance: Object): Container = add(instance.getClass.asInstanceOf[Class[Object]], () => instance)
 
-  def addActivator[C, A <: Activator[C]](aClass: Class[C], activator: Class[A]): ScalaContainer = add(activator).add(aClass, () => resolveType(activator).activate)
+  def addActivator[C, A <: Activator[C]](aClass: Class[C], activator: Class[A]): Container = add(activator).add(aClass, () => resolveType(activator).activate)
 
-  def add[T](aClass: Class[T], activator: () => T): ScalaContainer = {
+  def add[T](aClass: Class[T], activator: () => T): Container = {
     activators.containsKey(aClass) match {
       case true => throw new ContainerException(aClass.getName + " already added to container")
       case false => activators.put(aClass, new LazyActivator[T](activator))
@@ -37,7 +36,7 @@ class SimpleContainer(missingHandler: (Class[_]) => Object) extends ScalaContain
     this
   }
 
-  def decorate[I, C <: I](interface: Class[I], concrete: Class[C]): ScalaContainer = {
+  def decorate[I, C <: I](interface: Class[I], concrete: Class[C]): Container = {
     val existing = activators.get(interface)
     activators.put(interface, new LazyActivator[I](() => createInstance(concrete, (aClass: Class[_]) => {
       if (aClass.equals(interface)) existing.activate() else resolveType(aClass)
