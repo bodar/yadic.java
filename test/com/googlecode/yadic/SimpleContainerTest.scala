@@ -10,7 +10,7 @@ import java.util.concurrent.{TimeUnit, Future, Executors, Callable}
 
 class SimpleContainerTest {
   @Test
-  def shouldBeAbleAddClassAndAnActivatorClass {
+  def shouldBeAbleToAddAnActivatorClass {
     val container = new SimpleContainer
     container.addActivator(classOf[MyThing], classOf[MyThingActivator])
     val thing = container.resolveType(classOf[MyThing])
