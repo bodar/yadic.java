@@ -31,12 +31,7 @@ public class JavaTest {
     public void shouldSupportDifferentActivators() {
         Container container = new SimpleContainer();
         final int[] count = {0};
-        container.add(NoDependancies.class, new Activator<NoDependancies>(){
-            public NoDependancies activate() {
-                count[0]++;
-                return new NoDependancies();
-            }
-        });
+        container.addActivator(NoDependancies.class, new NoDependanciesActivator(count));
         assertNotNull(container.resolveType(NoDependancies.class));
         assertEquals(1, count[0]);
     }
@@ -48,4 +43,16 @@ public class JavaTest {
         }
     }
 
+    private static class NoDependanciesActivator implements Activator<NoDependancies> {
+        private final int[] count;
+
+        public NoDependanciesActivator(int[] count) {
+            this.count = count;
+        }
+
+        public NoDependancies activate() {
+            count[0]++;
+            return new NoDependancies();
+        }
+    }
 }

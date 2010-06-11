@@ -9,6 +9,25 @@ import java.util.List
 import java.util.concurrent.{TimeUnit, Future, Executors, Callable}
 
 class SimpleContainerTest {
+
+  @Test
+  def canAddObjectInstanceWithSpecificInterface {
+    val container = new SimpleContainer
+    val instance:Thing = new ThingWithNoDependencies
+    container.addInstance(classOf[Thing], instance)
+
+    assertThat(container.resolveType(classOf[Thing]), is(instance))
+  }
+
+  @Test
+  def canAddObjectInstance {
+    val container = new SimpleContainer
+    val instance:Object = new ThingWithNoDependencies
+    container.addInstance(instance)
+
+    assertThat(container.resolveType(classOf[ThingWithNoDependencies]), is(instance))
+  }
+
   @Test
   def shouldBeAbleToAddAnActivatorClass {
     val container = new SimpleContainer
@@ -137,15 +156,6 @@ class SimpleContainerTest {
 
     assertThat(thing, is(instanceOf(classOf[DecoratedThing])))
     assertThat(thing.dependency, is(instanceOf(classOf[ThingWithNoDependencies])))
-  }
-
-  @Test
-  def canAddObjectInstance {
-    val container = new SimpleContainer
-    val instance:Object = new ThingWithNoDependencies
-    container.addInstance(instance)
-
-    assertThat(container.resolveType(classOf[ThingWithNoDependencies]), is(instance))
   }
 
   @Test
