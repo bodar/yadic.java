@@ -16,22 +16,24 @@ class SimpleContainer(missingHandler: (Class[_]) => Object) extends Container {
       case activator: Activator[_] => activator.activate().asInstanceOf[Object]
     }
 
-  def resolveType[A](aClass: Class[A]): A = resolve(aClass).asInstanceOf[A]
+  def resolveType[Type](aClass: Class[Type]): Type = resolve(aClass).asInstanceOf[Type]
 
-  def add[C](concrete: Class[C]): Container = add(concrete, () => createInstance(concrete))
+  def add[Concrete](concrete: Class[Concrete]): Container = add(concrete, () => createInstance(concrete))
 
-  def add[I, C <: I](interface: Class[I], concrete: Class[C]): Container = add(interface, () => createInstance(concrete))
-
-  def add[T](a: Class[T], activator: Activator[T]): Container = add(a, () => activator.activate())
+  def add[Interface, Concrete <: Interface](interface: Class[Interface], concrete: Class[Concrete]): Container = add(interface, () => createInstance(concrete))
 
   def addInstance(instance: Object): Container = add(instance.getClass.asInstanceOf[Class[Object]], () => instance)
 
-  def addActivator[C, A <: Activator[C]](aClass: Class[C], activator: Class[A]): Container = add(activator).add(aClass, () => resolveType(activator).activate)
+  def addInstance[Interface, Concrete <: Interface](anInterface: Class[Interface], instance: Concrete) = add(anInterface, () => instance)
 
-  def add[T](aClass: Class[T], activator: () => T): Container = {
+  def addActivator[Type](aClass: Class[Type], activator: Activator[Type]): Container = add(aClass, () => activator.activate())
+
+  def addActivator[Type, AnActivator <: Activator[Type]](aClass: Class[Type], activator: Class[AnActivator]): Container = add(activator).add(aClass, () => resolveType(activator).activate)
+
+  def add[Type](aClass: Class[Type], activator: () => Type): Container = {
     activators.containsKey(aClass) match {
       case true => throw new ContainerException(aClass.getName + " already added to container")
-      case false => activators.put(aClass, new LazyActivator[T](activator))
+      case false => activators.put(aClass, new LazyActivator[Type](activator))
     }
     this
   }
