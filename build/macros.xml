@@ -17,8 +17,8 @@
 
         <sequential>
             <mkdir dir="@{classes}"/>
-            <scalac srcdir="@{src}" destdir="@{classes}" classpathref="@{classpathref}"/>
-            <javac srcdir="@{src}" destdir="@{classes}" classpathref="@{classpathref}" debug="true"/>
+            <scalac srcdir="@{src}" destdir="@{classes}" classpathref="@{classpathref}" target="jvm-1.5"/>
+            <javac srcdir="@{src}" destdir="@{classes}" classpathref="@{classpathref}" target="1.5" debug="true"/>
 
             <copy todir="@{classes}">
                 <fileset dir="@{src}">
