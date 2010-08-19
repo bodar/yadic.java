@@ -8,7 +8,8 @@
     <property name="src" value="${basedir}/src"/>
     <property name="test" value="${basedir}/test"/>
     <property name="release.version" value="${build.number}"/>
-    <property name="release.name" value="${ant.project.name}"/>
+    <property name="release.name" value="${ant.project.name}-${release.version}"/>
+    <property name="release.pom" value="${release.name}.pom"/>
     <property name="release.jar" value="${release.name}.jar"/>
     <property name="release.jar.path" value="${artifacts}/${release.jar}"/>
     <property name="test.jar.path" value="${artifacts}/${release.name}.test.jar"/>
@@ -47,9 +48,11 @@
         <propertyfile file="${artifacts}/release.properties">
             <entry key="release.version" value="${release.version}"/>
             <entry key="release.name" value="${release.name}"/>
-            <entry key="release.files" value="${release.jar}"/>
+            <entry key="release.files" value="${release.jar},${release.pom}"/>
             <entry key="${release.jar}.description" value="Yadic for Java (requires scala-library.jar) build:${build.number}"/>
             <entry key="${release.jar}.labels" value="Featured"/>
+            <entry key="${release.pom}.description" value="Maven POM file build:${build.number}"/>
+            <entry key="${release.pom}.labels" value="Featured"/>
         </propertyfile>
     </target>
 
