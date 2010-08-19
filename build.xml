@@ -55,6 +55,12 @@
             <entry key="${release.pom}.description" value="Maven POM file build:${build.number}"/>
             <entry key="${release.pom}.labels" value="Featured"/>
         </propertyfile>
+
+        <copy file="${build}/pom.xml" tofile="${artifacts}/${release.pom}">
+            <filterset>
+                <filter token="VERSION" value="${build.number}"/>
+            </filterset>
+        </copy>
     </target>
 
     <target name="build" depends="clean, compile, test, package" description="build all"/>
