@@ -28,4 +28,6 @@ public interface Container extends Resolver {
     <Type> Type get(Class<Type> aClass);
 
     <Type> Callable<Type> getCallable(Class<Type> aClass);
+
+    <Concrete> Concrete create(Class<Concrete> concrete);
 }
