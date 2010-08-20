@@ -19,7 +19,7 @@ public class JavaTest {
         Container container = new SimpleContainer(new Resolver(){
             public Object resolve(Class aClass) {
                 count[0]++;
-                return new Dependacy();
+                return new Dependancy();
             }
         });
         container.add(Depends.class);
@@ -36,10 +36,18 @@ public class JavaTest {
         assertEquals(1, count[0]);
     }
 
+    @Test
+    public void shouldBeAbleToGetTheActivatorForAType() throws Exception {
+        Container container = new SimpleContainer();
+        container.add(NoDependancies.class);
+        assertNotNull(container.getActivator(NoDependancies.class));
+    }
+
+
     static public class NoDependancies {}
-    static public class Dependacy {}
+    static public class Dependancy {}
     static public class Depends {
-        public Depends(Dependacy dependacy) {
+        public Depends(Dependancy dependancy) {
         }
     }
 

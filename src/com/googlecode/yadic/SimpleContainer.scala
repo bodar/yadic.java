@@ -18,6 +18,8 @@ class SimpleContainer(missingHandler: (Class[_]) => Object) extends Container {
 
   def resolveType[Type](aClass: Class[Type]): Type = resolve(aClass).asInstanceOf[Type]
 
+  def getActivator[Type](aClass: Class[Type]): Activator[Type] = activators.get(aClass).asInstanceOf[Activator[Type]] 
+
   def add[Concrete](concrete: Class[Concrete]): Container = add(concrete, () => createInstance(concrete))
 
   def add[Interface, Concrete <: Interface](interface: Class[Interface], concrete: Class[Concrete]): Container = add(interface, () => createInstance(concrete))
