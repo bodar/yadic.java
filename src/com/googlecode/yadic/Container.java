@@ -11,7 +11,7 @@ public interface Container extends Resolver {
 
     <Interface, Concrete extends Interface> Container addInstance(Class<Interface> anInterface, Concrete instance);
 
-    <Type> Container addActivator(Class<Type> aClass, Activator<Type> activator);
+    <Type, ExtendsType extends Type> Container addActivator(Class<Type> aClass, Activator<ExtendsType> activator);
 
     <Type, AnActivator extends Activator<Type>> Container addActivator(Class<Type> aClass, Class<AnActivator> activator);
 

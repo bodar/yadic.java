@@ -43,6 +43,17 @@ public class JavaTest {
         assertNotNull(container.getActivator(NoDependancies.class));
     }
 
+    @Test
+    public void shouldBeAbleToReregisterAClassAgainstAParentInterface() throws Exception {
+        Container container = new SimpleContainer();
+        container.add(SomeInterfaceImpl.class);
+        container.addActivator(SomeInterface.class, container.getActivator(SomeInterfaceImpl.class));
+        assertNotNull(container.getActivator(SomeInterface.class));
+    }
+
+
+    static public interface SomeInterface{}
+    static public class SomeInterfaceImpl implements SomeInterface{}
 
     static public class NoDependancies {}
     static public class Dependancy {}
