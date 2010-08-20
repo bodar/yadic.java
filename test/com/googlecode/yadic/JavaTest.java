@@ -2,6 +2,8 @@ package com.googlecode.yadic;
 
 import org.junit.Test;
 
+import java.util.concurrent.Callable;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -10,7 +12,7 @@ public class JavaTest {
     public void shouldBeCallableFromJava() {
         Container container = new SimpleContainer();
         container.add(NoDependancies.class);
-        assertNotNull(container.resolveType(NoDependancies.class));
+        assertNotNull(container.get(NoDependancies.class));
     }
 
     @Test
@@ -23,32 +25,32 @@ public class JavaTest {
             }
         });
         container.add(Depends.class);
-        assertNotNull(container.resolveType(Depends.class));
+        assertNotNull(container.get(Depends.class));
         assertEquals(1, count[0]);
     }
 
     @Test
-    public void shouldSupportDifferentActivators() {
+    public void shouldSupportDifferentCallables() {
         Container container = new SimpleContainer();
         final int[] count = {0};
-        container.addActivator(NoDependancies.class, new NoDependanciesActivator(count));
-        assertNotNull(container.resolveType(NoDependancies.class));
+        container.addCallable(NoDependancies.class, new NoDependanciesCallable(count));
+        assertNotNull(container.get(NoDependancies.class));
         assertEquals(1, count[0]);
     }
 
     @Test
-    public void shouldBeAbleToGetTheActivatorForAType() throws Exception {
+    public void shouldBeAbleToGetTheCallableForAType() throws Exception {
         Container container = new SimpleContainer();
         container.add(NoDependancies.class);
-        assertNotNull(container.getActivator(NoDependancies.class));
+        assertNotNull(container.getCallable(NoDependancies.class));
     }
 
     @Test
     public void shouldBeAbleToReregisterAClassAgainstAParentInterface() throws Exception {
         Container container = new SimpleContainer();
         container.add(SomeInterfaceImpl.class);
-        container.addActivator(SomeInterface.class, container.getActivator(SomeInterfaceImpl.class));
-        assertNotNull(container.getActivator(SomeInterface.class));
+        container.addCallable(SomeInterface.class, container.getCallable(SomeInterfaceImpl.class));
+        assertNotNull(container.getCallable(SomeInterface.class));
     }
 
 
@@ -62,14 +64,14 @@ public class JavaTest {
         }
     }
 
-    private static class NoDependanciesActivator implements Activator<NoDependancies> {
+    private static class NoDependanciesCallable implements Callable<NoDependancies> {
         private final int[] count;
 
-        public NoDependanciesActivator(int[] count) {
+        public NoDependanciesCallable(int[] count) {
             this.count = count;
         }
 
-        public NoDependancies activate() {
+        public NoDependancies call() {
             count[0]++;
             return new NoDependancies();
         }

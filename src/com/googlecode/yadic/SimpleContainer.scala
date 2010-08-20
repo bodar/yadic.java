@@ -2,59 +2,60 @@ package com.googlecode.yadic
 
 import java.lang.Class
 import java.util.HashMap
+import java.util.concurrent.Callable
 
 class SimpleContainer(missingHandler: (Class[_]) => Object) extends Container {
   def this() = this ((aClass: Class[_]) => {throw new ContainerException(aClass.getName + " not found in container")})
 
   def this(resolver: Resolver) = this ((aCLass: Class[_]) => resolver.resolve(aCLass))
 
-  val activators = new HashMap[Class[_], Activator[_]]
+  val callables = new HashMap[Class[_], Callable[_]]
 
   def resolve(aClass: Class[_]): Object =
-    activators.get(aClass) match {
+    callables.get(aClass) match {
       case null => missingHandler(aClass)
-      case activator: Activator[_] => activator.activate().asInstanceOf[Object]
+      case callable: Callable[_] => callable.call().asInstanceOf[Object]
     }
 
-  def resolveType[Type](aClass: Class[Type]): Type = resolve(aClass).asInstanceOf[Type]
+  def get[Type](aClass: Class[Type]): Type = resolve(aClass).asInstanceOf[Type]
 
-  def getActivator[Type](aClass: Class[Type]): Activator[Type] = activators.get(aClass).asInstanceOf[Activator[Type]] 
+  def getCallable[Type](aClass: Class[Type]): Callable[Type] = callables.get(aClass).asInstanceOf[Callable[Type]]
 
-  def add[Concrete](concrete: Class[Concrete]): Container = add(concrete, () => createInstance(concrete))
+  def add[Concrete](concrete: Class[Concrete]): Container = add(concrete, () => create(concrete))
 
-  def add[Interface, Concrete <: Interface](interface: Class[Interface], concrete: Class[Concrete]): Container = add(interface, () => createInstance(concrete))
+  def add[Interface, Concrete <: Interface](interface: Class[Interface], concrete: Class[Concrete]): Container = add(interface, () => create(concrete))
 
   def addInstance(instance: Object): Container = add(instance.getClass.asInstanceOf[Class[Object]], () => instance)
 
   def addInstance[Interface, Concrete <: Interface](anInterface: Class[Interface], instance: Concrete) = add(anInterface, () => instance)
 
-  def addActivator[Type, ExtendsType <: Type](aClass: Class[Type], activator: Activator[ExtendsType]): Container = add(aClass, () => activator.activate())
+  def addCallable[Type, ExtendsType <: Type](aClass: Class[Type], callable: Callable[ExtendsType]): Container = add(aClass, () => callable.call())
 
-  def addActivator[Type, AnActivator <: Activator[Type]](aClass: Class[Type], activator: Class[AnActivator]): Container = add(activator).add(aClass, () => resolveType(activator).activate)
+  def addCallable[Type, ACallable <: Callable[Type]](aClass: Class[Type], callable: Class[ACallable]): Container = add(callable).add(aClass, () => get(callable).call)
 
-  def add[Type](aClass: Class[Type], activator: () => Type): Container = {
-    activators.containsKey(aClass) match {
+  def add[Type](aClass: Class[Type], callable: () => Type): Container = {
+    callables.containsKey(aClass) match {
       case true => throw new ContainerException(aClass.getName + " already added to container")
-      case false => activators.put(aClass, new LazyActivator[Type](activator))
+      case false => callables.put(aClass, new LazyCallable[Type](callable))
     }
     this
   }
 
   def decorate[I, C <: I](interface: Class[I], concrete: Class[C]): Container = {
-    val existing = activators.get(interface)
-    activators.put(interface, new LazyActivator[I](() => createInstance(concrete, (aClass: Class[_]) => {
-      if (aClass.equals(interface)) existing.activate() else resolveType(aClass)
+    val existing = callables.get(interface)
+    callables.put(interface, new LazyCallable[I](() => create(concrete, (aClass: Class[_]) => {
+      if (aClass.equals(interface)) existing.call() else get(aClass)
     })))
     this
   }
 
-  def remove[T](aClass: Class[T]): Activator[T] = activators.remove(aClass).asInstanceOf[Activator[T]]
+  def remove[T](aClass: Class[T]): Callable[T] = callables.remove(aClass).asInstanceOf[Callable[T]]
 
-  def contains[T](aClass: Class[T]): Boolean = activators.containsKey(aClass)
+  def contains[T](aClass: Class[T]): Boolean = callables.containsKey(aClass)
 
-  def createInstance[C](concrete: Class[C]): C = createInstance(concrete, resolve)
+  def create[C](concrete: Class[C]): C = create(concrete, resolve)
 
-  def createInstance[C](concrete: Class[C], resolver: (Class[_]) => Any): C = {
+  def create[C](concrete: Class[C], resolver: (Class[_]) => Any): C = {
     val constructors = concrete.getConstructors.toList.sort(_.getParameterTypes.length > _.getParameterTypes.length)
     constructors.foreach(constructor => {
       try {

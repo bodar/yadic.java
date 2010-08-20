@@ -16,7 +16,7 @@ class SimpleContainerTest {
     val instance:Thing = new ThingWithNoDependencies
     container.addInstance(classOf[Thing], instance)
 
-    assertThat(container.resolveType(classOf[Thing]), is(instance))
+    assertThat(container.get(classOf[Thing]), is(instance))
   }
 
   @Test
@@ -25,14 +25,14 @@ class SimpleContainerTest {
     val instance:Object = new ThingWithNoDependencies
     container.addInstance(instance)
 
-    assertThat(container.resolveType(classOf[ThingWithNoDependencies]), is(instance))
+    assertThat(container.get(classOf[ThingWithNoDependencies]), is(instance))
   }
 
   @Test
-  def shouldBeAbleToAddAnActivatorClass {
+  def shouldBeAbleToAddACallableClass {
     val container = new SimpleContainer
-    container.addActivator(classOf[MyThing], classOf[MyThingActivator])
-    val thing = container.resolveType(classOf[MyThing])
+    container.addCallable(classOf[MyThing], classOf[MyThingActivator])
+    val thing = container.get(classOf[MyThing])
     assertThat(thing.dependency, is(nullValue(classOf[MyDependency])))
   }
 
@@ -90,7 +90,7 @@ class SimpleContainerTest {
     val container = new SimpleContainer
     container.add(classOf[MyThingWithReverseConstructor])
 
-    var myThing: MyThingWithReverseConstructor = container.resolveType(classOf[MyThingWithReverseConstructor])
+    var myThing: MyThingWithReverseConstructor = container.get(classOf[MyThingWithReverseConstructor])
 
     assertThat(myThing.dependency, is(nullValue(classOf[Thing])))
   }
@@ -102,7 +102,7 @@ class SimpleContainerTest {
 
     val child = new SimpleContainer(parent)
 
-    val thing = child.resolveType(classOf[Thing])
+    val thing = child.get(classOf[Thing])
 
     assertThat(thing, is(instanceOf(classOf[ThingWithNoDependencies])))
   }
@@ -112,7 +112,7 @@ class SimpleContainerTest {
     val container = new SimpleContainer
     container.add(classOf[Thing], classOf[ThingWithNoDependencies])
 
-    val thing = container.resolveType(classOf[Thing])
+    val thing = container.get(classOf[Thing])
 
     assertThat(thing, is(instanceOf(classOf[ThingWithNoDependencies])))
   }
@@ -125,7 +125,7 @@ class SimpleContainerTest {
         wasCalled = true
         null
       })
-    container.resolveType(classOf[Thing])
+    container.get(classOf[Thing])
 
     assertTrue(wasCalled)
   }
@@ -140,8 +140,8 @@ class SimpleContainerTest {
       new ThingWithNoDependencies
     })
 
-    container.resolveType(classOf[Thing])
-    val thing = container.resolveType(classOf[Thing])
+    container.get(classOf[Thing])
+    val thing = container.get(classOf[Thing])
 
     assertThat(count, is(equalTo(1)))
   }
@@ -152,7 +152,7 @@ class SimpleContainerTest {
     container.add(classOf[Thing], classOf[ThingWithNoDependencies])
     container.decorate(classOf[Thing], classOf[DecoratedThing])
 
-    var thing = container.resolveType(classOf[Thing])
+    var thing = container.get(classOf[Thing])
 
     assertThat(thing, is(instanceOf(classOf[DecoratedThing])))
     assertThat(thing.dependency, is(instanceOf(classOf[ThingWithNoDependencies])))
@@ -163,7 +163,7 @@ class SimpleContainerTest {
     val container = new SimpleContainer
     container.add(classOf[Thing], () => new ThingWithNoDependencies)
 
-    var thing = container.resolveType(classOf[Thing])
+    var thing = container.get(classOf[Thing])
 
     assertThat(thing, is(instanceOf(classOf[ThingWithNoDependencies])))
   }
@@ -173,7 +173,7 @@ class SimpleContainerTest {
     val container = new SimpleContainer
     container.add(classOf[Thing], classOf[ThingWithNoDependencies])
 
-    var thing = container.resolveType(classOf[Thing])
+    var thing = container.get(classOf[Thing])
 
     assertThat(thing, is(instanceOf(classOf[ThingWithNoDependencies])))
   }
@@ -189,7 +189,7 @@ class SimpleContainerTest {
   @Test {val expected = classOf[ContainerException]}
   def resolveShouldThrowExceptionIfTypeNotInContainer {
     val container = new SimpleContainer
-    container.resolveType(classOf[MyThing])
+    container.get(classOf[MyThing])
     fail("should have thrown exception")
   }
 
@@ -198,7 +198,7 @@ class SimpleContainerTest {
     val container = new SimpleContainer
     container.add(classOf[ThingWithNoDependencies])
 
-    var result = container.resolveType(classOf[ThingWithNoDependencies])
+    var result = container.get(classOf[ThingWithNoDependencies])
 
     assertThat(result, is(instanceOf(classOf[ThingWithNoDependencies])))
   }
@@ -208,8 +208,8 @@ class SimpleContainerTest {
     val container = new SimpleContainer
     container.add(classOf[ThingWithNoDependencies])
 
-    var result1 = container.resolveType(classOf[ThingWithNoDependencies])
-    var result2 = container.resolveType(classOf[ThingWithNoDependencies])
+    var result1 = container.get(classOf[ThingWithNoDependencies])
+    var result2 = container.get(classOf[ThingWithNoDependencies])
 
     assertSame(result1, result2)
   }
@@ -220,7 +220,7 @@ class SimpleContainerTest {
     container.add(classOf[MyDependency])
     container.add(classOf[ThingWithNoDependencies])
 
-    var myThing = container.resolveType(classOf[MyDependency])
+    var myThing = container.get(classOf[MyDependency])
 
     assertThat(myThing.dependency, is(instanceOf(classOf[ThingWithNoDependencies])))
   }
@@ -232,7 +232,7 @@ class SimpleContainerTest {
     container.add(classOf[MyDependency])
     container.add(classOf[ThingWithNoDependencies])
 
-    var myThing = container.resolveType(classOf[MyThing])
+    var myThing = container.get(classOf[MyThing])
 
     assertThat(myThing.dependency, is(instanceOf(classOf[MyDependency])))
     assertThat(myThing.dependency.dependency, is(instanceOf(classOf[ThingWithNoDependencies])))
@@ -245,7 +245,7 @@ class SimpleContainerTest {
     container.add(classOf[MyThing])
     container.add(classOf[ThingWithNoDependencies])
 
-    var myThing = container.resolveType(classOf[MyThing])
+    var myThing = container.get(classOf[MyThing])
 
     assertThat("1st level Dependency was not fulfilled", myThing.dependency, is(instanceOf(classOf[MyDependency])))
     assertThat("2nd level Dependency was not fulfiled", myThing.dependency.dependency, is(instanceOf(classOf[ThingWithNoDependencies])))
@@ -257,7 +257,7 @@ class SimpleContainerTest {
     container.add(classOf[MyThingWithReverseConstructor])
     container.add(classOf[ThingWithNoDependencies])
 
-    var myThing: MyThingWithReverseConstructor = container.resolveType(classOf[MyThingWithReverseConstructor])
+    var myThing: MyThingWithReverseConstructor = container.get(classOf[MyThingWithReverseConstructor])
 
     assertThat("Wrong constructor was used", myThing.dependency, is(notNullValue(classOf[Thing])))
     assertThat(myThing.dependency, is(instanceOf(classOf[ThingWithNoDependencies])))
@@ -265,12 +265,12 @@ class SimpleContainerTest {
 }
 
 object SimpleContainerTest {
-  class MyThingActivator extends Activator[MyThing]{
-    def activate = new MyThing(null)
+  class MyThingActivator extends Callable[MyThing]{
+    def call = new MyThing(null)
   }
 
   class Creator(container: SimpleContainer) extends Callable[Thing] {
-    def call = container.resolveType(classOf[Thing])
+    def call = container.get(classOf[Thing])
   }
 
   class MyThingWithReverseConstructor(val dependency: ThingWithNoDependencies) extends Thing {
