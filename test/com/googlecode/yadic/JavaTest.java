@@ -33,7 +33,7 @@ public class JavaTest {
     public void shouldSupportDifferentCallables() {
         Container container = new SimpleContainer();
         final int[] count = {0};
-        container.addCallable(NoDependancies.class, new NoDependanciesCallable(count));
+        container.addActivator(NoDependancies.class, new NoDependanciesCallable(count));
         assertNotNull(container.get(NoDependancies.class));
         assertEquals(1, count[0]);
     }
@@ -42,15 +42,15 @@ public class JavaTest {
     public void shouldBeAbleToGetTheCallableForAType() throws Exception {
         Container container = new SimpleContainer();
         container.add(NoDependancies.class);
-        assertNotNull(container.getCallable(NoDependancies.class));
+        assertNotNull(container.getActivator(NoDependancies.class));
     }
 
     @Test
     public void shouldBeAbleToReregisterAClassAgainstAParentInterface() throws Exception {
         Container container = new SimpleContainer();
         container.add(SomeInterfaceImpl.class);
-        container.addCallable(SomeInterface.class, container.getCallable(SomeInterfaceImpl.class));
-        assertNotNull(container.getCallable(SomeInterface.class));
+        container.addActivator(SomeInterface.class, container.getActivator(SomeInterfaceImpl.class));
+        assertNotNull(container.getActivator(SomeInterface.class));
     }
 
 

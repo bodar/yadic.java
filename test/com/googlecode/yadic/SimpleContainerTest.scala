@@ -31,7 +31,7 @@ class SimpleContainerTest {
   @Test
   def shouldBeAbleToAddACallableClass {
     val container = new SimpleContainer
-    container.addCallable(classOf[MyThing], classOf[MyThingActivator])
+    container.addActivator(classOf[MyThing], classOf[MyThingActivator])
     val thing = container.get(classOf[MyThing])
     assertThat(thing.dependency, is(nullValue(classOf[MyDependency])))
   }
