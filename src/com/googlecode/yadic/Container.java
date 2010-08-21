@@ -13,11 +13,11 @@ public interface Container extends Resolver {
 
     <Interface, Concrete extends Interface> Container addInstance(Class<Interface> anInterface, Concrete instance);
 
-    <Type, ExtendsType extends Type> Container addCallable(Class<Type> aClass, Callable<ExtendsType> callable);
+    <Type, ExtendsType extends Type> Container addActivator(Class<Type> aClass, Callable<ExtendsType> activator);
 
-    <Type, ACallable extends Callable<Type>> Container addCallable(Class<Type> aClass, Class<ACallable> callable);
+    <Type, AnActivator extends Callable<Type>> Container addActivator(Class<Type> aClass, Class<AnActivator> activator);
 
-    <Type> Container add(Class<Type> aClass, Function0<Type> function);
+    <Type> Container add(Class<Type> aClass, Function0<Type> activator);
 
     <Interface, Concrete extends Interface> Container decorate(Class<Interface> anInterface, Class<Concrete> concrete);
 
@@ -27,7 +27,7 @@ public interface Container extends Resolver {
 
     <Type> Type get(Class<Type> aClass);
 
-    <Type> Callable<Type> getCallable(Class<Type> aClass);
+    <Type> Callable<Type> getActivator(Class<Type> aClass);
 
     <Concrete> Concrete create(Class<Concrete> concrete);
 }
