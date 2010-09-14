@@ -57,14 +57,14 @@ class SimpleContainer(missingHandler: (Class[_]) => Object) extends Container {
 
   def create[C](concrete: Class[C], resolver: (Class[_]) => Any): C = {
     val constructors = concrete.getConstructors.toList.sort(_.getParameterTypes.length > _.getParameterTypes.length)
-    constructors.foreach(constructor => {
+    val exceptions = constructors.map(constructor => {
       try {
         val instances = constructor.getParameterTypes.map(resolver(_).asInstanceOf[Object])
         return constructor.newInstance(instances: _*).asInstanceOf[C]
       } catch {
-        case e: ContainerException =>
+        case e:ContainerException => e
       }
     })
-    throw new ContainerException(concrete.getName + " does not have a satisfiable constructor")
+    throw new ContainerException(concrete.getName + " does not have a satisfiable constructor", exceptions)
   }
 }
