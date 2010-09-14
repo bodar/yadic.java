@@ -18,6 +18,7 @@ class SimpleContainerTest {
       container.resolve(classOf[DependsOnMyThing])
     } catch {
       case e:ContainerException => {
+        Console.println(e.getCause)
         assertNotNull(e.getCause)
         assertThat(e.getCauses.get(0), is(e.getCause) )
       }
@@ -281,6 +282,10 @@ class SimpleContainerTest {
 object SimpleContainerTest {
   class MyThingActivator extends Callable[MyThing]{
     def call = new MyThing(null)
+  }
+
+  class DependsOnMyThingActivator(val dependency: MyThing) extends Callable[DependsOnMyThing]{
+    def call = new DependsOnMyThing(dependency)
   }
 
   class Creator(container: SimpleContainer) extends Callable[Thing] {

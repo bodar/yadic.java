@@ -4,10 +4,21 @@ import org.junit.Test;
 
 import java.util.concurrent.Callable;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.*;
 
 public class JavaTest {
+    @Test
+    public void shouldThrowWhenClassDoesNotHaveAPublicConstructor() {
+        try {
+            Container container = new SimpleContainer();
+            container.add(PrivateClass.class);
+            container.get(PrivateClass.class);
+        } catch (ContainerException e) {
+            assertThat(e.getMessage(), is(PrivateClass.class.getName() + " does not have a public constructor") );
+        }
+    }
+
     @Test
     public void shouldBeCallableFromJava() {
         Container container = new SimpleContainer();
@@ -61,6 +72,11 @@ public class JavaTest {
     static public class Dependancy {}
     static public class Depends {
         public Depends(Dependancy dependancy) {
+        }
+    }
+
+    static private class PrivateClass{
+        private PrivateClass() {
         }
     }
 
