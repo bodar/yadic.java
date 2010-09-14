@@ -57,6 +57,9 @@ class SimpleContainer(missingHandler: (Class[_]) => Object) extends Container {
 
   def create[C](concrete: Class[C], resolver: (Class[_]) => Any): C = {
     val constructors = concrete.getConstructors.toList.sort(_.getParameterTypes.length > _.getParameterTypes.length)
+    if (constructors.isEmpty) {
+      throw new ContainerException(concrete.getName + " does not have a public constructor")
+    }
     val exceptions = constructors.map(constructor => {
       try {
         val instances = constructor.getParameterTypes.map(resolver(_).asInstanceOf[Object])
