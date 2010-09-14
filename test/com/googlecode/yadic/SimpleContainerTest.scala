@@ -1,7 +1,7 @@
 package com.googlecode.yadic
 
 import org.hamcrest.CoreMatchers._
-import org.junit.Assert.{assertThat, assertTrue, fail, assertSame}
+import org.junit.Assert._
 import org.junit.{Test}
 import com.googlecode.yadic.SimpleContainerTest._
 import java.util.ArrayList
@@ -9,6 +9,20 @@ import java.util.List
 import java.util.concurrent.{TimeUnit, Future, Executors, Callable}
 
 class SimpleContainerTest {
+  @Test
+  def exceptionCapturesDependencyExceptions {
+    val container = new SimpleContainer
+    container.add(classOf[DependsOnMyThing])
+    container.add(classOf[MyThing])
+    try {
+      container.resolve(classOf[DependsOnMyThing])
+    } catch {
+      case e:ContainerException => {
+        assertNotNull(e.getCause)
+        assertThat(e.getCauses.get(0), is(e.getCause) )
+      }
+    }
+  }
 
   @Test
   def canAddObjectInstanceWithSpecificInterface {
@@ -276,6 +290,8 @@ object SimpleContainerTest {
   class MyThingWithReverseConstructor(val dependency: ThingWithNoDependencies) extends Thing {
     def this() = this (null)
   }
+
+  class DependsOnMyThing(val dependency: MyThing) extends Thing
 
   class MyThing(val dependency: MyDependency) extends Thing
 
