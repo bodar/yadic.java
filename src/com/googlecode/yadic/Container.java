@@ -1,33 +1,29 @@
 package com.googlecode.yadic;
 
-import scala.Function0;
+import com.googlecode.totallylazy.Callable1;
 
 import java.util.concurrent.Callable;
 
 public interface Container extends Resolver {
-    <Concrete> Container add(Class<Concrete> concrete);
+    <C> Container add(Class<C> concrete);
 
-    <Interface, Concrete extends Interface> Container add(Class<Interface> anInterface, Class<Concrete> concrete);
+    <I, C extends I> Container add(Class<I> anInterface, Class<C> concrete);
 
-    Container addInstance(Object instance);
+    <T> Container addInstance(T instance);
 
-    <Interface, Concrete extends Interface> Container addInstance(Class<Interface> anInterface, Concrete instance);
+    <I, C extends I> Container addInstance(Class<I> anInterface, C instance);
 
-    <Type, ExtendsType extends Type> Container addActivator(Class<Type> aClass, Callable<ExtendsType> activator);
+    <T, A extends Callable<T>> Container addActivator(Class<T> aClass, Class<A> activator);
 
-    <Type, AnActivator extends Callable<Type>> Container addActivator(Class<Type> aClass, Class<AnActivator> activator);
+    <T> Container addActivator(Class<T> aClass, Callable<? extends T> activator);
 
-    <Type> Container add(Class<Type> aClass, Function0<Type> activator);
+    <I, C extends I> Container decorate(Class<I> anInterface, Class<C> concrete);
 
-    <Interface, Concrete extends Interface> Container decorate(Class<Interface> anInterface, Class<Concrete> concrete);
+    <T> Callable<T> remove(Class<T> aClass);
 
-    <Type> Callable<Type> remove(Class<Type> aClass);
+    <T> boolean contains(Class<T> aClass);
 
-    <Type> boolean contains(Class<Type> aClass);
+    <T> T get(Class<T> aClass);
 
-    <Type> Type get(Class<Type> aClass);
-
-    <Type> Callable<Type> getActivator(Class<Type> aClass);
-
-    <Concrete> Concrete create(Class<Concrete> concrete);
+    <T> Callable<T> getActivator(Class<T> aClass);
 }

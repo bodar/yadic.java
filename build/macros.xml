@@ -1,13 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project>
 
-    <taskdef resource="scala/tools/ant/antlib.xml">
-        <classpath>
-            <pathelement location="build/lib/scala-compiler.jar"/>
-            <pathelement location="lib/scala-library.jar"/>
-        </classpath>
-    </taskdef>
-
     <macrodef name="compile.and.jar">
         <attribute name="src"/>
         <attribute name="jar"/>
@@ -17,7 +10,6 @@
 
         <sequential>
             <mkdir dir="@{classes}"/>
-            <scalac srcdir="@{src}" destdir="@{classes}" classpathref="@{classpathref}" target="jvm-1.5"/>
             <javac srcdir="@{src}" destdir="@{classes}" classpathref="@{classpathref}" target="1.5" debug="true"/>
 
             <copy todir="@{classes}">
