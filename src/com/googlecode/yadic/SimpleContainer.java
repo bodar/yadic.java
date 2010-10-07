@@ -49,10 +49,6 @@ public class SimpleContainer implements Container {
         return addActivator(anInterface, create(concrete, this));
     }
 
-    public <T> Container addInstance(T instance) {
-        return addActivator((Class<T>)instance.getClass(), returns(instance));
-    }
-
     public <I, C extends I> Container addInstance(Class<I> anInterface, C instance) {
         return addActivator(anInterface, returns(instance));
     }
@@ -74,13 +70,12 @@ public class SimpleContainer implements Container {
     }
 
     public <I, C extends I> Container decorate(final Class<I> anInterface, final Class<C> concrete) {
-        final Callable existing = activators.get(anInterface);
+        final Callable<I> existing = activators.get(anInterface);
         activators.put(anInterface, lazy(create(concrete, new Resolver() {
-                    public Object resolve(Class aClass) {
-                        if (aClass.equals(anInterface)) return Callers.call(existing);
-                        return get(aClass);
-                    }
-                })));
+            public Object resolve(Class aClass) {
+                return aClass.equals(anInterface) ? Callers.call(existing) : resolve(aClass);
+            }
+        })));
         return this;
     }
 
