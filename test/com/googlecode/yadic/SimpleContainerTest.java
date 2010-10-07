@@ -232,14 +232,6 @@ public class SimpleContainerTest {
     }
 
     @Test
-    public void canAddObjectInstance() {
-        Container container = new SimpleContainer();
-        Object instance = new ThingWithNoDependencies();
-        container.addInstance(instance);
-        assertThat(container.get(ThingWithNoDependencies.class), is(instance));
-    }
-
-    @Test
     public void canAddObjectInstanceWithSpecificInterface() {
         Container container = new SimpleContainer();
         Thing instance = new ThingWithNoDependencies();

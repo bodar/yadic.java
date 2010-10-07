@@ -9,8 +9,6 @@ public interface Container extends Resolver {
 
     <I, C extends I> Container add(Class<I> anInterface, Class<C> concrete);
 
-    <T> Container addInstance(T instance);
-
     <I, C extends I> Container addInstance(Class<I> anInterface, C instance);
 
     <T, A extends Callable<T>> Container addActivator(Class<T> aClass, Class<A> activator);
