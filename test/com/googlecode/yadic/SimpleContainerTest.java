@@ -21,6 +21,16 @@ import static org.junit.Assert.fail;
 
 public class SimpleContainerTest {
     @Test
+    public void allowsRegisteringAnObjectWithTwoInterfaces() throws Exception {
+        Container container = new SimpleContainer();
+        container.add(SimpleContainerTest.SomeInterfaceImpl.class);
+        container.addActivator(SimpleContainerTest.SomeInterface.class, container.getActivator(SimpleContainerTest.SomeInterfaceImpl.class));
+        final SimpleContainerTest.SomeInterfaceImpl someInterfaceImpl = container.get(SimpleContainerTest.SomeInterfaceImpl.class);
+        final SimpleContainerTest.SomeInterface someInterface = container.get(SimpleContainerTest.SomeInterface.class);
+        assertSame(someInterfaceImpl, someInterface);
+    }
+
+    @Test
     public void shouldResolveUsingConstructorWithMostDependencies() {
         Container container = new SimpleContainer();
         container.add(MyThingWithReverseConstructor.class);
