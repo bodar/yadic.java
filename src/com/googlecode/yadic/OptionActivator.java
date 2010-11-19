@@ -20,8 +20,11 @@ public class OptionActivator implements Callable<Option> {
     public Option call() throws Exception {
         try {
             return option(resolver.resolve(typeClass));
-        } catch (NoSuchElementException e) {
-            return none();
+        } catch (ContainerException e) {
+            if(e.getCause() instanceof NoSuchElementException){
+                return none();
+            }
+            throw e;
         }
     }
 }
