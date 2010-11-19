@@ -9,6 +9,7 @@ import java.util.concurrent.Callable;
 import static com.googlecode.totallylazy.Callables.returns;
 import static com.googlecode.totallylazy.callables.LazyCallable.lazy;
 import static com.googlecode.yadic.CreateCallable.create;
+import static java.util.Arrays.asList;
 
 public class SimpleContainer implements Container {
     private final Map<Class, Callable> activators = new HashMap<Class, Callable>();
@@ -30,7 +31,13 @@ public class SimpleContainer implements Container {
         if (!activators.containsKey(aClass)) {
             return missingHandler.resolve(aClass);
         }
-        return Callers.call(activators.get(aClass));
+        try {
+            return activators.get(aClass).call();
+        } catch (ContainerException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ContainerException(aClass.getName() + " cannot be created", e);
+        }
     }
 
     public <T> T get(Class<T> aClass) {
