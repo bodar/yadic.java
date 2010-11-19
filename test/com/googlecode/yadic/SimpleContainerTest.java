@@ -222,6 +222,18 @@ public class SimpleContainerTest {
     }
 
     @Test(expected = ContainerException.class)
+    public void resolveShouldThrowExceptionIfActivatorBlowsUp() {
+        Container container = new SimpleContainer();
+        container.addActivator(MyThing.class, new Callable<MyThing>() {
+            public MyThing call() throws Exception {
+                throw new Exception();
+            }
+        });
+        container.resolve(MyThing.class);
+        fail("should have thrown exception");
+    }
+
+    @Test(expected = ContainerException.class)
     public void resolveShouldThrowExceptionIfConstructorIsNotSatisfiable() {
         Container container = new SimpleContainer();
         container.add(MyThing.class);
