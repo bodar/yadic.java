@@ -40,10 +40,12 @@ public class SimpleContainer implements Container {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public <T> T get(Class<T> aClass) {
         return (T) resolve(aClass);
     }
 
+    @SuppressWarnings("unchecked")
     public <T> Callable<T> getActivator(Class<T> aClass) {
         return activators.get(aClass);
     }
@@ -86,11 +88,17 @@ public class SimpleContainer implements Container {
         return this;
     }
 
+    @SuppressWarnings("unchecked")
     public <T> Callable<T> remove(Class<T> aClass) {
         return activators.remove(aClass);
     }
 
     public <T> boolean contains(Class<T> aClass) {
         return activators.containsKey(aClass);
+    }
+
+    public <I, C extends I> Container replace(Class<I> anInterface, Class<C> newConcrete) {
+        remove(anInterface);
+        return add(anInterface, newConcrete);
     }
 }
