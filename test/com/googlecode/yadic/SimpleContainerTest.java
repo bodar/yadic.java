@@ -139,6 +139,17 @@ public class SimpleContainerTest {
     }
 
     @Test
+    public void supportsReplacingAnExistingComponent() {
+        Container container = new SimpleContainer();
+        container.add(SomeInterface.class, SomeInterfaceImpl.class);
+        container.replace(SomeInterface.class, SomeOtherInterfaceImpl.class);
+
+        SomeInterface someInterface = container.get(SomeInterface.class);
+
+        assertThat(someInterface, is(instanceOf(SomeOtherInterfaceImpl.class)));
+    }
+
+    @Test
     public void shouldDecorateAnExistingComponent() {
         Container container = new SimpleContainer();
         container.add(Thing.class, ThingWithNoDependencies.class);
@@ -309,7 +320,7 @@ public class SimpleContainerTest {
         Container container = new SimpleContainer(new Resolver() {
             public Object resolve(Class aClass) {
                 count[0]++;
-                return new Dependancy();
+                return new Dependency();
             }
         });
         container.add(Depends.class);
@@ -321,16 +332,16 @@ public class SimpleContainerTest {
     public void shouldSupportDifferentCallables() {
         Container container = new SimpleContainer();
         final int[] count = {0};
-        container.addActivator(NoDependancies.class, new NoDependanciesCallable(count));
-        assertNotNull(container.get(NoDependancies.class));
+        container.addActivator(NoDependencies.class, new NoDependanciesCallable(count));
+        assertNotNull(container.get(NoDependencies.class));
         assertEquals(1, count[0]);
     }
 
     @Test
     public void shouldBeAbleToGetTheCallableForAType() throws Exception {
         Container container = new SimpleContainer();
-        container.add(NoDependancies.class);
-        assertNotNull(container.getActivator(NoDependancies.class));
+        container.add(NoDependencies.class);
+        assertNotNull(container.getActivator(NoDependencies.class));
     }
 
     @Test
@@ -347,14 +358,19 @@ public class SimpleContainerTest {
     static public class SomeInterfaceImpl implements SomeInterface {
     }
 
-    static public class NoDependancies {
+    static public class SomeOtherInterfaceImpl implements SomeInterface {
     }
 
-    static public class Dependancy {
+
+
+    static public class NoDependencies {
+    }
+
+    static public class Dependency {
     }
 
     static public class Depends {
-        public Depends(Dependancy dependancy) {
+        public Depends(Dependency dependency) {
         }
     }
 
@@ -363,16 +379,16 @@ public class SimpleContainerTest {
         }
     }
 
-    private static class NoDependanciesCallable implements Callable<NoDependancies> {
+    private static class NoDependanciesCallable implements Callable<NoDependencies> {
         private final int[] count;
 
         public NoDependanciesCallable(int[] count) {
             this.count = count;
         }
 
-        public NoDependancies call() {
+        public NoDependencies call() {
             count[0]++;
-            return new NoDependancies();
+            return new NoDependencies();
         }
     }
 
