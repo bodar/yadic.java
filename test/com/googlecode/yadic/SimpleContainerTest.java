@@ -126,6 +126,19 @@ public class SimpleContainerTest {
     }
 
     @Test
+    public void shouldBeAbleToResolveAdditionalArgumentsWhenDecoratingAnExistingComponent() {
+        Container container = new SimpleContainer();
+        container.add(Thing.class, ThingWithNoDependencies.class);
+        container.decorate(Thing.class, DecoratedThingWithAdditionalArguments.class);
+        container.addInstance(String.class, "myString");
+
+        Thing thing = container.get(Thing.class);
+
+        assertThat(thing, is(instanceOf(DecoratedThingWithAdditionalArguments.class)));
+        assertThat(thing.dependency(), is(instanceOf(ThingWithNoDependencies.class)));
+    }
+
+    @Test
     public void shouldDecorateAnExistingComponent() {
         Container container = new SimpleContainer();
         container.add(Thing.class, ThingWithNoDependencies.class);
@@ -468,5 +481,19 @@ public class SimpleContainerTest {
 
     static interface Thing {
         Thing dependency();
+    }
+
+    static class DecoratedThingWithAdditionalArguments implements Thing {
+        private final Thing dependency;
+        private final String additionalArgument;
+
+        public DecoratedThingWithAdditionalArguments(Thing dependency, String additionalArgument) {
+            this.dependency = dependency;
+            this.additionalArgument = additionalArgument;
+        }
+
+        public Thing dependency() {
+            return dependency;
+        }
     }
 }

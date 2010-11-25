@@ -80,7 +80,7 @@ public class SimpleContainer implements Container {
         final Callable<?> existing = activators.get(anInterface);
         activators.put(anInterface, lazy(create(concrete, new Resolver() {
             public Object resolve(Class aClass) {
-                return aClass.equals(anInterface) ? Callers.call(existing) : resolve(aClass);
+                return aClass.equals(anInterface) ? Callers.call(existing) : SimpleContainer.this.resolve(aClass);
             }
         })));
         return this;
