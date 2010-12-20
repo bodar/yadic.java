@@ -1,5 +1,6 @@
 package com.googlecode.yadic;
 
+import com.googlecode.totallylazy.Exceptions;
 import com.googlecode.totallylazy.Option;
 
 import java.util.NoSuchElementException;
@@ -21,10 +22,10 @@ public class OptionActivator implements Callable<Option> {
         try {
             return option(resolver.resolve(typeClass));
         } catch (ContainerException e) {
-            if(e.getCause() instanceof NoSuchElementException){
-                return none();
+            if (Exceptions.find(e, NoSuchElementException.class).isEmpty()) {
+                throw e;
             }
-            throw e;
+            return none();
         }
     }
 }
