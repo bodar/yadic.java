@@ -45,6 +45,9 @@
     <option name="DEPRECATION" value="false" />
   </component>
   <component name="Encoding" useUTFGuessing="true" native2AsciiForPropertiesFiles="false" />
+  <component name="EntryPointsManager">
+    <entry_points version="2.0" />
+  </component>
   <component name="IdProvider" IDEtalkID="8F93DB596643FAE22E33B67E5F3E95DD" />
   <component name="InspectionProjectProfileManager">
     <list size="5">
@@ -98,6 +101,14 @@
   </component>
   <component name="WebServicesPlugin" addRequiredLibraries="true" />
   <component name="libraryTable">
+    <library name="build">
+      <CLASSES>
+        <root url="file://$PROJECT_DIR$/build/lib" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES />
+      <jarDirectory url="file://$PROJECT_DIR$/build/lib" recursive="false" />
+    </library>
     <library name="lib">
       <CLASSES>
         <root url="file://$PROJECT_DIR$/lib" />
@@ -107,14 +118,6 @@
         <root url="jar://$PROJECT_DIR$/lib/totallylazy-63-sources.jar!/" />
       </SOURCES>
       <jarDirectory url="file://$PROJECT_DIR$/lib" recursive="false" />
-    </library>
-    <library name="build">
-      <CLASSES>
-        <root url="file://$PROJECT_DIR$/build/lib" />
-      </CLASSES>
-      <JAVADOC />
-      <SOURCES />
-      <jarDirectory url="file://$PROJECT_DIR$/build/lib" recursive="false" />
     </library>
   </component>
 </project>
