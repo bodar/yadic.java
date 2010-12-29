@@ -3,8 +3,6 @@ package com.googlecode.yadic;
 import com.googlecode.totallylazy.*;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -17,15 +15,19 @@ import static com.googlecode.totallylazy.Sequences.sequence;
 
 public class CreateCallable<T> implements Callable<T> {
     private final Class<T> concrete;
-    private final Resolver resolver;
+    private final TypeToCallableFactory factory;
 
-    private CreateCallable(Class<T> concrete, final Resolver resolver) {
+    private CreateCallable(Class<T> concrete, TypeToCallableFactory factory) {
         this.concrete = concrete;
-        this.resolver = resolver;
+        this.factory = factory;
     }
 
     public static <T> CreateCallable<T> create(final Class<T> concrete, final Resolver resolver) {
-        return new CreateCallable<T>(concrete, resolver);
+        return create(concrete, new TypeToCallableFactory(resolver));
+    }
+
+    public static <T> CreateCallable<T> create(final Class<T> concrete, final TypeToCallableFactory factory) {
+        return new CreateCallable<T>(concrete, factory);
     }
 
     public T call() throws Exception {
@@ -42,7 +44,7 @@ public class CreateCallable<T> implements Callable<T> {
         return new Callable1<Constructor<?>, Option<Object>>() {
             public Option<Object> call(Constructor<?> constructor) throws Exception {
                 try {
-                    Sequence<Object> instances = sequence(constructor.getGenericParameterTypes()).map(convertToCallable(resolver));
+                    Sequence<Object> instances = sequence(constructor.getGenericParameterTypes()).map(factory.convertToCallable());
                     return some(constructor.newInstance(instances.toArray(Object.class)));
                 } catch (ContainerException e) {
                     exceptions.add(e);
@@ -60,20 +62,4 @@ public class CreateCallable<T> implements Callable<T> {
         };
     }
 
-    private static Callable1<? super Type, Object> convertToCallable(final Resolver resolver) {
-        return new Callable1<Type, Object>() {
-            public Object call(Type type) throws Exception {
-                if(type instanceof Class){
-                    return resolver.resolve((Class) type);
-                }
-                if(type instanceof ParameterizedType ){
-                    ParameterizedType parameterizedType = (ParameterizedType) type;
-                    if(parameterizedType.getRawType().equals(Option.class)){
-                        return new OptionActivator((Class<?>) parameterizedType.getActualTypeArguments()[0], resolver).call();
-                    }
-                }
-                throw new UnsupportedOperationException(type.toString());
-            }
-        };
-    }
 }

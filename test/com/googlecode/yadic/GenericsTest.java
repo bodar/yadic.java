@@ -1,6 +1,7 @@
 package com.googlecode.yadic;
 
 import com.googlecode.totallylazy.Option;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -8,14 +9,16 @@ import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 
 public class GenericsTest {
-    //@Test
+    @Test
+    @Ignore
     public void containerShouldSupportRandomGenericClasses() throws Exception {
         Container container = new SimpleContainer();
         container.addInstance(String.class, "bob");
         container.addInstance(Integer.class, 1);
         container.add(GenericType.class);
         container.add(UsesGenericType.class);
-        assertThat(container.resolve(UsesGenericType.class), is(notNullValue()));
+        UsesGenericType genericType = container.get(UsesGenericType.class);
+        assertThat(genericType.getValue().getInstance(), is(1));
     }
 
     public static  class UsesGenericType {
