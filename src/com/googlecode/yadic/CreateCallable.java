@@ -34,11 +34,11 @@ public class CreateCallable<T> implements Callable<T> {
             throw new ContainerException(concrete.getName() + " does not have a public constructor");
         }
         final List<ContainerException> exceptions = new ArrayList<ContainerException>();
-        return constructors.tryPick(firstSatisifiableConstructor(exceptions)).map(cast(concrete)).
+        return constructors.tryPick(firstSatisfiableConstructor(exceptions)).map(cast(concrete)).
                 getOrElse(Callables.<T>callThrows(new ContainerException(concrete.getName() + " does not have a satisfiable constructor", exceptions)));
     }
 
-    private Callable1<Constructor<?>, Option<Object>> firstSatisifiableConstructor(final List<ContainerException> exceptions) {
+    private Callable1<Constructor<?>, Option<Object>> firstSatisfiableConstructor(final List<ContainerException> exceptions) {
         return new Callable1<Constructor<?>, Option<Object>>() {
             public Option<Object> call(Constructor<?> constructor) throws Exception {
                 try {
