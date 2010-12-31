@@ -3,6 +3,7 @@ package com.googlecode.yadic;
 import com.googlecode.totallylazy.Sequence;
 import org.junit.Test;
 
+import java.lang.reflect.Type;
 import java.util.concurrent.Callable;
 
 import static com.googlecode.totallylazy.Callers.callConcurrently;
@@ -184,7 +185,7 @@ public class SimpleContainerTest {
     public void shouldCallMissingMethodWhenItemNotFound() {
         final boolean[] wasCalled = {false};
         Container container = new SimpleContainer(new Resolver() {
-            public Object resolve(Class aClass) {
+            public Object resolve(Type type) {
                 wasCalled[0] = true;
                 return null;
 
@@ -318,7 +319,7 @@ public class SimpleContainerTest {
     public void shouldSupportUserDefinedResolver() {
         final int[] count = {0};
         Container container = new SimpleContainer(new Resolver() {
-            public Object resolve(Class aClass) {
+            public Object resolve(Type type) {
                 count[0]++;
                 return new Dependency();
             }

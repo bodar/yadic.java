@@ -21,6 +21,7 @@ public class TypeToCallableFactory {
         this.resolver = resolver;
         rules.add(rule(instanceOf(Class.class), classCallable(resolver)));
         rules.add(rule(instanceOfParameterizedTypeWithRawType(Option.class), parameterizedTypeCallable(resolver)));
+        rules.add(rule(instanceOf(ParameterizedType.class), classCallable(resolver)));
     }
 
     private Predicate<? super Type> instanceOfParameterizedTypeWithRawType(final Class aClass) {
@@ -44,7 +45,7 @@ public class TypeToCallableFactory {
     private Callable1<Type, Object> classCallable(final Resolver resolver) {
         return new Callable1<Type, Object>() {
             public Object call(Type type) throws Exception {
-                return resolver.resolve((Class) type);
+                return resolver.resolve(type);
             }
         };
     }
