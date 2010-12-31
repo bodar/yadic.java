@@ -176,7 +176,7 @@ public class SimpleContainerTest {
         });
 
         container.get(Thing.class);
-        Thing thing = container.get(Thing.class);
+        container.get(Thing.class);
 
         assertThat(count[0], is(equalTo(1)));
     }
@@ -270,7 +270,7 @@ public class SimpleContainerTest {
     public void shouldBeAbleToRemove() {
         Container container = new SimpleContainer();
         container.add(MyThing.class);
-        Callable<MyThing> activator = container.remove(MyThing.class);
+        container.remove(MyThing.class);
         container.add(MyThing.class);
     }
 
@@ -292,6 +292,7 @@ public class SimpleContainerTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void exceptionCapturesDependencyExceptions() throws Exception {
         Container container = new SimpleContainer();
         container.add(DependsOnMyThing.class);
@@ -380,7 +381,7 @@ public class SimpleContainerTest {
         }
     }
 
-    private static class NoDependanciesCallable implements Callable<NoDependencies> {
+    public static class NoDependanciesCallable implements Callable<NoDependencies> {
         private final int[] count;
 
         public NoDependanciesCallable(int[] count) {
@@ -399,7 +400,7 @@ public class SimpleContainerTest {
         }
     }
 
-    static class DependsOnMyThingActivator implements Callable<DependsOnMyThing> {
+    public static class DependsOnMyThingActivator implements Callable<DependsOnMyThing> {
         private final MyThing dependency;
 
         DependsOnMyThingActivator(MyThing dependency) {
@@ -411,7 +412,7 @@ public class SimpleContainerTest {
         }
     }
 
-    static class Creator implements Callable<Thing> {
+    public static class Creator implements Callable<Thing> {
         final Container container;
 
         Creator(Container container) {
@@ -423,7 +424,7 @@ public class SimpleContainerTest {
         }
     }
 
-    static class MyThingWithReverseConstructor implements Thing {
+    public static class MyThingWithReverseConstructor implements Thing {
         private final ThingWithNoDependencies dependency;
 
         public MyThingWithReverseConstructor(ThingWithNoDependencies dependency) {
@@ -442,7 +443,7 @@ public class SimpleContainerTest {
 
     }
 
-    static class DependsOnMyThing implements Thing {
+    public static class DependsOnMyThing implements Thing {
         private final MyThing dependency;
 
         public DependsOnMyThing(MyThing dependency) {
@@ -454,7 +455,7 @@ public class SimpleContainerTest {
         }
     }
 
-    static class MyThing implements Thing {
+    public static class MyThing implements Thing {
         private final MyDependency dependency;
 
         public MyThing(MyDependency dependency) {
@@ -466,7 +467,7 @@ public class SimpleContainerTest {
         }
     }
 
-    static class MyDependency implements Thing {
+    public static class MyDependency implements Thing {
         private final ThingWithNoDependencies dependency;
 
         public MyDependency(ThingWithNoDependencies dependency) {
@@ -484,7 +485,7 @@ public class SimpleContainerTest {
         }
     }
 
-    static class DecoratedThing implements Thing {
+    public static class DecoratedThing implements Thing {
         private final Thing dependency;
 
         public DecoratedThing(Thing dependency) {
@@ -496,17 +497,15 @@ public class SimpleContainerTest {
         }
     }
 
-    static interface Thing {
+    public static interface Thing {
         Thing dependency();
     }
 
-    static class DecoratedThingWithAdditionalArguments implements Thing {
+    public static class DecoratedThingWithAdditionalArguments implements Thing {
         private final Thing dependency;
-        private final String additionalArgument;
 
         public DecoratedThingWithAdditionalArguments(Thing dependency, String additionalArgument) {
             this.dependency = dependency;
-            this.additionalArgument = additionalArgument;
         }
 
         public Thing dependency() {
