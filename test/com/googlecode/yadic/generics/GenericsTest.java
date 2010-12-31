@@ -24,7 +24,6 @@ public class GenericsTest {
         assertThat(genericType.getValue().getInstance(), is(1));
     }
 
-
     public static  class UsesGenericType {
         private final GenericType<Integer> value;
 

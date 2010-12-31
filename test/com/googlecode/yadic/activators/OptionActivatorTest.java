@@ -1,6 +1,9 @@
-package com.googlecode.yadic;
+package com.googlecode.yadic.activators;
 
-import com.googlecode.totallylazy.Option;
+import com.googlecode.yadic.Container;
+import com.googlecode.yadic.ContainerException;
+import com.googlecode.yadic.SimpleContainer;
+import com.googlecode.yadic.activators.OptionActivator;
 import org.junit.Test;
 
 import java.util.NoSuchElementException;
