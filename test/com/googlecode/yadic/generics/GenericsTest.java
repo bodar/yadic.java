@@ -1,25 +1,29 @@
-package com.googlecode.yadic;
+package com.googlecode.yadic.generics;
 
 import com.googlecode.totallylazy.Option;
+import com.googlecode.yadic.Container;
+import com.googlecode.yadic.SimpleContainer;
+import com.googlecode.yadic.generics.GenericType;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import static com.googlecode.yadic.generics.Types.parameterizedType;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 
 public class GenericsTest {
     @Test
-    @Ignore
     public void containerShouldSupportRandomGenericClasses() throws Exception {
         Container container = new SimpleContainer();
         container.addInstance(String.class, "bob");
         container.addInstance(Integer.class, 1);
-        container.add(GenericType.class);
+        container.add(parameterizedType(GenericType.class, Integer.class), GenericType.class);
         container.add(UsesGenericType.class);
         UsesGenericType genericType = container.get(UsesGenericType.class);
         assertThat(genericType.getValue().getInstance(), is(1));
     }
+
 
     public static  class UsesGenericType {
         private final GenericType<Integer> value;
@@ -30,18 +34,6 @@ public class GenericsTest {
 
         public GenericType<Integer> getValue() {
             return value;
-        }
-    }
-
-    public static class GenericType<T> {
-        private final T instance;
-
-        public GenericType(T instance) {
-            this.instance = instance;
-        }
-
-        public T getInstance() {
-            return instance;
         }
     }
 

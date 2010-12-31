@@ -1,5 +1,7 @@
 package com.googlecode.yadic;
 
+import java.lang.reflect.Type;
+
 public interface Resolver {
-    Object resolve(Class aClass);
+    Object resolve(Type type);
 }
