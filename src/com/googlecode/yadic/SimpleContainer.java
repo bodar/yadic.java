@@ -2,19 +2,12 @@ package com.googlecode.yadic;
 
 import com.googlecode.totallylazy.Callers;
 
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.concurrent.Callable;
 
-import static com.googlecode.totallylazy.Callables.first;
 import static com.googlecode.totallylazy.Callables.returns;
-import static com.googlecode.totallylazy.Callables.second;
-import static com.googlecode.totallylazy.Predicates.is;
-import static com.googlecode.totallylazy.Sequences.sequence;
 import static com.googlecode.totallylazy.callables.LazyCallable.lazy;
-import static com.googlecode.yadic.CreateCallable.create;
-import static com.googlecode.yadic.generics.CreateParameterizedType.createParameterizedType;
-import static com.googlecode.yadic.generics.Types.equalTo;
+import static com.googlecode.yadic.generics.ConstructorActivator.create;
 
 public class SimpleContainer extends BaseTypeMap implements Container {
     public SimpleContainer(Resolver missingHandler) {
@@ -39,11 +32,11 @@ public class SimpleContainer extends BaseTypeMap implements Container {
     }
 
     public <T> Container add(final Class<T> concrete) {
-        return addActivator(concrete, create(concrete, this));
+        return addActivator(concrete, create(concrete, concrete, this));
     }
 
     public <I, C extends I> Container add(Class<I> anInterface, Class<C> concrete) {
-        return addActivator(anInterface, create(concrete, this));
+        return addActivator(anInterface, create(concrete, concrete, this));
     }
 
     public <I, C extends I> Container addInstance(Class<I> anInterface, C instance) {
@@ -65,7 +58,7 @@ public class SimpleContainer extends BaseTypeMap implements Container {
 
     public <I, C extends I> Container decorate(final Class<I> anInterface, final Class<C> concrete) {
         final Callable<?> existing = remove(anInterface);
-        addActivator(anInterface, lazy(create(concrete, new Resolver() {
+        addActivator(anInterface, lazy(create(concrete, concrete, new Resolver() {
             public Object resolve(Type type) {
                 return type.equals(anInterface) ? Callers.call(existing) : SimpleContainer.this.resolve(type);
             }

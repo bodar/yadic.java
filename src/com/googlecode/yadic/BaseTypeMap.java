@@ -3,6 +3,7 @@ package com.googlecode.yadic;
 import com.googlecode.totallylazy.First;
 import com.googlecode.totallylazy.Pair;
 import com.googlecode.totallylazy.predicates.LogicalPredicate;
+import com.googlecode.yadic.generics.ConstructorActivator;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -18,7 +19,6 @@ import static com.googlecode.totallylazy.Predicates.is;
 import static com.googlecode.totallylazy.Predicates.where;
 import static com.googlecode.totallylazy.Sequences.sequence;
 import static com.googlecode.totallylazy.callables.LazyCallable.lazy;
-import static com.googlecode.yadic.generics.CreateParameterizedType.createParameterizedType;
 import static com.googlecode.yadic.generics.Types.equalTo;
 
 public class BaseTypeMap implements TypeMap {
@@ -48,7 +48,7 @@ public class BaseTypeMap implements TypeMap {
     }
 
     public TypeMap add(Type type, Class<?> concrete) {
-        return add(type, createParameterizedType(concrete, (ParameterizedType) type, this));
+        return add(type, ConstructorActivator.create((ParameterizedType) type, concrete, this));
     }
 
     public <T> TypeMap add(Type type, Callable activator) {

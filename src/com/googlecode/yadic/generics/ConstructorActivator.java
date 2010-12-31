@@ -1,33 +1,44 @@
-package com.googlecode.yadic;
+package com.googlecode.yadic.generics;
 
 import com.googlecode.totallylazy.*;
+import com.googlecode.yadic.ContainerException;
+import com.googlecode.yadic.Resolver;
+import com.googlecode.yadic.TypeToCallableFactory;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 
 import static com.googlecode.totallylazy.Callables.cast;
 import static com.googlecode.totallylazy.Callables.descending;
+import static com.googlecode.totallylazy.Callables.returnArgument;
 import static com.googlecode.totallylazy.Option.none;
 import static com.googlecode.totallylazy.Option.some;
 import static com.googlecode.totallylazy.Sequences.sequence;
 
-public class CreateCallable<T> implements Callable<T> {
+public class ConstructorActivator<T> implements Callable<T> {
     private final Class<T> concrete;
     private final TypeToCallableFactory factory;
+    private final Callable1<Type, Type> typeConverter;
 
-    private CreateCallable(Class<T> concrete, TypeToCallableFactory factory) {
+    private ConstructorActivator(Type type, Class<T> concrete, TypeToCallableFactory factory) {
         this.concrete = concrete;
         this.factory = factory;
+        typeConverter = type instanceof ParameterizedType ? new TypeConverter<T>((ParameterizedType) type, concrete) : returnArgument(Type.class);
     }
 
-    public static <T> CreateCallable<T> create(final Class<T> concrete, final Resolver resolver) {
-        return create(concrete, new TypeToCallableFactory(resolver));
+    public static <T> ConstructorActivator<T> create(final Type type, Class<T> concrete, final Resolver resolver) {
+        return create(type, concrete, new TypeToCallableFactory(resolver));
     }
 
-    public static <T> CreateCallable<T> create(final Class<T> concrete, final TypeToCallableFactory factory) {
-        return new CreateCallable<T>(concrete, factory);
+    public static <T> ConstructorActivator<T> create(final Type type, Class<T> concrete, final TypeToCallableFactory factory) {
+        return new ConstructorActivator<T>(type, concrete, factory);
     }
 
     public T call() throws Exception {
@@ -44,7 +55,7 @@ public class CreateCallable<T> implements Callable<T> {
         return new Callable1<Constructor<?>, Option<Object>>() {
             public Option<Object> call(Constructor<?> constructor) throws Exception {
                 try {
-                    Sequence<Object> instances = sequence(constructor.getGenericParameterTypes()).map(factory.convertToCallable());
+                    Sequence<Object> instances = genericParametersFor(constructor).map(factory.convertToCallable());
                     return some(constructor.newInstance(instances.toArray(Object.class)));
                 } catch (ContainerException e) {
                     exceptions.add(e);
@@ -52,6 +63,10 @@ public class CreateCallable<T> implements Callable<T> {
                 }
             }
         };
+    }
+
+    private Sequence<Type> genericParametersFor(Constructor<?> constructor) {
+        return sequence(constructor.getGenericParameterTypes()).map(typeConverter);
     }
 
     private Callable1<Constructor<?>, Comparable> numberOfParamters() {
@@ -62,4 +77,20 @@ public class CreateCallable<T> implements Callable<T> {
         };
     }
 
+    private static class TypeConverter<T> implements Callable1<Type, Type> {
+        private final Map<TypeVariable<Class<T>>, Type> typeVariableMap;
+
+        public TypeConverter(ParameterizedType parameterizedType, Class<T> concrete) {
+            typeVariableMap = sequence(concrete.getTypeParameters()).
+                    zip(sequence(parameterizedType.getActualTypeArguments())).
+                    fold(new HashMap<TypeVariable<Class<T>>, Type>(), Maps.<TypeVariable<Class<T>>, Type>asMap());
+        }
+
+        public Type call(Type type) throws Exception {
+            if(typeVariableMap.containsKey(type)){
+                return typeVariableMap.get(type);
+            }
+            return type;
+        }
+    }
 }
