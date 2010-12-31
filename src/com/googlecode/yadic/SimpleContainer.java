@@ -26,6 +26,7 @@ public class SimpleContainer extends BaseTypeMap implements Container {
         return (T) resolve(aClass);
     }
 
+    @SuppressWarnings("unchecked")
     public <T> Callable<T> getActivator(Class<T> aClass) {
         return super.getActivator(aClass);
     }
