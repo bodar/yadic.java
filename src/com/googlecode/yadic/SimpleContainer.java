@@ -1,35 +1,24 @@
 package com.googlecode.yadic;
 
 import com.googlecode.totallylazy.Callers;
-import com.googlecode.totallylazy.First;
-import com.googlecode.totallylazy.Pair;
-import com.googlecode.totallylazy.predicates.LogicalPredicate;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.concurrent.Callable;
 
 import static com.googlecode.totallylazy.Callables.first;
 import static com.googlecode.totallylazy.Callables.returns;
 import static com.googlecode.totallylazy.Callables.second;
-import static com.googlecode.totallylazy.Pair.pair;
 import static com.googlecode.totallylazy.Predicates.is;
-import static com.googlecode.totallylazy.Predicates.where;
 import static com.googlecode.totallylazy.Sequences.sequence;
 import static com.googlecode.totallylazy.callables.LazyCallable.lazy;
 import static com.googlecode.yadic.CreateCallable.create;
 import static com.googlecode.yadic.generics.CreateParameterizedType.createParameterizedType;
 import static com.googlecode.yadic.generics.Types.equalTo;
 
-public class SimpleContainer implements Container {
-    private final List<Pair<Type, Callable>> activators = new ArrayList<Pair<Type, Callable>>();
-    private final Resolver missingHandler;
-
+public class SimpleContainer extends BaseTypeMap implements Container {
     public SimpleContainer(Resolver missingHandler) {
-        this.missingHandler = missingHandler;
+        super(missingHandler);
     }
 
     public SimpleContainer() {
@@ -40,32 +29,13 @@ public class SimpleContainer implements Container {
         });
     }
 
-    public Object resolve(Type type) {
-        if (!contains(type)) {
-            return missingHandler.resolve(type);
-        }
-        try {
-            return getActivator(type).call();
-        } catch (ContainerException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new ContainerException(type.toString() + " cannot be created", e);
-        }
-    }
-
     @SuppressWarnings("unchecked")
     public <T> T get(Class<T> aClass) {
         return (T) resolve(aClass);
     }
 
-    @SuppressWarnings("unchecked")
-    public <T> Callable<T> getActivator(Type type) {
-        return sequence(activators).find(pairFor(type)).map(second(Callable.class)).get();
-    }
-
-    @SuppressWarnings("unchecked")
-    private LogicalPredicate<First<Type>> pairFor(Type type) {
-        return where(first(Type.class), is(equalTo(type)));
+    public <T> Callable<T> getActivator(Class<T> aClass) {
+        return super.getActivator(aClass);
     }
 
     public <T> Container add(final Class<T> concrete) {
@@ -74,10 +44,6 @@ public class SimpleContainer implements Container {
 
     public <I, C extends I> Container add(Class<I> anInterface, Class<C> concrete) {
         return addActivator(anInterface, create(concrete, this));
-    }
-
-    public Container add(Type type, Class<?> concrete) {
-        return addActivator(type, createParameterizedType(concrete, (ParameterizedType) type, this));
     }
 
     public <I, C extends I> Container addInstance(Class<I> anInterface, C instance) {
@@ -93,14 +59,7 @@ public class SimpleContainer implements Container {
     }
 
     public <T> Container addActivator(Class<T> aClass, Callable<? extends T> activator) {
-        return addActivator((Type) aClass, activator);
-    }
-
-    public Container addActivator(Type type, Callable activator) {
-        if (contains(type)) {
-            throw new ContainerException(type.toString() + " already added to container");
-        }
-        activators.add(pair(type, lazy(activator)));
+        add(aClass, activator);
         return this;
     }
 
@@ -112,21 +71,6 @@ public class SimpleContainer implements Container {
             }
         })));
         return this;
-    }
-
-    @SuppressWarnings("unchecked")
-    public <T> Callable<T> remove(Type type) {
-        for (int i = 0, activatorsSize = activators.size(); i < activatorsSize; i++) {
-            Pair<Type, Callable> activator = activators.get(i);
-            if(pairFor(type).matches(activator)){
-                return activators.remove(i).second();
-            }
-        }
-        throw new NoSuchElementException();
-    }
-
-    public <T> boolean contains(Type type) {
-        return sequence(activators).exists(pairFor(type));
     }
 
     public <I, C extends I> Container replace(Class<I> anInterface, Class<C> newConcrete) {
