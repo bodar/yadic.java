@@ -3,9 +3,7 @@ package com.googlecode.yadic;
 import com.googlecode.totallylazy.First;
 import com.googlecode.totallylazy.Pair;
 import com.googlecode.totallylazy.predicates.LogicalPredicate;
-import com.googlecode.yadic.activators.ConstructorActivator;
 
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -52,7 +50,8 @@ public class BaseTypeMap implements TypeMap {
         return add(type, create(type, concrete, this));
     }
 
-    public <T> TypeMap add(Type type, Callable activator) {
+    @SuppressWarnings("unchecked")
+    public TypeMap add(Type type, Callable activator) {
         if (contains(type)) {
             throw new ContainerException(type.toString() + " already added to container");
         }
@@ -71,7 +70,7 @@ public class BaseTypeMap implements TypeMap {
         throw new NoSuchElementException();
     }
 
-    public <T> boolean contains(Type type) {
+    public boolean contains(Type type) {
         return sequence(activators).exists(pairFor(type));
     }
 

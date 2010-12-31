@@ -53,7 +53,7 @@ public class SimpleContainerTest {
         MyThing myThing = container.get(MyThing.class);
 
         assertThat("1st level Dependency was not fulfilled", myThing.dependency(), is(instanceOf(MyDependency.class)));
-        assertThat("2nd level Dependency was not fulfiled", myThing.dependency().dependency(), is(instanceOf(ThingWithNoDependencies.class)));
+        assertThat("2nd level Dependency was not fulfilled", myThing.dependency().dependency(), is(instanceOf(ThingWithNoDependencies.class)));
     }
 
     @Test
