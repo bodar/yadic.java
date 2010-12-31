@@ -1,13 +1,12 @@
 package com.googlecode.yadic;
 
-import com.googlecode.totallylazy.Callers;
-
 import java.lang.reflect.Type;
 import java.util.concurrent.Callable;
 
 import static com.googlecode.totallylazy.Callables.returns;
-import static com.googlecode.totallylazy.callables.LazyCallable.lazy;
-import static com.googlecode.yadic.generics.ConstructorActivator.create;
+import static com.googlecode.yadic.activators.Activators.activator;
+import static com.googlecode.yadic.activators.Activators.create;
+import static com.googlecode.yadic.activators.Activators.decorator;
 
 public class SimpleContainer extends BaseTypeMap implements Container {
     public SimpleContainer(Resolver missingHandler) {
@@ -32,11 +31,11 @@ public class SimpleContainer extends BaseTypeMap implements Container {
     }
 
     public <T> Container add(final Class<T> concrete) {
-        return addActivator(concrete, create(concrete, concrete, this));
+        return addActivator(concrete, create(concrete, this));
     }
 
     public <I, C extends I> Container add(Class<I> anInterface, Class<C> concrete) {
-        return addActivator(anInterface, create(concrete, concrete, this));
+        return addActivator(anInterface, create(concrete, this));
     }
 
     public <I, C extends I> Container addInstance(Class<I> anInterface, C instance) {
@@ -44,11 +43,7 @@ public class SimpleContainer extends BaseTypeMap implements Container {
     }
 
     public <T, A extends Callable<T>> Container addActivator(Class<T> aClass, final Class<A> activator) {
-        return add(activator).addActivator(aClass, new Callable<T>() {
-            public T call() throws Exception {
-                return get(activator).call();
-            }
-        });
+        return addActivator(aClass, activator(this, activator));
     }
 
     public <T> Container addActivator(Class<T> aClass, Callable<? extends T> activator) {
@@ -57,12 +52,7 @@ public class SimpleContainer extends BaseTypeMap implements Container {
     }
 
     public <I, C extends I> Container decorate(final Class<I> anInterface, final Class<C> concrete) {
-        final Callable<?> existing = remove(anInterface);
-        addActivator(anInterface, lazy(create(concrete, concrete, new Resolver() {
-            public Object resolve(Type type) {
-                return type.equals(anInterface) ? Callers.call(existing) : SimpleContainer.this.resolve(type);
-            }
-        })));
+        addActivator(anInterface, decorator(this, anInterface, concrete));
         return this;
     }
 

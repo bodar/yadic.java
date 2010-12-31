@@ -1,7 +1,9 @@
-package com.googlecode.yadic;
+package com.googlecode.yadic.activators;
 
 import com.googlecode.totallylazy.Exceptions;
 import com.googlecode.totallylazy.Option;
+import com.googlecode.yadic.ContainerException;
+import com.googlecode.yadic.Resolver;
 
 import java.lang.reflect.Type;
 import java.util.NoSuchElementException;
