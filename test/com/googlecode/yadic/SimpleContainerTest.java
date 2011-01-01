@@ -25,15 +25,17 @@ public class SimpleContainerTest {
     @Test
     public void allowsRegisteringAnObjectWithTwoInterfaces() throws Exception {
         Container container = new SimpleContainer();
-        container.add(SomeInterfaceImpl.class);
-        container.addActivator(SomeInterface.class, container.getActivator(SomeInterfaceImpl.class));
-        final SomeInterfaceImpl someInterfaceImpl = container.get(SomeInterfaceImpl.class);
-        final SomeInterface someInterface = container.get(SomeInterface.class);
-        assertSame(someInterfaceImpl, someInterface);
+        container.add(MemoryUserRepository.class);
+        container.addActivator(UserRepository.class, container.getActivator(MemoryUserRepository.class));
+
+        final MemoryUserRepository memoryUserRepository = container.get(MemoryUserRepository.class);
+        final UserRepository userRepository = container.get(UserRepository.class);
+
+        assertSame(memoryUserRepository, userRepository);
     }
 
     @Test
-    public void shouldResolveUsingConstructorWithMostDependencies() {
+    public void shouldResolveUsingConstructorWithMostParameters() {
         Container container = new SimpleContainer();
         container.add(MyThingWithReverseConstructor.class);
         container.add(ThingWithNoDependencies.class);
@@ -143,12 +145,12 @@ public class SimpleContainerTest {
     @Test
     public void supportsReplacingAnExistingComponent() {
         Container container = new SimpleContainer();
-        container.add(SomeInterface.class, SomeInterfaceImpl.class);
-        container.replace(SomeInterface.class, SomeOtherInterfaceImpl.class);
+        container.add(UserRepository.class, MemoryUserRepository.class);
+        container.replace(UserRepository.class, AlternativeUserRepository.class);
 
-        SomeInterface someInterface = container.get(SomeInterface.class);
+        UserRepository userRepository = container.get(UserRepository.class);
 
-        assertThat(someInterface, is(instanceOf(SomeOtherInterfaceImpl.class)));
+        assertThat(userRepository, is(instanceOf(AlternativeUserRepository.class)));
     }
 
     @Test
@@ -350,9 +352,9 @@ public class SimpleContainerTest {
     @Test
     public void shouldBeAbleToReregisterAClassAgainstAParentInterface() throws Exception {
         Container container = new SimpleContainer();
-        container.add(SomeInterfaceImpl.class);
-        container.addActivator(SomeInterface.class, container.getActivator(SomeInterfaceImpl.class));
-        assertNotNull(container.getActivator(SomeInterface.class));
+        container.add(MemoryUserRepository.class);
+        container.addActivator(UserRepository.class, container.getActivator(MemoryUserRepository.class));
+        assertNotNull(container.getActivator(UserRepository.class));
     }
 
 
