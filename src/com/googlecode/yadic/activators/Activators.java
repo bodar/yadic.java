@@ -34,5 +34,4 @@ public class Activators {
     public static <T> Callable<T> create(final Type type, Class<T> concrete, final Resolver resolver) {
         return new ConstructorActivator<T>(resolver, type, concrete);
     }
-
 }

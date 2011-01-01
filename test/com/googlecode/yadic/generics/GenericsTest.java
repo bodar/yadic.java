@@ -1,10 +1,10 @@
 package com.googlecode.yadic.generics;
 
-import com.googlecode.totallylazy.Option;
 import com.googlecode.yadic.Container;
 import com.googlecode.yadic.SimpleContainer;
-import com.googlecode.yadic.generics.GenericType;
-import org.junit.Ignore;
+import com.googlecode.yadic.examples.ClassWithOption;
+import com.googlecode.yadic.examples.GenericType;
+import com.googlecode.yadic.examples.UsesGenericType;
 import org.junit.Test;
 
 import static com.googlecode.yadic.generics.Types.parameterizedType;
@@ -24,28 +24,12 @@ public class GenericsTest {
         assertThat(genericType.getValue().getInstance(), is(1));
     }
 
-    public static  class UsesGenericType {
-        private final GenericType<Integer> value;
-
-        public UsesGenericType(GenericType<Integer> value) {
-            this.value = value;
-        }
-
-        public GenericType<Integer> getValue() {
-            return value;
-        }
-    }
-
     @Test
     public void containerShouldSupportOptions() throws Exception {
         Container container = new SimpleContainer();
         container.addInstance(String.class, "bob");
         container.add(ClassWithOption.class);
         assertThat(container.resolve(ClassWithOption.class), is(notNullValue()));
-    }
-
-    public static class ClassWithOption {
-        public ClassWithOption(Option<String> optional) {}
     }
 
 }

@@ -1,6 +1,7 @@
 package com.googlecode.yadic;
 
 import com.googlecode.totallylazy.Sequence;
+import com.googlecode.yadic.examples.*;
 import org.junit.Test;
 
 import java.lang.reflect.Type;
@@ -24,10 +25,10 @@ public class SimpleContainerTest {
     @Test
     public void allowsRegisteringAnObjectWithTwoInterfaces() throws Exception {
         Container container = new SimpleContainer();
-        container.add(SimpleContainerTest.SomeInterfaceImpl.class);
-        container.addActivator(SimpleContainerTest.SomeInterface.class, container.getActivator(SimpleContainerTest.SomeInterfaceImpl.class));
-        final SimpleContainerTest.SomeInterfaceImpl someInterfaceImpl = container.get(SimpleContainerTest.SomeInterfaceImpl.class);
-        final SimpleContainerTest.SomeInterface someInterface = container.get(SimpleContainerTest.SomeInterface.class);
+        container.add(SomeInterfaceImpl.class);
+        container.addActivator(SomeInterface.class, container.getActivator(SomeInterfaceImpl.class));
+        final SomeInterfaceImpl someInterfaceImpl = container.get(SomeInterfaceImpl.class);
+        final SomeInterface someInterface = container.get(SomeInterface.class);
         assertSame(someInterfaceImpl, someInterface);
     }
 
@@ -40,7 +41,7 @@ public class SimpleContainerTest {
         MyThingWithReverseConstructor myThing = container.get(MyThingWithReverseConstructor.class);
 
         assertThat("Wrong constructor was used", myThing.dependency(), is(not(nullValue(Thing.class))));
-        assertThat(myThing.dependency, is(instanceOf(ThingWithNoDependencies.class)));
+        assertThat(myThing.dependency(), is(instanceOf(ThingWithNoDependencies.class)));
     }
 
     @Test
@@ -77,7 +78,7 @@ public class SimpleContainerTest {
 
         MyDependency myThing = container.get(MyDependency.class);
 
-        assertThat(myThing.dependency, is(not(nullValue(ThingWithNoDependencies.class))));
+        assertThat(myThing.dependency(), is(not(nullValue(Thing.class))));
     }
 
     @Test
@@ -225,7 +226,7 @@ public class SimpleContainerTest {
 
         MyThingWithReverseConstructor myThing = container.get(MyThingWithReverseConstructor.class);
 
-        assertThat(myThing.dependency, is(nullValue(Thing.class)));
+        assertThat(myThing.dependency(), is(nullValue(Thing.class)));
     }
 
     @Test
@@ -354,162 +355,10 @@ public class SimpleContainerTest {
         assertNotNull(container.getActivator(SomeInterface.class));
     }
 
-    static public interface SomeInterface {
-    }
-
-    static public class SomeInterfaceImpl implements SomeInterface {
-    }
-
-    static public class SomeOtherInterfaceImpl implements SomeInterface {
-    }
-
-
-
-    static public class NoDependencies {
-    }
-
-    static public class Dependency {
-    }
-
-    static public class Depends {
-        public Depends(Dependency dependency) {
-        }
-    }
 
     static private class PrivateClass {
         private PrivateClass() {
         }
     }
 
-    public static class NoDependanciesCallable implements Callable<NoDependencies> {
-        private final int[] count;
-
-        public NoDependanciesCallable(int[] count) {
-            this.count = count;
-        }
-
-        public NoDependencies call() {
-            count[0]++;
-            return new NoDependencies();
-        }
-    }
-
-    public static class MyThingActivator implements Callable<MyThing> {
-        public MyThing call() {
-            return new MyThing(null);
-        }
-    }
-
-    public static class DependsOnMyThingActivator implements Callable<DependsOnMyThing> {
-        private final MyThing dependency;
-
-        DependsOnMyThingActivator(MyThing dependency) {
-            this.dependency = dependency;
-        }
-
-        public DependsOnMyThing call() {
-            return new DependsOnMyThing(dependency);
-        }
-    }
-
-    public static class Creator implements Callable<Thing> {
-        final Container container;
-
-        Creator(Container container) {
-            this.container = container;
-        }
-
-        public Thing call() {
-            return container.get(Thing.class);
-        }
-    }
-
-    public static class MyThingWithReverseConstructor implements Thing {
-        private final ThingWithNoDependencies dependency;
-
-        public MyThingWithReverseConstructor(ThingWithNoDependencies dependency) {
-
-            this.dependency = dependency;
-        }
-
-        public MyThingWithReverseConstructor() {
-            this(null);
-        }
-
-        public Thing dependency() {
-            return dependency;
-        }
-
-
-    }
-
-    public static class DependsOnMyThing implements Thing {
-        private final MyThing dependency;
-
-        public DependsOnMyThing(MyThing dependency) {
-            this.dependency = dependency;
-        }
-
-        public Thing dependency() {
-            return dependency;
-        }
-    }
-
-    public static class MyThing implements Thing {
-        private final MyDependency dependency;
-
-        public MyThing(MyDependency dependency) {
-            this.dependency = dependency;
-        }
-
-        public Thing dependency() {
-            return dependency;
-        }
-    }
-
-    public static class MyDependency implements Thing {
-        private final ThingWithNoDependencies dependency;
-
-        public MyDependency(ThingWithNoDependencies dependency) {
-            this.dependency = dependency;
-        }
-
-        public Thing dependency() {
-            return dependency;
-        }
-    }
-
-    public static class ThingWithNoDependencies implements Thing {
-        public Thing dependency() {
-            return null;
-        }
-    }
-
-    public static class DecoratedThing implements Thing {
-        private final Thing dependency;
-
-        public DecoratedThing(Thing dependency) {
-            this.dependency = dependency;
-        }
-
-        public Thing dependency() {
-            return dependency;
-        }
-    }
-
-    public static interface Thing {
-        Thing dependency();
-    }
-
-    public static class DecoratedThingWithAdditionalArguments implements Thing {
-        private final Thing dependency;
-
-        public DecoratedThingWithAdditionalArguments(Thing dependency, String additionalArgument) {
-            this.dependency = dependency;
-        }
-
-        public Thing dependency() {
-            return dependency;
-        }
-    }
 }
