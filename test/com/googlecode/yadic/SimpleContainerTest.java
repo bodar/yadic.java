@@ -1,6 +1,7 @@
 package com.googlecode.yadic;
 
 import com.googlecode.totallylazy.Sequence;
+import com.googlecode.totallylazy.callables.CountingCallable;
 import com.googlecode.yadic.examples.*;
 import org.junit.Test;
 
@@ -25,13 +26,13 @@ public class SimpleContainerTest {
     @Test
     public void allowsRegisteringAClassAgainstMultipleTypes() throws Exception {
         Container container = new SimpleContainer();
-        container.add(MemoryUserRepository.class);
-        container.addActivator(UserRepository.class, container.getActivator(MemoryUserRepository.class));
+        container.add(RootNode.class);
+        container.addActivator(Node.class, container.getActivator(RootNode.class));
 
-        final MemoryUserRepository memoryUserRepository = container.get(MemoryUserRepository.class);
-        final UserRepository userRepository = container.get(UserRepository.class);
+        final RootNode rootNode = container.get(RootNode.class);
+        final Node node = container.get(Node.class);
 
-        assertSame(memoryUserRepository, userRepository);
+        assertSame(rootNode, node);
     }
 
     @Test
@@ -70,7 +71,7 @@ public class SimpleContainerTest {
     }
 
     @Test
-    public void shouldOnlyCallCreationLambdaOnce() {
+    public void shouldOnlyCallActivatorOnce() {
         final int[] count = {0};
         Container container = new SimpleContainer();
 
@@ -89,7 +90,7 @@ public class SimpleContainerTest {
     }
 
     @Test
-    public void shouldOnlyCallCreationLambdaOnceEvenFromDifferentThreads() throws InterruptedException {
+    public void shouldOnlyCallActivatorOnceEvenFromDifferentThreads() throws InterruptedException {
         Container container = new SimpleContainer();
 
         final int[] count = {0};
@@ -113,14 +114,13 @@ public class SimpleContainerTest {
 
         RootNode result = container.get(RootNode.class);
 
-        assertThat(result, is(not(nullValue(RootNode.class))));
+        assertThat(result, is(not(nullValue())));
     }
 
     @Test(expected = ContainerException.class)
     public void resolveShouldThrowExceptionIfTypeNotInContainer() {
         Container container = new SimpleContainer();
         container.get(GrandChildNode.class);
-        fail("should have thrown exception");
     }
 
     @Test(expected = ContainerException.class)
@@ -128,13 +128,24 @@ public class SimpleContainerTest {
         Container container = new SimpleContainer();
         container.add(GrandChildNode.class);
         container.add(GrandChildNode.class);
-        fail("should have thrown exception");
     }
 
     @Test
     public void shouldAddAndResolveByInterface() {
         Container container = new SimpleContainer();
         container.add(Node.class, RootNode.class);
+
+        Node node = container.get(Node.class);
+
+        assertThat(node, is(instanceOf(RootNode.class)));
+    }
+
+
+    @Test
+    public void supportsReplacingAnExistingComponent() {
+        Container container = new SimpleContainer();
+        container.add(Node.class, ChildNode.class);
+        container.replace(Node.class, RootNode.class);
 
         Node node = container.get(Node.class);
 
@@ -155,17 +166,6 @@ public class SimpleContainerTest {
     }
 
     @Test
-    public void supportsReplacingAnExistingComponent() {
-        Container container = new SimpleContainer();
-        container.add(UserRepository.class, MemoryUserRepository.class);
-        container.replace(UserRepository.class, AlternativeUserRepository.class);
-
-        UserRepository userRepository = container.get(UserRepository.class);
-
-        assertThat(userRepository, is(instanceOf(AlternativeUserRepository.class)));
-    }
-
-    @Test
     public void shouldDecorateAnExistingComponent() {
         Container container = new SimpleContainer();
         container.add(Node.class, RootNode.class);
@@ -178,7 +178,7 @@ public class SimpleContainerTest {
     }
 
     @Test
-    public void shouldCallMissingMethodWhenItemNotFound() {
+    public void shouldCallParentResolverWhenItemNotFound() {
         final boolean[] wasCalled = {false};
         Container container = new SimpleContainer(new Resolver() {
             public Object resolve(Type type) {
@@ -221,7 +221,7 @@ public class SimpleContainerTest {
 
         ChildNode node = container.get(ChildNode.class);
 
-        assertThat(node.parent(), is(nullValue(Node.class)));
+        assertThat(node.parent(), is(nullValue()));
     }
 
     @Test(expected = ContainerException.class)
@@ -273,10 +273,10 @@ public class SimpleContainerTest {
     @SuppressWarnings("unchecked")
     public void exceptionCapturesDependencyExceptions() throws Exception {
         Container container = new SimpleContainer();
-        container.add(DependsOnMyNode.class);
         container.add(GrandChildNode.class);
+        container.add(ChildNode.class);
         try {
-            container.resolve(DependsOnMyNode.class);
+            container.resolve(GrandChildNode.class);
         } catch (ContainerException e) {
             assertNotNull(e.getCause());
             assertThat(e.getCauses().get(0), is(e.getCause()));
@@ -300,38 +300,29 @@ public class SimpleContainerTest {
         Container container = new SimpleContainer(new Resolver() {
             public Object resolve(Type type) {
                 count[0]++;
-                return new Dependency();
+                return new RootNode();
             }
         });
-        container.add(Depends.class);
-        assertNotNull(container.get(Depends.class));
+        container.add(ChildNode.class);
+        assertNotNull(container.get(ChildNode.class));
         assertEquals(1, count[0]);
     }
 
     @Test
     public void shouldSupportDifferentCallables() {
         Container container = new SimpleContainer();
-        final int[] count = {0};
-        container.addActivator(NoDependencies.class, new NoDependanciesCallable(count));
-        assertNotNull(container.get(NoDependencies.class));
-        assertEquals(1, count[0]);
+        CountingCallable count = CountingCallable.counting();
+        container.addActivator(Integer.class, count);
+        assertNotNull(container.get(Integer.class));
+        assertEquals(1, count.count());
     }
 
     @Test
     public void shouldBeAbleToGetTheCallableForAType() throws Exception {
         Container container = new SimpleContainer();
-        container.add(NoDependencies.class);
-        assertNotNull(container.getActivator(NoDependencies.class));
+        container.add(RootNode.class);
+        assertNotNull(container.getActivator(RootNode.class));
     }
-
-    @Test
-    public void shouldBeAbleToReregisterAClassAgainstAParentInterface() throws Exception {
-        Container container = new SimpleContainer();
-        container.add(MemoryUserRepository.class);
-        container.addActivator(UserRepository.class, container.getActivator(MemoryUserRepository.class));
-        assertNotNull(container.getActivator(UserRepository.class));
-    }
-
 
     static private class PrivateClass {
         private PrivateClass() {

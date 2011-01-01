@@ -1,6 +1,7 @@
 package com.googlecode.yadic;
 
-import java.lang.reflect.Type;
+import com.googlecode.yadic.activators.MissingResolver;
+
 import java.util.concurrent.Callable;
 
 import static com.googlecode.totallylazy.Callables.returns;
@@ -9,16 +10,12 @@ import static com.googlecode.yadic.activators.Activators.create;
 import static com.googlecode.yadic.activators.Activators.decorator;
 
 public class SimpleContainer extends BaseTypeMap implements Container {
-    public SimpleContainer(Resolver missingHandler) {
-        super(missingHandler);
+    public SimpleContainer(Resolver parent) {
+        super(parent);
     }
 
     public SimpleContainer() {
-        this(new Resolver() {
-            public Object resolve(Type type) {
-                throw new ContainerException(type.toString() + " not found in container");
-            }
-        });
+        this(new MissingResolver());
     }
 
     @SuppressWarnings("unchecked")
@@ -61,4 +58,5 @@ public class SimpleContainer extends BaseTypeMap implements Container {
         remove(anInterface);
         return add(anInterface, newConcrete);
     }
+
 }
