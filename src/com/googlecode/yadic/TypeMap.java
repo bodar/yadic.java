@@ -6,11 +6,11 @@ import java.util.concurrent.Callable;
 public interface TypeMap extends Resolver {
     TypeMap add(Type type, Callable activator);
 
-    <T> Callable<T> remove(Type type);
-
-    boolean contains(Type type);
+    TypeMap add(Type type, Class<?> concrete);
 
     <T> Callable<T> getActivator(Type type);
 
-    TypeMap add(Type type, Class<?> concrete);
+    <T> Callable<T> remove(Type type);
+
+    boolean contains(Type type);
 }
