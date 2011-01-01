@@ -1,4 +1,4 @@
-package com.googlecode.yadic.generics;
+package com.googlecode.yadic.examples;
 
 public class GenericType<T> {
     private final T instance;

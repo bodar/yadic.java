@@ -1,5 +1,6 @@
 package com.googlecode.yadic.generics;
 
+import com.googlecode.yadic.examples.GenericType;
 import org.junit.Test;
 
 import static com.googlecode.yadic.generics.Types.equalTo;
