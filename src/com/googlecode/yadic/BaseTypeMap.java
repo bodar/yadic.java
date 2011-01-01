@@ -22,15 +22,15 @@ import static com.googlecode.yadic.generics.Types.equalTo;
 
 public class BaseTypeMap implements TypeMap {
     private final List<Pair<Type, Callable>> activators = new ArrayList<Pair<Type, Callable>>();
-    protected final Resolver missingHandler;
+    protected final Resolver parent;
 
-    public BaseTypeMap(Resolver missingHandler) {
-        this.missingHandler = missingHandler;
+    public BaseTypeMap(Resolver parent) {
+        this.parent = parent;
     }
 
     public Object resolve(Type type) {
         if (!contains(type)) {
-            return missingHandler.resolve(type);
+            return parent.resolve(type);
         }
         try {
             return getActivator(type).call();
@@ -61,7 +61,7 @@ public class BaseTypeMap implements TypeMap {
 
     @SuppressWarnings("unchecked")
     public <T> Callable<T> remove(Type type) {
-        for (int i = 0, activatorsSize = activators.size(); i < activatorsSize; i++) {
+        for (int i = 0; i < activators.size(); i++) {
             Pair<Type, Callable> activator = activators.get(i);
             if(pairFor(type).matches(activator)){
                 return activators.remove(i).second();
