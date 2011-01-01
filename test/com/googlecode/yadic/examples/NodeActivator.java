@@ -4,14 +4,14 @@ import com.googlecode.yadic.Container;
 
 import java.util.concurrent.Callable;
 
-public class Creator implements Callable<Thing> {
+public class NodeActivator implements Callable<Node> {
     final Container container;
 
-    public Creator(Container container) {
+    public NodeActivator(Container container) {
         this.container = container;
     }
 
-    public Thing call() {
-        return container.get(Thing.class);
+    public Node call() {
+        return container.get(Node.class);
     }
 }

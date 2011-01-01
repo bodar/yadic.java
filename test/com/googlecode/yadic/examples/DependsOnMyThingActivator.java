@@ -2,14 +2,14 @@ package com.googlecode.yadic.examples;
 
 import java.util.concurrent.Callable;
 
-public class DependsOnMyThingActivator implements Callable<DependsOnMyThing> {
-    private final MyThing dependency;
+public class DependsOnMyThingActivator implements Callable<DependsOnMyNode> {
+    private final GrandChildNode dependency;
 
-    public DependsOnMyThingActivator(MyThing dependency) {
+    public DependsOnMyThingActivator(GrandChildNode dependency) {
         this.dependency = dependency;
     }
 
-    public DependsOnMyThing call() {
-        return new DependsOnMyThing(dependency);
+    public DependsOnMyNode call() {
+        return new DependsOnMyNode(dependency);
     }
 }
