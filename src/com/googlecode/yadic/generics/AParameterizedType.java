@@ -3,7 +3,7 @@ package com.googlecode.yadic.generics;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
-class AParameterizedType implements ParameterizedType {
+public class AParameterizedType implements ParameterizedType {
     private final Type rawType;
     private final Type[] typeArguments;
     private final Type ownerType;

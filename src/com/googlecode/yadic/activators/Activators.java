@@ -31,5 +31,4 @@ public class Activators {
     public static Callable create(final Type concrete, final Resolver resolver) {
         return new ConstructorActivator(resolver, concrete);
     }
-
 }
