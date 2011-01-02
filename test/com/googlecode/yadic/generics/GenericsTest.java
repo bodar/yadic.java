@@ -13,7 +13,7 @@ import static org.hamcrest.core.Is.is;
 
 public class GenericsTest {
     @Test
-    public void containerShouldSupportGenericClass() throws Exception {
+    public void containerShouldSupportGenericClassUsingTypeFor() throws Exception {
         Container container = new SimpleContainer();
         container.addInstance(String.class, "bob");
         container.addInstance(Integer.class, 1);
@@ -24,7 +24,7 @@ public class GenericsTest {
     }
 
     @Test
-    public void containerShouldSupportGenericClassUsingTypeFor() throws Exception {
+    public void containerShouldSupportGenericClass() throws Exception {
         Container container = new SimpleContainer();
         container.addInstance(String.class, "bob");
         container.addInstance(Integer.class, 1);
