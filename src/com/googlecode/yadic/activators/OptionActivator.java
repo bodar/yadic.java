@@ -25,9 +25,6 @@ public class OptionActivator implements Callable<Option> {
         try {
             return option(resolver.resolve(type));
         } catch (ContainerException e) {
-            if (Exceptions.find(e, NoSuchElementException.class).isEmpty()) {
-                throw e;
-            }
             return none();
         }
     }
