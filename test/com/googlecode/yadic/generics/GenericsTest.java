@@ -17,6 +17,17 @@ public class GenericsTest {
         Container container = new SimpleContainer();
         container.addInstance(String.class, "bob");
         container.addInstance(Integer.class, 1);
+        container.add(new TypeFor<GenericType<Integer>>(){{}}.get(), new TypeFor<GenericType<Integer>>(){{}}.get());
+        container.add(UsesGenericType.class);
+        UsesGenericType genericType = container.get(UsesGenericType.class);
+        assertThat(genericType.instance().instance(), is(1));
+    }
+
+    @Test
+    public void containerShouldSupportGenericClassUsingTypeFor() throws Exception {
+        Container container = new SimpleContainer();
+        container.addInstance(String.class, "bob");
+        container.addInstance(Integer.class, 1);
         container.add(parameterizedType(GenericType.class, Integer.class), parameterizedType(GenericType.class, Integer.class));
         container.add(UsesGenericType.class);
         UsesGenericType genericType = container.get(UsesGenericType.class);
