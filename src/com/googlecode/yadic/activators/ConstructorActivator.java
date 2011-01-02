@@ -6,6 +6,7 @@ import com.googlecode.totallylazy.Option;
 import com.googlecode.totallylazy.Sequence;
 import com.googlecode.yadic.ContainerException;
 import com.googlecode.yadic.Resolver;
+import com.googlecode.yadic.generics.TypeConverter;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.ParameterizedType;
@@ -20,16 +21,17 @@ import static com.googlecode.totallylazy.Option.none;
 import static com.googlecode.totallylazy.Option.some;
 import static com.googlecode.totallylazy.Sequences.sequence;
 import static com.googlecode.yadic.generics.TypeConverter.typeConverter;
+import static com.googlecode.yadic.generics.Types.classOf;
 
 public class ConstructorActivator<T> implements Callable<T> {
+    private final Type type;
     private final Class<T> concrete;
     private final Resolver resolver;
-    private final Callable1<Type, Type> typeConverter;
 
-    public ConstructorActivator(Resolver resolver, Type type, Class<T> concrete) {
-        this.concrete = concrete;
+    public ConstructorActivator(Resolver resolver, Type type) {
+        this.type = type;
+        this.concrete = classOf(type);
         this.resolver = resolver;
-        typeConverter = typeConverter(type, concrete);
     }
 
     public T call() throws Exception {
@@ -57,7 +59,7 @@ public class ConstructorActivator<T> implements Callable<T> {
     }
 
     private Sequence<Type> genericParametersFor(Constructor<?> constructor) {
-        return sequence(constructor.getGenericParameterTypes()).map(typeConverter);
+        return sequence(constructor.getGenericParameterTypes()).map(typeConverter(type, constructor));
     }
 
     private Callable1<Constructor<?>, Comparable> numberOfParamters() {

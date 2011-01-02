@@ -1,29 +1,37 @@
 package com.googlecode.yadic.generics;
 
-import com.googlecode.totallylazy.None;
 import com.googlecode.totallylazy.Option;
 import com.googlecode.yadic.Container;
 import com.googlecode.yadic.SimpleContainer;
 import com.googlecode.yadic.examples.*;
 import org.junit.Test;
 
-import static com.googlecode.totallylazy.Option.none;
 import static com.googlecode.yadic.generics.Types.parameterizedType;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNull.notNullValue;
 
 public class GenericsTest {
     @Test
-    public void containerShouldSupportRandomGenericClasses() throws Exception {
+    public void containerShouldSupportGenericClass() throws Exception {
         Container container = new SimpleContainer();
         container.addInstance(String.class, "bob");
         container.addInstance(Integer.class, 1);
-        container.add(parameterizedType(GenericType.class, Integer.class), GenericType.class);
+        container.add(parameterizedType(GenericType.class, Integer.class), parameterizedType(GenericType.class, Integer.class));
         container.add(UsesGenericType.class);
         UsesGenericType genericType = container.get(UsesGenericType.class);
-        assertThat(genericType.getValue().getInstance(), is(1));
+        assertThat(genericType.instance().instance(), is(1));
+    }
+
+    @Test
+    public void containerShouldSupportGenericInterfaceAndClass() throws Exception {
+        Container container = new SimpleContainer();
+        container.addInstance(String.class, "bob");
+        container.addInstance(Integer.class, 1);
+        container.add(parameterizedType(Instance.class, Integer.class), parameterizedType(GenericType.class, Integer.class));
+        container.add(UsesGenericType.class);
+        UsesGenericType genericType = container.get(UsesGenericType.class);
+        assertThat(genericType.instance().instance(), is(1));
     }
 
     @Test

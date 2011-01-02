@@ -46,8 +46,8 @@ public class BaseTypeMap implements TypeMap {
         return sequence(activators).find(pairFor(type)).map(second(Callable.class)).get();
     }
 
-    public TypeMap add(Type type, Class<?> concrete) {
-        return add(type, create(type, concrete, this));
+    public TypeMap add(Type type, Type concrete) {
+        return add(type, create(concrete, this));
     }
 
     @SuppressWarnings("unchecked")
