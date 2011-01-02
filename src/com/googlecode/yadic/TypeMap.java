@@ -6,7 +6,7 @@ import java.util.concurrent.Callable;
 public interface TypeMap extends Resolver {
     TypeMap add(Type type, Callable activator);
 
-    TypeMap add(Type type, Class<?> concrete);
+    TypeMap add(Type type, Type concrete);
 
     <T> Callable<T> getActivator(Type type);
 

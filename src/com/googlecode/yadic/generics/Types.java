@@ -2,15 +2,37 @@ package com.googlecode.yadic.generics;
 
 import com.googlecode.totallylazy.Pair;
 import com.googlecode.totallylazy.Predicate;
+import com.googlecode.totallylazy.Sequence;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
 
 import static com.googlecode.totallylazy.Sequences.sequence;
 
 public class Types {
     public static ParameterizedType parameterizedType(final Type rawType, final Type... typeArguments) {
         return new AParameterizedType(null, rawType, typeArguments);
+    }
+
+    public static Sequence<Type> classTypeParameters(Type concrete) {
+        if(concrete instanceof Class){
+            return sequence(((Class) concrete).getTypeParameters()).safeCast(Type.class);
+        }
+        if(concrete instanceof ParameterizedType){
+            return sequence(((ParameterizedType) concrete).getActualTypeArguments());
+        }
+        throw new UnsupportedOperationException();
+    }
+
+    public static Class classOf(Type concrete) {
+        if(concrete instanceof Class){
+            return (Class) concrete;
+        }
+        if(concrete instanceof ParameterizedType){
+            return classOf(((ParameterizedType) concrete).getRawType());
+        }
+        throw new UnsupportedOperationException();
     }
 
     public static boolean equalTo(Type a, Type b){

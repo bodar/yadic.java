@@ -11,21 +11,25 @@ public class Activators {
         return create(concrete, new DecoratorResolver(anInterface, typeMap.remove(anInterface), typeMap));
     }
 
+    public static Callable decorator(final TypeMap typeMap, final Type anInterface, final Type concrete) {
+        return create(concrete, new DecoratorResolver(anInterface, typeMap.remove(anInterface), typeMap));
+    }
+
     @SuppressWarnings("unchecked")
     public static <T, A extends Callable<T>> Callable<T> activator(final Resolver resolver, final Class<A> activator) {
-        return new Callable<T>() {
-            public T call() throws Exception {
-                return (T) create(activator, resolver).call();
-            }
-        };
+        return new ActivatorActivator<T>(activator, resolver);
+    }
+
+    public static Callable activator(final Resolver resolver, final Type activator) {
+        return new ActivatorActivator(activator, resolver);
     }
 
     public static <T> Callable<T> create(final Class<T> concrete, final Resolver resolver) {
-        return new ConstructorActivator<T>(resolver, concrete, concrete);
+        return new ConstructorActivator<T>(resolver, concrete);
     }
 
-    public static <T> Callable<T> create(final Type type, Class<T> concrete, final Resolver resolver) {
-        return new ConstructorActivator<T>(resolver, type, concrete);
+    public static Callable create(final Type concrete, final Resolver resolver) {
+        return new ConstructorActivator(resolver, concrete);
     }
 
 }
