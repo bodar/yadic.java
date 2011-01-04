@@ -1,13 +1,17 @@
 package com.googlecode.yadic;
 
+import com.googlecode.totallylazy.Callable1;
+import com.googlecode.totallylazy.Callables;
+import com.googlecode.yadic.activators.Activators;
 import com.googlecode.yadic.activators.MissingResolver;
 
+import java.lang.reflect.Type;
 import java.util.concurrent.Callable;
 
+import static com.googlecode.totallylazy.Callables.asCallable1;
+import static com.googlecode.totallylazy.Callables.curry;
 import static com.googlecode.totallylazy.Callables.returns;
-import static com.googlecode.yadic.activators.Activators.activator;
-import static com.googlecode.yadic.activators.Activators.create;
-import static com.googlecode.yadic.activators.Activators.decorator;
+import static com.googlecode.yadic.activators.Activators.*;
 
 public class SimpleContainer extends BaseTypeMap implements Container {
     public SimpleContainer(Resolver parent) {
@@ -23,34 +27,37 @@ public class SimpleContainer extends BaseTypeMap implements Container {
         return (T) resolve(aClass);
     }
 
-    @SuppressWarnings("unchecked")
     public <T> Callable<T> getActivator(Class<T> aClass) {
-        return super.getActivator(aClass);
+        return curry(super.<T>getActivator(aClass), aClass);
     }
 
     public <T> Container add(final Class<T> concrete) {
-        return addActivator(concrete, create(concrete, this));
+        add(concrete, create(concrete, this));
+        return this;
     }
 
     public <I, C extends I> Container add(Class<I> anInterface, Class<C> concrete) {
-        return addActivator(anInterface, create(concrete, this));
+        add(anInterface, create(concrete, this));
+        return this;
     }
 
     public <I, C extends I> Container addInstance(Class<I> anInterface, C instance) {
         return addActivator(anInterface, returns(instance));
     }
 
+    @SuppressWarnings("unchecked")
     public <T, A extends Callable<T>> Container addActivator(Class<T> aClass, final Class<A> activator) {
-        return addActivator(aClass, activator(this, activator));
+        add(aClass, activator(this, activator));
+        return this;
     }
 
-    public <T> Container addActivator(Class<T> aClass, Callable<? extends T> activator) {
-        add(aClass, activator);
+    public <T> Container addActivator(Class<T> aClass, final Callable<? extends T> activator) {
+        add(aClass, Callables.<Type, Object>asCallable1(activator));
         return this;
     }
 
     public <I, C extends I> Container decorate(final Class<I> anInterface, final Class<C> concrete) {
-        addActivator(anInterface, decorator(this, anInterface, concrete));
+        add(anInterface, decorator(this, anInterface, concrete));
         return this;
     }
 

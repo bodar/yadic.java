@@ -8,6 +8,7 @@ import org.junit.Test;
 import java.lang.reflect.Type;
 import java.util.concurrent.Callable;
 
+import static com.googlecode.totallylazy.Callables.curry;
 import static com.googlecode.totallylazy.Callers.callConcurrently;
 import static com.googlecode.totallylazy.callables.SleepyCallable.sleepy;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -101,7 +102,7 @@ public class SimpleContainerTest {
             }
         }, 10));
 
-        Sequence<Node> results = callConcurrently(new NodeActivator(container), new NodeActivator(container));
+        Sequence<Node> results = callConcurrently(curry(new NodeActivator(container), null), curry(new NodeActivator(container), null));
 
         assertSame(results.first(), results.second());
         assertThat(count[0], is(1));

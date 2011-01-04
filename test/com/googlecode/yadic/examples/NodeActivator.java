@@ -1,17 +1,18 @@
 package com.googlecode.yadic.examples;
 
+import com.googlecode.totallylazy.Callable1;
 import com.googlecode.yadic.Container;
 
-import java.util.concurrent.Callable;
+import java.lang.reflect.Type;
 
-public class NodeActivator implements Callable<Node> {
+public class NodeActivator implements Callable1<Type, Node> {
     final Container container;
 
     public NodeActivator(Container container) {
         this.container = container;
     }
 
-    public Node call() {
+    public Node call(Type type) {
         return container.get(Node.class);
     }
 }
