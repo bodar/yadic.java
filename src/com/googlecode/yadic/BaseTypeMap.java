@@ -1,5 +1,7 @@
 package com.googlecode.yadic;
 
+import com.googlecode.totallylazy.Callable1;
+import com.googlecode.totallylazy.Callables;
 import com.googlecode.totallylazy.First;
 import com.googlecode.totallylazy.Pair;
 import com.googlecode.totallylazy.predicates.LogicalPredicate;
@@ -8,7 +10,6 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.concurrent.Callable;
 
 import static com.googlecode.totallylazy.Callables.first;
 import static com.googlecode.totallylazy.Callables.second;
@@ -16,12 +17,12 @@ import static com.googlecode.totallylazy.Pair.pair;
 import static com.googlecode.totallylazy.Predicates.is;
 import static com.googlecode.totallylazy.Predicates.where;
 import static com.googlecode.totallylazy.Sequences.sequence;
-import static com.googlecode.totallylazy.callables.LazyCallable.lazy;
+import static com.googlecode.totallylazy.callables.LazyCallable1.lazy;
 import static com.googlecode.yadic.activators.Activators.create;
 import static com.googlecode.yadic.generics.Types.equalTo;
 
 public class BaseTypeMap implements TypeMap {
-    private final List<Pair<Type, Callable>> activators = new ArrayList<Pair<Type, Callable>>();
+    private final List<Pair<Type, Callable1<Type, Object>>> activators = new ArrayList<Pair<Type, Callable1<Type, Object>>>();
     protected final Resolver parent;
 
     public BaseTypeMap(Resolver parent) {
@@ -33,7 +34,7 @@ public class BaseTypeMap implements TypeMap {
             return parent.resolve(type);
         }
         try {
-            return getActivator(type).call();
+            return getActivator(type).call(type);
         } catch (ContainerException e) {
             throw e;
         } catch (Exception e) {
@@ -42,8 +43,8 @@ public class BaseTypeMap implements TypeMap {
     }
 
     @SuppressWarnings("unchecked")
-    public Callable getActivator(Type type) {
-        return sequence(activators).find(pairFor(type)).map(second(Callable.class)).get();
+    public <T> Callable1<Type, T> getActivator(Type type) {
+        return (Callable1<Type, T>) sequence(activators).find(pairFor(type)).map(Callables.<Callable1<Type, Object>>second()).get();
     }
 
     public TypeMap add(Type type, Type concrete) {
@@ -51,20 +52,20 @@ public class BaseTypeMap implements TypeMap {
     }
 
     @SuppressWarnings("unchecked")
-    public TypeMap add(Type type, Callable activator) {
+    public TypeMap add(Type type, Callable1<Type, ?> activator) {
         if (contains(type)) {
             throw new ContainerException(type.toString() + " already added to container");
         }
-        activators.add(pair(type, lazy(activator)));
+        activators.add(Pair.<Type, Callable1<Type, Object>>pair(type, (Callable1<Type, Object>) lazy(activator)));
         return this;
     }
 
     @SuppressWarnings("unchecked")
-    public <T> Callable<T> remove(Type type) {
+    public <T> Callable1<Type, T> remove(Type type) {
         for (int i = 0; i < activators.size(); i++) {
-            Pair<Type, Callable> activator = activators.get(i);
+            Pair<Type, Callable1<Type, Object>> activator = activators.get(i);
             if(pairFor(type).matches(activator)){
-                return activators.remove(i).second();
+                return (Callable1<Type, T>) activators.remove(i).second();
             }
         }
         throw new NoSuchElementException();

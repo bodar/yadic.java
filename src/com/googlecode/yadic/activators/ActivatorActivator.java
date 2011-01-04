@@ -1,11 +1,11 @@
 package com.googlecode.yadic.activators;
 
+import com.googlecode.totallylazy.Callable1;
 import com.googlecode.yadic.Resolver;
 
 import java.lang.reflect.Type;
-import java.util.concurrent.Callable;
 
-public class ActivatorActivator<T> implements Callable<T> {
+public class ActivatorActivator<T> implements Callable1<Type, T> {
     private final Type activator;
     private final Resolver resolver;
 
@@ -15,7 +15,7 @@ public class ActivatorActivator<T> implements Callable<T> {
     }
 
     @SuppressWarnings("unchecked")
-    public T call() throws Exception {
-        return (T) Activators.create(activator, resolver).call();
+    public T call(Type type) throws Exception {
+        return (T) Activators.create(activator, resolver).call(type);
     }
 }

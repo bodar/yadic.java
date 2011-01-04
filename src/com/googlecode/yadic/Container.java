@@ -1,7 +1,5 @@
 package com.googlecode.yadic;
 
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.concurrent.Callable;
 
 public interface Container extends TypeMap {

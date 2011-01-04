@@ -2,15 +2,12 @@ package com.googlecode.yadic.generics;
 
 import com.googlecode.totallylazy.Callable1;
 import com.googlecode.totallylazy.Maps;
-import com.googlecode.totallylazy.Pair;
-import com.googlecode.totallylazy.Sequence;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.googlecode.totallylazy.Callables.returnArgument;
 import static com.googlecode.totallylazy.Sequences.sequence;
 import static com.googlecode.yadic.generics.Types.classTypeParameters;
 
