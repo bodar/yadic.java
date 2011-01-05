@@ -12,14 +12,13 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 import static com.googlecode.totallylazy.Callables.first;
-import static com.googlecode.totallylazy.Callables.second;
-import static com.googlecode.totallylazy.Pair.pair;
 import static com.googlecode.totallylazy.Predicates.is;
 import static com.googlecode.totallylazy.Predicates.where;
 import static com.googlecode.totallylazy.Sequences.sequence;
 import static com.googlecode.totallylazy.callables.LazyCallable1.lazy;
 import static com.googlecode.yadic.activators.Activators.create;
 import static com.googlecode.yadic.generics.Types.equalTo;
+import static com.googlecode.yadic.generics.Types.matches;
 
 public class BaseTypeMap implements TypeMap {
     private final List<Pair<Type, Callable1<Type, Object>>> activators = new ArrayList<Pair<Type, Callable1<Type, Object>>>();
@@ -77,6 +76,6 @@ public class BaseTypeMap implements TypeMap {
 
     @SuppressWarnings("unchecked")
     private LogicalPredicate<First<Type>> pairFor(Type type) {
-        return where(first(Type.class), is(equalTo(type)));
+        return where(first(Type.class), is(matches(type)));
     }
 }

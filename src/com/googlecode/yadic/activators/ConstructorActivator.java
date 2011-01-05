@@ -8,7 +8,6 @@ import com.googlecode.yadic.ContainerException;
 import com.googlecode.yadic.Resolver;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +45,7 @@ public class ConstructorActivator<T> implements Callable1<Type, T> {
         return new Callable1<Constructor<?>, Option<Object>>() {
             public Option<Object> call(Constructor<?> constructor) throws Exception {
                 try {
-                    Sequence<Object> instances = genericParametersFor(constructor).map(convertToCallable1(resolver));
+                    Sequence<Object> instances = genericParametersFor(constructor).map(toInstance());
                     return some(constructor.newInstance(instances.toArray(Object.class)));
                 } catch (ContainerException e) {
                     exceptions.add(e);
@@ -68,15 +67,9 @@ public class ConstructorActivator<T> implements Callable1<Type, T> {
         };
     }
 
-    private static Callable1<? super Type, Object> convertToCallable1(final Resolver resolver) {
+    private Callable1<? super Type, Object> toInstance() {
         return new Callable1<Type, Object>() {
             public Object call(Type type) throws Exception {
-                if(type instanceof ParameterizedType ){
-                    ParameterizedType parameterizedType = (ParameterizedType) type;
-                    if(parameterizedType.getRawType().equals(Option.class)){
-                        return new OptionActivator(parameterizedType.getActualTypeArguments()[0], resolver).call(type);
-                    }
-                }
                 return resolver.resolve(type);
             }
         };
