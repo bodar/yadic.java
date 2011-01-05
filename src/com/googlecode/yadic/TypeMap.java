@@ -4,14 +4,14 @@ import com.googlecode.totallylazy.Callable1;
 
 import java.lang.reflect.Type;
 
-public interface TypeMap extends Resolver {
-    TypeMap add(Type type, Callable1<Type, ?> activator);
+public interface TypeMap extends Resolver<Object> {
+    TypeMap add(Type type, Resolver<?> activator);
 
     TypeMap add(Type type, Type concrete);
 
-    <T> Callable1<Type, T> getActivator(Type type);
+    <T> Resolver<T> getResolver(Type type);
 
-    <T> Callable1<Type, T> remove(Type type);
+    <T> Resolver<T> remove(Type type);
 
     boolean contains(Type type);
 }

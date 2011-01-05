@@ -182,7 +182,7 @@ public class SimpleContainerTest {
     public void shouldCallParentResolverWhenItemNotFound() {
         final boolean[] wasCalled = {false};
         Container container = new SimpleContainer(new Resolver() {
-            public Object resolve(Type type) {
+            public Object resolve(Type type) throws Exception {
                 wasCalled[0] = true;
                 return null;
 
@@ -226,19 +226,19 @@ public class SimpleContainerTest {
     }
 
     @Test(expected = ContainerException.class)
-    public void resolveShouldThrowExceptionIfActivatorBlowsUp() {
+    public void getShouldThrowExceptionIfActivatorBlowsUp() throws Exception {
         Container container = new SimpleContainer();
         container.addActivator(GrandChildNode.class, new Callable<GrandChildNode>() {
             public GrandChildNode call() throws Exception {
                 throw new Exception();
             }
         });
-        container.resolve(GrandChildNode.class);
+        container.get(GrandChildNode.class);
         fail("should have thrown exception");
     }
 
     @Test(expected = ContainerException.class)
-    public void resolveShouldThrowExceptionIfConstructorIsNotSatisfiable() {
+    public void resolveShouldThrowExceptionIfConstructorIsNotSatisfiable() throws Exception {
         Container container = new SimpleContainer();
         container.add(GrandChildNode.class);
         container.resolve(GrandChildNode.class);
@@ -299,7 +299,7 @@ public class SimpleContainerTest {
     public void shouldSupportUserDefinedResolver() {
         final int[] count = {0};
         Container container = new SimpleContainer(new Resolver() {
-            public Object resolve(Type type) {
+            public Object resolve(Type type) throws Exception {
                 count[0]++;
                 return new RootNode();
             }
