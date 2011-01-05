@@ -17,21 +17,22 @@ import static com.googlecode.totallylazy.Callables.descending;
 import static com.googlecode.totallylazy.Option.none;
 import static com.googlecode.totallylazy.Option.some;
 import static com.googlecode.totallylazy.Sequences.sequence;
+import static com.googlecode.yadic.activators.Resolvers.asCallable1;
 import static com.googlecode.yadic.generics.TypeConverter.typeConverter;
 import static com.googlecode.yadic.generics.Types.classOf;
 
-public class ConstructorActivator<T> implements Callable1<Type, T> {
+public class ConstructorActivator<T> implements Resolver<T> {
     private final Type type;
     private final Class<T> concrete;
-    private final Resolver resolver;
+    private final Resolver<?> resolver;
 
-    public ConstructorActivator(Resolver resolver, Type type) {
+    public ConstructorActivator(Resolver<?> resolver, Type type) {
         this.type = type;
         this.concrete = classOf(type);
         this.resolver = resolver;
     }
 
-    public T call(Type type) throws Exception {
+    public T resolve(Type type) throws Exception {
         Sequence<Constructor<?>> constructors = sequence(concrete.getConstructors()).sortBy(descending(numberOfParamters()));
         if (constructors.isEmpty()) {
             throw new ContainerException(concrete.getName() + " does not have a public constructor");
@@ -45,7 +46,7 @@ public class ConstructorActivator<T> implements Callable1<Type, T> {
         return new Callable1<Constructor<?>, Option<Object>>() {
             public Option<Object> call(Constructor<?> constructor) throws Exception {
                 try {
-                    Sequence<Object> instances = genericParametersFor(constructor).map(toInstance());
+                    Sequence<Object> instances = genericParametersFor(constructor).map(asCallable1(resolver));
                     return some(constructor.newInstance(instances.toArray(Object.class)));
                 } catch (ContainerException e) {
                     exceptions.add(e);
@@ -63,14 +64,6 @@ public class ConstructorActivator<T> implements Callable1<Type, T> {
         return new Callable1<Constructor<?>, Comparable>() {
             public Comparable call(Constructor<?> constructor) throws Exception {
                 return constructor.getParameterTypes().length;
-            }
-        };
-    }
-
-    private Callable1<? super Type, Object> toInstance() {
-        return new Callable1<Type, Object>() {
-            public Object call(Type type) throws Exception {
-                return resolver.resolve(type);
             }
         };
     }

@@ -1,14 +1,13 @@
 package com.googlecode.yadic;
 
-import com.googlecode.totallylazy.Callables;
 import com.googlecode.yadic.activators.MissingResolver;
 
-import java.lang.reflect.Type;
 import java.util.concurrent.Callable;
 
 import static com.googlecode.totallylazy.Callables.curry;
 import static com.googlecode.totallylazy.Callables.returns;
-import static com.googlecode.yadic.activators.Activators.*;
+import static com.googlecode.yadic.activators.Resolvers.*;
+import static com.googlecode.yadic.activators.Resolvers.asResolver;
 
 public class SimpleContainer extends BaseTypeMap implements Container {
     public SimpleContainer(Resolver parent) {
@@ -21,11 +20,17 @@ public class SimpleContainer extends BaseTypeMap implements Container {
 
     @SuppressWarnings("unchecked")
     public <T> T get(Class<T> aClass) {
-        return (T) resolve(aClass);
+        try {
+            return (T) resolve(aClass);
+        } catch (ContainerException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ContainerException(aClass.getName() + " cannot be created", e);
+        }
     }
 
     public <T> Callable<T> getActivator(Class<T> aClass) {
-        return curry(super.<T>getActivator(aClass), aClass);
+        return asCallable(super.<T>getResolver(aClass), aClass);
     }
 
     public <T> Container add(final Class<T> concrete) {
@@ -49,7 +54,7 @@ public class SimpleContainer extends BaseTypeMap implements Container {
     }
 
     public <T> Container addActivator(Class<T> aClass, final Callable<? extends T> activator) {
-        add(aClass, Callables.<Type, Object>asCallable1(activator));
+        add(aClass, asResolver(activator));
         return this;
     }
 

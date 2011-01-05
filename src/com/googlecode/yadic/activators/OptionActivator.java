@@ -11,14 +11,14 @@ import java.lang.reflect.Type;
 import static com.googlecode.totallylazy.Option.none;
 import static com.googlecode.totallylazy.Option.option;
 
-public class OptionActivator implements Callable1<Type, Option> {
+public class OptionActivator implements Resolver<Option> {
     private final Resolver resolver;
 
     public OptionActivator(final Resolver resolver) {
         this.resolver = resolver;
     }
 
-    public Option call(Type type) throws Exception {
+    public Option resolve(Type type) throws Exception {
         try {
             return option(resolver.resolve(((ParameterizedType) type).getActualTypeArguments()[0]));
         } catch (ContainerException e) {
