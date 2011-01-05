@@ -1,6 +1,5 @@
 package com.googlecode.yadic.activators;
 
-import com.googlecode.totallylazy.Callable1;
 import com.googlecode.totallylazy.Option;
 import com.googlecode.yadic.ContainerException;
 import com.googlecode.yadic.Resolver;
