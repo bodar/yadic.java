@@ -3,14 +3,16 @@ package com.googlecode.yadic;
 import com.googlecode.totallylazy.Sequence;
 import com.googlecode.totallylazy.callables.CountingCallable;
 import com.googlecode.yadic.examples.*;
+import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
 import java.lang.reflect.Type;
 import java.util.concurrent.Callable;
 
-import static com.googlecode.totallylazy.Callables.curry;
 import static com.googlecode.totallylazy.Callers.callConcurrently;
 import static com.googlecode.totallylazy.callables.SleepyCallable.sleepy;
+import static com.googlecode.yadic.activators.Resolvers.asCallable;
+import static com.googlecode.yadic.activators.Resolvers.asCallable1;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.not;
@@ -72,6 +74,20 @@ public class SimpleContainerTest {
     }
 
     @Test
+    public void shouldBeAbleToRegisterACallableClassAsAnActivator() {
+        Container container = new SimpleContainer();
+        container.addActivator(Node.class, NodeActivator.class);
+        assertThat(container.get(Node.class), is(instanceOf(RootNode.class)));
+    }
+
+    @Test
+    public void shouldBeAbleToRegisterAResolverClassAsAnActivator() {
+        Container container = new SimpleContainer();
+        container.add(Node.class, NodeResolver.class);
+        assertThat(container.get(Node.class), is(instanceOf(RootNode.class)));
+    }
+
+    @Test
     public void shouldOnlyCallActivatorOnce() {
         final int[] count = {0};
         Container container = new SimpleContainer();
@@ -102,7 +118,7 @@ public class SimpleContainerTest {
             }
         }, 10));
 
-        Sequence<Node> results = callConcurrently(curry(new NodeActivator(container), null), curry(new NodeActivator(container), null));
+        Sequence<Object> results = callConcurrently(asCallable(container, Node.class), asCallable(container, Node.class));
 
         assertSame(results.first(), results.second());
         assertThat(count[0], is(1));
