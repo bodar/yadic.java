@@ -1,14 +1,11 @@
 package com.googlecode.yadic;
 
-import com.googlecode.totallylazy.Callable1;
 import com.googlecode.totallylazy.Callables;
-import com.googlecode.yadic.activators.Activators;
 import com.googlecode.yadic.activators.MissingResolver;
 
 import java.lang.reflect.Type;
 import java.util.concurrent.Callable;
 
-import static com.googlecode.totallylazy.Callables.asCallable1;
 import static com.googlecode.totallylazy.Callables.curry;
 import static com.googlecode.totallylazy.Callables.returns;
 import static com.googlecode.yadic.activators.Activators.*;
