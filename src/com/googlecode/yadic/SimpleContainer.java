@@ -1,6 +1,7 @@
 package com.googlecode.yadic;
 
 import com.googlecode.yadic.activators.MissingResolver;
+import com.googlecode.yadic.activators.Resolvers;
 
 import java.util.concurrent.Callable;
 
@@ -20,13 +21,7 @@ public class SimpleContainer extends BaseTypeMap implements Container {
 
     @SuppressWarnings("unchecked")
     public <T> T get(Class<T> aClass) {
-        try {
-            return (T) resolve(aClass);
-        } catch (ContainerException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new ContainerException(aClass.getName() + " cannot be created", e);
-        }
+        return (T) Resolvers.resolve(this, aClass);
     }
 
     public <T> Callable<T> getActivator(Class<T> aClass) {

@@ -4,6 +4,7 @@ import com.googlecode.totallylazy.Callables;
 import com.googlecode.totallylazy.First;
 import com.googlecode.totallylazy.Pair;
 import com.googlecode.totallylazy.predicates.LogicalPredicate;
+import com.googlecode.yadic.activators.Resolvers;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -33,7 +34,7 @@ public class BaseTypeMap implements TypeMap {
         if (!contains(type)) {
             return parent.resolve(type);
         }
-        return getResolver(type).resolve(type);
+        return Resolvers.resolve(getResolver(type), type);
     }
 
     @SuppressWarnings("unchecked")
@@ -62,7 +63,7 @@ public class BaseTypeMap implements TypeMap {
     public <T> Resolver<T> remove(Type type) {
         for (int i = 0; i < activators.size(); i++) {
             Pair<Type, Resolver<Object>> activator = activators.get(i);
-            if(pairFor(type).matches(activator)){
+            if (pairFor(type).matches(activator)) {
                 return (Resolver<T>) activators.remove(i).second();
             }
         }
