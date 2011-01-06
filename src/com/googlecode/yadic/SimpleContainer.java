@@ -1,14 +1,14 @@
 package com.googlecode.yadic;
 
-import com.googlecode.yadic.activators.MissingResolver;
-import com.googlecode.yadic.activators.Resolvers;
+import com.googlecode.yadic.resolvers.MissingResolver;
+import com.googlecode.yadic.resolvers.Resolvers;
 
 import java.util.concurrent.Callable;
 
 import static com.googlecode.totallylazy.Callables.curry;
 import static com.googlecode.totallylazy.Callables.returns;
-import static com.googlecode.yadic.activators.Resolvers.*;
-import static com.googlecode.yadic.activators.Resolvers.asResolver;
+import static com.googlecode.yadic.resolvers.Resolvers.*;
+import static com.googlecode.yadic.resolvers.Resolvers.asResolver;
 
 public class SimpleContainer extends BaseTypeMap implements Container {
     public SimpleContainer(Resolver parent) {

@@ -10,7 +10,7 @@ import java.util.concurrent.Callable;
 
 import static com.googlecode.totallylazy.Callers.callConcurrently;
 import static com.googlecode.totallylazy.callables.SleepyCallable.sleepy;
-import static com.googlecode.yadic.activators.Resolvers.asCallable;
+import static com.googlecode.yadic.resolvers.Resolvers.asCallable;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.not;

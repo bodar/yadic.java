@@ -1,4 +1,4 @@
-package com.googlecode.yadic.activators;
+package com.googlecode.yadic.resolvers;
 
 import com.googlecode.totallylazy.Option;
 import com.googlecode.yadic.ContainerException;
@@ -10,10 +10,10 @@ import java.lang.reflect.Type;
 import static com.googlecode.totallylazy.Option.none;
 import static com.googlecode.totallylazy.Option.option;
 
-public class OptionActivator implements Resolver<Option> {
+public class OptionResolver implements Resolver<Option> {
     private final Resolver resolver;
 
-    public OptionActivator(final Resolver resolver) {
+    public OptionResolver(final Resolver resolver) {
         this.resolver = resolver;
     }
 

@@ -1,4 +1,4 @@
-package com.googlecode.yadic.activators;
+package com.googlecode.yadic.resolvers;
 
 import com.googlecode.totallylazy.Callable1;
 import com.googlecode.yadic.ContainerException;
@@ -22,15 +22,15 @@ public class Resolvers {
     }
 
     public static <T, A extends Resolver<T>> Resolver<T> activator(final Resolver resolver, final Class<A> activator) {
-        return new ActivatorActivator<T>(activator, resolver);
+        return new ActivatorResolver<T>(activator, resolver);
     }
 
     public static Resolver<Object> activator(final Resolver resolver, final Type activator) {
-        return new ActivatorActivator<Object>(activator, resolver);
+        return new ActivatorResolver<Object>(activator, resolver);
     }
 
     public static Resolver<Object> create(final Type concrete, final Resolver<?> resolver) {
-        return new ConstructorActivator<Object>(resolver, concrete);
+        return new ConstructorResolver<Object>(resolver, concrete);
     }
 
     public static <T> Callable<T> asCallable(final Resolver<? extends T> resolver, final Type type) {

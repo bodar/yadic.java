@@ -1,4 +1,4 @@
-package com.googlecode.yadic.activators;
+package com.googlecode.yadic.resolvers;
 
 import com.googlecode.totallylazy.Callable1;
 import com.googlecode.totallylazy.Callables;
@@ -17,16 +17,16 @@ import static com.googlecode.totallylazy.Callables.descending;
 import static com.googlecode.totallylazy.Option.none;
 import static com.googlecode.totallylazy.Option.some;
 import static com.googlecode.totallylazy.Sequences.sequence;
-import static com.googlecode.yadic.activators.Resolvers.asCallable1;
+import static com.googlecode.yadic.resolvers.Resolvers.asCallable1;
 import static com.googlecode.yadic.generics.TypeConverter.typeConverter;
 import static com.googlecode.yadic.generics.Types.classOf;
 
-public class ConstructorActivator<T> implements Resolver<T> {
+public class ConstructorResolver<T> implements Resolver<T> {
     private final Type type;
     private final Class<T> concrete;
     private final Resolver<?> resolver;
 
-    public ConstructorActivator(Resolver<?> resolver, Type type) {
+    public ConstructorResolver(Resolver<?> resolver, Type type) {
         this.type = type;
         this.concrete = classOf(type);
         this.resolver = resolver;
