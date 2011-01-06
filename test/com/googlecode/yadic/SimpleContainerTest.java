@@ -3,7 +3,6 @@ package com.googlecode.yadic;
 import com.googlecode.totallylazy.Sequence;
 import com.googlecode.totallylazy.callables.CountingCallable;
 import com.googlecode.yadic.examples.*;
-import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
 import java.lang.reflect.Type;
@@ -12,7 +11,6 @@ import java.util.concurrent.Callable;
 import static com.googlecode.totallylazy.Callers.callConcurrently;
 import static com.googlecode.totallylazy.callables.SleepyCallable.sleepy;
 import static com.googlecode.yadic.activators.Resolvers.asCallable;
-import static com.googlecode.yadic.activators.Resolvers.asCallable1;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.not;
@@ -242,14 +240,14 @@ public class SimpleContainerTest {
     }
 
     @Test(expected = ContainerException.class)
-    public void getShouldThrowExceptionIfActivatorBlowsUp() throws Exception {
+    public void resolveShouldThrowExceptionIfActivatorBlowsUp() throws Exception {
         Container container = new SimpleContainer();
         container.addActivator(GrandChildNode.class, new Callable<GrandChildNode>() {
             public GrandChildNode call() throws Exception {
                 throw new Exception();
             }
         });
-        container.get(GrandChildNode.class);
+        container.resolve(GrandChildNode.class);
         fail("should have thrown exception");
     }
 

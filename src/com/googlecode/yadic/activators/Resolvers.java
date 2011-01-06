@@ -1,6 +1,7 @@
 package com.googlecode.yadic.activators;
 
 import com.googlecode.totallylazy.Callable1;
+import com.googlecode.yadic.ContainerException;
 import com.googlecode.yadic.Resolver;
 import com.googlecode.yadic.TypeMap;
 
@@ -36,7 +37,7 @@ public class Resolvers {
         return curry(asCallable1(resolver), type);
     }
 
-    public static <T> Callable1<Type,T> asCallable1(final Resolver<? extends T> resolver) {
+    public static <T> Callable1<Type, T> asCallable1(final Resolver<? extends T> resolver) {
         return new Callable1<Type, T>() {
             public T call(Type type) throws Exception {
                 return resolver.resolve(type);
@@ -60,5 +61,14 @@ public class Resolvers {
         };
     }
 
+    public static <T> T resolve(Resolver<T> resolver, Type type) {
+        try {
+            return (T) resolver.resolve(type);
+        } catch (ContainerException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ContainerException(type.toString() + " cannot be created", e);
+        }
 
+    }
 }
