@@ -1,17 +1,17 @@
-package com.googlecode.yadic.activators;
+package com.googlecode.yadic.resolvers;
 
 import com.googlecode.yadic.Resolver;
 
 import java.lang.reflect.Type;
 import java.util.concurrent.Callable;
 
-import static com.googlecode.yadic.activators.Resolvers.create;
+import static com.googlecode.yadic.resolvers.Resolvers.create;
 
-public class ActivatorActivator<T> implements Resolver<T> {
+public class ActivatorResolver<T> implements Resolver<T> {
     private final Type activator;
     private final Resolver resolver;
 
-    public ActivatorActivator(Type activator, Resolver resolver) {
+    public ActivatorResolver(Type activator, Resolver resolver) {
         this.activator = activator;
         this.resolver = resolver;
     }

@@ -1,4 +1,4 @@
-package com.googlecode.yadic.activators;
+package com.googlecode.yadic.resolvers;
 
 import com.googlecode.yadic.ContainerException;
 import com.googlecode.yadic.Resolver;

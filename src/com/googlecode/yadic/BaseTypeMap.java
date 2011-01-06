@@ -4,7 +4,7 @@ import com.googlecode.totallylazy.Callables;
 import com.googlecode.totallylazy.First;
 import com.googlecode.totallylazy.Pair;
 import com.googlecode.totallylazy.predicates.LogicalPredicate;
-import com.googlecode.yadic.activators.Resolvers;
+import com.googlecode.yadic.resolvers.Resolvers;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -16,10 +16,10 @@ import static com.googlecode.totallylazy.Predicates.is;
 import static com.googlecode.totallylazy.Predicates.where;
 import static com.googlecode.totallylazy.Sequences.sequence;
 import static com.googlecode.totallylazy.callables.LazyCallable1.lazy;
-import static com.googlecode.yadic.activators.Resolvers.activator;
-import static com.googlecode.yadic.activators.Resolvers.asCallable1;
-import static com.googlecode.yadic.activators.Resolvers.asResolver;
-import static com.googlecode.yadic.activators.Resolvers.create;
+import static com.googlecode.yadic.resolvers.Resolvers.activator;
+import static com.googlecode.yadic.resolvers.Resolvers.asCallable1;
+import static com.googlecode.yadic.resolvers.Resolvers.asResolver;
+import static com.googlecode.yadic.resolvers.Resolvers.create;
 import static com.googlecode.yadic.generics.Types.matches;
 
 public class BaseTypeMap implements TypeMap {
