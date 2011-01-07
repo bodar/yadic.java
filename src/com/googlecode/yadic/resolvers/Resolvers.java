@@ -37,6 +37,21 @@ public class Resolvers {
         return curry(asCallable1(resolver), type);
     }
 
+    public static Resolver<Object> listOf(final Resolver<?>... values) {
+        return new Resolver<Object>() {
+            public Object resolve(Type type) throws Exception {
+                for (Resolver<?> resolver : values) {
+                    try {
+                        return resolver.resolve(type);
+                    } catch (Exception e) {
+                        // continue
+                    }
+                }
+                return new MissingResolver().resolve(type);
+            }
+        };
+    }
+
     public static <T> Callable1<Type, T> asCallable1(final Resolver<? extends T> resolver) {
         return new Callable1<Type, T>() {
             public T call(Type type) throws Exception {

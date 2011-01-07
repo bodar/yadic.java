@@ -9,6 +9,8 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.googlecode.totallylazy.Sequences.sequence;
 
@@ -35,6 +37,23 @@ public class Types {
             return classOf(((ParameterizedType) concrete).getRawType());
         }
         throw new UnsupportedOperationException();
+    }
+
+    public static List<Type> typeArgumentsOf(Type type) {
+        List<Type> types = new ArrayList<Type>();
+        if(type instanceof ParameterizedType){
+            for (Type subType : ((ParameterizedType) type).getActualTypeArguments()) {
+                types.addAll(typeArgumentsOf(subType));
+            }
+            return types;
+        }
+
+        if(type instanceof Class) {
+            types.add(type);
+            return types;
+        }
+
+        throw new UnsupportedOperationException("Does not support " + type.toString());
     }
 
     public static boolean equalTo(Type a, Type b) {

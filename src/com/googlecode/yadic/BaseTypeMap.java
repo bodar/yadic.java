@@ -4,6 +4,7 @@ import com.googlecode.totallylazy.Callables;
 import com.googlecode.totallylazy.First;
 import com.googlecode.totallylazy.Pair;
 import com.googlecode.totallylazy.predicates.LogicalPredicate;
+import com.googlecode.yadic.resolvers.ObjectResolver;
 import com.googlecode.yadic.resolvers.Resolvers;
 
 import java.lang.reflect.Type;
@@ -28,6 +29,7 @@ public class BaseTypeMap implements TypeMap {
 
     public BaseTypeMap(Resolver parent) {
         this.parent = parent;
+        add(Object.class, new ObjectResolver());
     }
 
     public Object resolve(Type type) throws Exception {
@@ -78,4 +80,5 @@ public class BaseTypeMap implements TypeMap {
     private LogicalPredicate<First<Type>> pairFor(Type type) {
         return where(first(Type.class), is(matches(type)));
     }
+
 }
