@@ -1,11 +1,14 @@
 package com.googlecode.yadic.resolvers;
 
 import com.googlecode.totallylazy.Callable1;
+import com.googlecode.totallylazy.Exceptions;
 import com.googlecode.yadic.ContainerException;
 import com.googlecode.yadic.Resolver;
 import com.googlecode.yadic.TypeMap;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Callable;
 
 import static com.googlecode.totallylazy.Callables.curry;
@@ -37,17 +40,18 @@ public class Resolvers {
         return curry(asCallable1(resolver), type);
     }
 
-    public static Resolver<Object> listOf(final Resolver<?>... values) {
+    public static Resolver<Object> listOf(final Resolver<?>... resolvers) {
         return new Resolver<Object>() {
             public Object resolve(Type type) throws Exception {
-                for (Resolver<?> resolver : values) {
+                List<Exception> exceptions = new ArrayList<Exception>();
+                for (Resolver<?> resolver : resolvers) {
                     try {
                         return resolver.resolve(type);
                     } catch (Exception e) {
-                        // continue
+                        exceptions.add(e);
                     }
                 }
-                return new MissingResolver().resolve(type);
+                return new ContainerException("Unable to create " + type, exceptions);
             }
         };
     }
