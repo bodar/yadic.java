@@ -8,6 +8,7 @@ import com.googlecode.yadic.resolvers.OptionResolver;
 import com.googlecode.yadic.examples.*;
 import org.junit.Test;
 
+import static com.googlecode.totallylazy.Predicates.always;
 import static com.googlecode.yadic.generics.Types.parameterizedType;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -50,7 +51,7 @@ public class GenericsTest {
     @Test
     public void containerShouldSupportWildcards() throws Exception {
         Container container = new SimpleContainer();
-        container.add(new TypeFor<Option<?>>(){{}}.get(), new OptionResolver(container, Predicates.<Throwable>always()));
+        container.add(new TypeFor<Option<?>>(){{}}.get(), new OptionResolver(container, always()));
         container.add(Node.class, RootNode.class);
         container.add(FlexibleNode.class);
         assertThat(container.get(FlexibleNode.class).parent(), is(instanceOf(RootNode.class)));
@@ -59,7 +60,7 @@ public class GenericsTest {
     @Test
     public void containerShouldSupportSomeOption() throws Exception {
         Container container = new SimpleContainer();
-        container.add(new TypeFor<Option<Node>>(){{}}.get(), new OptionResolver(container, Predicates.<Throwable>always()));
+        container.add(new TypeFor<Option<Node>>(){{}}.get(), new OptionResolver(container, always()));
         container.add(Node.class, RootNode.class);
         container.add(FlexibleNode.class);
         assertThat(container.get(FlexibleNode.class).parent(), is(instanceOf(RootNode.class)));
@@ -68,7 +69,7 @@ public class GenericsTest {
     @Test
     public void containerShouldSupportNoneOption() throws Exception {
         Container container = new SimpleContainer();
-        container.add(new TypeFor<Option<Node>>(){{}}.get(), new OptionResolver(container, Predicates.<Throwable>always()));
+        container.add(new TypeFor<Option<Node>>(){{}}.get(), new OptionResolver(container, always()));
         container.add(FlexibleNode.class);
         Option<Node> none = Option.none(Node.class);
         assertThat(container.get(FlexibleNode.class).optionalParent(), is(none));

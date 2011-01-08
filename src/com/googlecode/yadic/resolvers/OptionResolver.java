@@ -15,9 +15,9 @@ import static com.googlecode.totallylazy.Predicates.instanceOf;
 
 public class OptionResolver implements Resolver<Option> {
     private final Resolver resolver;
-    private final Predicate<Throwable> predicate;
+    private final Predicate<? super Throwable> predicate;
 
-    public OptionResolver(final Resolver resolver, Predicate<Throwable> predicate) {
+    public OptionResolver(final Resolver resolver, Predicate<? super Throwable> predicate) {
         this.resolver = resolver;
         this.predicate = predicate;
     }
