@@ -8,6 +8,6 @@ import java.util.NoSuchElementException;
 
 public class MissingResolver implements Resolver {
     public Object resolve(Type type) throws Exception {
-        throw new ContainerException(type.toString() + " not found in container", new NoSuchElementException());
+        throw new ContainerException(type.toString() + " not found in container");
     }
 }
