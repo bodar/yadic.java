@@ -51,7 +51,7 @@ public class Resolvers {
                         exceptions.add(e);
                     }
                 }
-                return new ContainerException("Unable to create " + type, exceptions);
+                throw new ContainerException("Unable to create " + type, exceptions);
             }
         };
     }
