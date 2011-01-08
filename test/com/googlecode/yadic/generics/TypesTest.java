@@ -1,5 +1,6 @@
 package com.googlecode.yadic.generics;
 
+import com.googlecode.totallylazy.Either;
 import com.googlecode.totallylazy.Option;
 import com.googlecode.yadic.examples.GenericType;
 import org.junit.Test;
@@ -27,5 +28,7 @@ public class TypesTest {
     public void supportsMatchingWithWildcards() throws Exception {
         assertThat(matches(new TypeFor<Option<Integer>>() {{}}.get(),
                 new TypeFor<Option<?>>() {{}}.get()), is(true));
+        assertThat(matches(new TypeFor<Either<String, Option<Integer>>>() {{}}.get(),
+                new TypeFor<Either<?, ?>>() {{}}.get()), is(true));
     }
 }
