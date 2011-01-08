@@ -138,7 +138,7 @@ public class Types {
             return true;
         }
         if (Numbers.equalTo(upperBounds.size(), 1)) {
-            return ((Class) upperBounds.first()).isAssignableFrom((Class) concrete);
+            return (classOf(upperBounds.first())).isAssignableFrom(classOf(concrete));
         }
         throw new UnsupportedOperationException();
     }
@@ -148,7 +148,7 @@ public class Types {
             return true;
         }
         if (Numbers.equalTo(lowerBounds.size(), 1)) {
-            return ((Class) concrete).isAssignableFrom((Class) lowerBounds.first());
+            return (classOf(concrete)).isAssignableFrom(classOf(lowerBounds.first()));
         }
         throw new UnsupportedOperationException();
     }
