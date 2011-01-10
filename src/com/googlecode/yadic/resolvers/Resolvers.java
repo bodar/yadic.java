@@ -33,7 +33,19 @@ public class Resolvers {
     }
 
     public static Resolver<Object> create(final Type concrete, final Resolver<?> resolver) {
-        return new ConstructorResolver<Object>(resolver, concrete);
+        return new Resolver<Object>() {
+            public Object resolve(Type type) throws Exception {
+                return new ConstructorResolver<Object>(resolver).resolve(concrete);
+            }
+        };
+    }
+
+    public static Resolver<Object> createByStaticMethod(final Type concrete, final Resolver<?> resolver) {
+        return new Resolver<Object>() {
+            public Object resolve(Type type) throws Exception {
+                return new StaticMethodResolver<Object>(resolver).resolve(concrete);
+            }
+        };
     }
 
     public static <T> Callable<T> asCallable(final Resolver<? extends T> resolver, final Type type) {
