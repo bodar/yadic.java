@@ -1,9 +1,6 @@
 package com.googlecode.yadic.resolvers;
 
-import com.googlecode.totallylazy.Callable1;
-import com.googlecode.totallylazy.Callables;
-import com.googlecode.totallylazy.Option;
-import com.googlecode.totallylazy.Sequence;
+import com.googlecode.totallylazy.*;
 import com.googlecode.yadic.ContainerException;
 import com.googlecode.yadic.Resolver;
 
@@ -17,47 +14,41 @@ import static com.googlecode.totallylazy.Callables.descending;
 import static com.googlecode.totallylazy.Option.none;
 import static com.googlecode.totallylazy.Option.some;
 import static com.googlecode.totallylazy.Sequences.sequence;
+import static com.googlecode.yadic.generics.TypeConverter.convertParametersToInstances;
 import static com.googlecode.yadic.resolvers.Resolvers.asCallable1;
 import static com.googlecode.yadic.generics.TypeConverter.typeConverter;
 import static com.googlecode.yadic.generics.Types.classOf;
 
 public class ConstructorResolver<T> implements Resolver<T> {
-    private final Type type;
-    private final Class<T> concrete;
     private final Resolver<?> resolver;
 
-    public ConstructorResolver(Resolver<?> resolver, Type type) {
-        this.type = type;
-        this.concrete = classOf(type);
+    public ConstructorResolver(Resolver<?> resolver) {
         this.resolver = resolver;
     }
 
     public T resolve(Type type) throws Exception {
+        Class<T> concrete = classOf(type);
         Sequence<Constructor<?>> constructors = sequence(concrete.getConstructors()).sortBy(descending(numberOfParamters()));
         if (constructors.isEmpty()) {
             throw new ContainerException(concrete.getName() + " does not have a public constructor");
         }
         final List<ContainerException> exceptions = new ArrayList<ContainerException>();
-        return constructors.tryPick(firstSatisfiableConstructor(exceptions)).map(cast(concrete)).
+        return constructors.tryPick(firstSatisfiableConstructor(exceptions, type)).map(cast(concrete)).
                 getOrElse(Callables.<T>callThrows(new ContainerException(concrete.getName() + " does not have a satisfiable constructor", exceptions)));
     }
 
-    private Callable1<Constructor<?>, Option<Object>> firstSatisfiableConstructor(final List<ContainerException> exceptions) {
+    private Callable1<Constructor<?>, Option<Object>> firstSatisfiableConstructor(final List<ContainerException> exceptions, final Type type) {
         return new Callable1<Constructor<?>, Option<Object>>() {
             public Option<Object> call(Constructor<?> constructor) throws Exception {
                 try {
-                    Sequence<Object> instances = genericParametersFor(constructor).map(asCallable1(resolver));
-                    return some(constructor.newInstance(instances.toArray(Object.class)));
+                    Object[] instances = convertParametersToInstances(resolver, type, sequence(constructor.getGenericParameterTypes()));
+                    return some(constructor.newInstance(instances));
                 } catch (ContainerException e) {
                     exceptions.add(e);
                     return none();
                 }
             }
         };
-    }
-
-    private Sequence<Type> genericParametersFor(Constructor<?> constructor) {
-        return sequence(constructor.getGenericParameterTypes()).map(typeConverter(type, constructor));
     }
 
     private Callable1<Constructor<?>, Comparable> numberOfParamters() {
