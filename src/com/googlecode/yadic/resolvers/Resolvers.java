@@ -1,7 +1,6 @@
 package com.googlecode.yadic.resolvers;
 
 import com.googlecode.totallylazy.Callable1;
-import com.googlecode.totallylazy.Exceptions;
 import com.googlecode.yadic.ContainerException;
 import com.googlecode.yadic.Resolver;
 import com.googlecode.yadic.TypeMap;
@@ -12,6 +11,7 @@ import java.util.List;
 import java.util.concurrent.Callable;
 
 import static com.googlecode.totallylazy.Callables.curry;
+import static com.googlecode.yadic.generics.Types.classOf;
 
 public class Resolvers {
 
@@ -32,7 +32,14 @@ public class Resolvers {
         return new ActivatorResolver<Object>(activator, resolver);
     }
 
-    public static Resolver<Object> create(final Type concrete, final Resolver<?> resolver) {
+    public static Resolver<Object> create(final Type t, Resolver<?> resolver) {
+        if(classOf(t).getConstructors().length > 0){
+            return constructor(t, resolver);
+        }
+        return staticMethod(t, resolver);
+    }
+
+    public static Resolver<Object> constructor(final Type concrete, final Resolver<?> resolver) {
         return new Resolver<Object>() {
             public Object resolve(Type type) throws Exception {
                 return new ConstructorResolver<Object>(resolver).resolve(concrete);
@@ -40,7 +47,7 @@ public class Resolvers {
         };
     }
 
-    public static Resolver<Object> createByStaticMethod(final Type concrete, final Resolver<?> resolver) {
+    public static Resolver<Object> staticMethod(final Type concrete, final Resolver<?> resolver) {
         return new Resolver<Object>() {
             public Object resolve(Type type) throws Exception {
                 return new StaticMethodResolver<Object>(resolver).resolve(concrete);
@@ -63,7 +70,7 @@ public class Resolvers {
                         exceptions.add(e);
                     }
                 }
-                throw new ContainerException("Unable to create " + type, exceptions);
+                throw new ContainerException(type + " cannot be created", exceptions);
             }
         };
     }
@@ -98,7 +105,7 @@ public class Resolvers {
         } catch (ContainerException e) {
             throw e;
         } catch (Exception e) {
-            throw new ContainerException(type.toString() + " cannot be created", e);
+            throw new ContainerException(type + " cannot be created", e);
         }
 
     }

@@ -298,15 +298,11 @@ public class SimpleContainerTest {
         }
     }
 
-    @Test
-    public void shouldThrowWhenClassDoesNotHaveAPublicConstructor() {
-        try {
-            Container container = new SimpleContainer();
-            container.add(PrivateClass.class);
-            container.get(PrivateClass.class);
-        } catch (ContainerException e) {
-            assertThat(e.getMessage(), is(PrivateClass.class.getName() + " does not have a public constructor"));
-        }
+    @Test(expected = ContainerException.class)
+    public void shouldThrowWhenClassDoesNotHaveAPublicConstructorOrStaticMethod() {
+        Container container = new SimpleContainer();
+        container.add(PrivateClass.class);
+        container.get(PrivateClass.class);
     }
 
     @Test
