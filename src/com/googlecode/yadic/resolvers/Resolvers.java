@@ -1,10 +1,13 @@
 package com.googlecode.yadic.resolvers;
 
 import com.googlecode.totallylazy.Callable1;
+import com.googlecode.totallylazy.Runnable1;
 import com.googlecode.yadic.ContainerException;
 import com.googlecode.yadic.Resolver;
 import com.googlecode.yadic.TypeMap;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -109,4 +112,25 @@ public class Resolvers {
         }
 
     }
+
+    public static Runnable1<Closeable> close() {
+        return new Runnable1<Closeable>() {
+            public void run(Closeable closeable) {
+                try {
+                    closeable.close();
+                } catch (IOException e) {
+                    throw new UnsupportedOperationException(e);
+                }
+            }
+        };
+    }
+
+    public static Closeable ignore() {
+        return new Closeable() {
+            public void close() throws IOException {
+            }
+        };
+    }
+
+
 }

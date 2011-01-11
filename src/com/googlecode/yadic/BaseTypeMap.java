@@ -4,9 +4,12 @@ import com.googlecode.totallylazy.Callables;
 import com.googlecode.totallylazy.First;
 import com.googlecode.totallylazy.Pair;
 import com.googlecode.totallylazy.predicates.LogicalPredicate;
+import com.googlecode.yadic.resolvers.ClosableResolver;
 import com.googlecode.yadic.resolvers.ObjectResolver;
 import com.googlecode.yadic.resolvers.Resolvers;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,15 +20,13 @@ import static com.googlecode.totallylazy.Predicates.is;
 import static com.googlecode.totallylazy.Predicates.where;
 import static com.googlecode.totallylazy.Sequences.sequence;
 import static com.googlecode.totallylazy.callables.LazyCallable1.lazy;
-import static com.googlecode.yadic.resolvers.Resolvers.activator;
-import static com.googlecode.yadic.resolvers.Resolvers.asCallable1;
-import static com.googlecode.yadic.resolvers.Resolvers.asResolver;
-import static com.googlecode.yadic.resolvers.Resolvers.create;
 import static com.googlecode.yadic.generics.Types.matches;
+import static com.googlecode.yadic.resolvers.Resolvers.*;
 
 public class BaseTypeMap implements TypeMap {
     private final List<Pair<Type, Resolver<Object>>> activators = new ArrayList<Pair<Type, Resolver<Object>>>();
     protected final Resolver parent;
+    private List<Closeable> closeables = new ArrayList<Closeable>();
 
     public BaseTypeMap(Resolver parent) {
         this.parent = parent;
@@ -45,21 +46,29 @@ public class BaseTypeMap implements TypeMap {
     }
 
     public TypeMap add(Type type, Type concrete) {
-        return add(type, create(concrete, this));
+        ClosableResolver closableResolver = new ClosableResolver<Object>(create(concrete, this));
+        return add(type, closableResolver, closableResolver);
     }
 
     public TypeMap add(Type type, Class<? extends Resolver> resolverClass) {
         return add(type, activator(this, resolverClass));
     }
 
-    @SuppressWarnings("unchecked")
     public TypeMap add(Type type, Resolver<?> resolver) {
+        add(type, resolver, ignore());
+        return this;
+    }
+
+    @SuppressWarnings("unchecked")
+    public TypeMap add(Type type, Resolver<?> resolver, Closeable closeable) {
         if (contains(type)) {
             throw new ContainerException(type.toString() + " already added to container");
         }
         activators.add(Pair.<Type, Resolver<Object>>pair(type, asResolver(lazy(asCallable1(resolver)))));
+        closeables.add(closeable);
         return this;
     }
+
 
     @SuppressWarnings("unchecked")
     public <T> Resolver<T> remove(Type type) {
@@ -81,4 +90,7 @@ public class BaseTypeMap implements TypeMap {
         return where(first(Type.class), is(matches(type)));
     }
 
+    public void close() throws IOException {
+        sequence(closeables).forEach(Resolvers.close());
+    }
 }
