@@ -3,6 +3,7 @@ package com.googlecode.yadic;
 import com.googlecode.yadic.resolvers.MissingResolver;
 import com.googlecode.yadic.resolvers.Resolvers;
 
+import java.lang.reflect.Type;
 import java.util.concurrent.Callable;
 
 import static com.googlecode.totallylazy.Callables.curry;
@@ -29,12 +30,12 @@ public class SimpleContainer extends BaseTypeMap implements Container {
     }
 
     public <T> Container add(final Class<T> concrete) {
-        add(concrete, create(concrete, this));
+        add((Type)concrete, concrete);
         return this;
     }
 
     public <I, C extends I> Container add(Class<I> anInterface, Class<C> concrete) {
-        add(anInterface, create(concrete, this));
+        add((Type)anInterface, concrete);
         return this;
     }
 
