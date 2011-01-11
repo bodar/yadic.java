@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 import static com.googlecode.totallylazy.Callables.first;
+import static com.googlecode.totallylazy.Callables.second;
+import static com.googlecode.totallylazy.Pair.pair;
 import static com.googlecode.totallylazy.Predicates.is;
 import static com.googlecode.totallylazy.Predicates.where;
 import static com.googlecode.totallylazy.Sequences.sequence;
@@ -25,8 +27,8 @@ import static com.googlecode.yadic.resolvers.Resolvers.*;
 
 public class BaseTypeMap implements TypeMap {
     private final List<Pair<Type, Resolver<Object>>> activators = new ArrayList<Pair<Type, Resolver<Object>>>();
+    private final List<Pair<Type, Closeable>> closeables = new ArrayList<Pair<Type, Closeable>>();
     protected final Resolver parent;
-    private List<Closeable> closeables = new ArrayList<Closeable>();
 
     public BaseTypeMap(Resolver parent) {
         this.parent = parent;
@@ -65,13 +67,19 @@ public class BaseTypeMap implements TypeMap {
             throw new ContainerException(type.toString() + " already added to container");
         }
         activators.add(Pair.<Type, Resolver<Object>>pair(type, asResolver(lazy(asCallable1(resolver)))));
-        closeables.add(closeable);
+        closeables.add(pair(type, closeable));
         return this;
     }
 
 
     @SuppressWarnings("unchecked")
     public <T> Resolver<T> remove(Type type) {
+        for (int i = 0; i < closeables.size(); i++) {
+            Pair<Type, Closeable> closable = closeables.get(i);
+            if (pairFor(type).matches(closable)) {
+                closeables.remove(i);
+            }
+        }
         for (int i = 0; i < activators.size(); i++) {
             Pair<Type, Resolver<Object>> activator = activators.get(i);
             if (pairFor(type).matches(activator)) {
@@ -91,6 +99,6 @@ public class BaseTypeMap implements TypeMap {
     }
 
     public void close() throws IOException {
-        sequence(closeables).forEach(Resolvers.close());
+        sequence(closeables).map(second(Closeable.class)).forEach(Resolvers.close());
     }
 }
