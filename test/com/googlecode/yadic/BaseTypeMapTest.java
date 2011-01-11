@@ -32,6 +32,16 @@ public class BaseTypeMapTest {
         assertThat(closable.closed, is(true));
     }
 
+    @Test
+    public void removingTheTypeAlsoStopsInstanceBeingClosed() throws Exception {
+        TypeMap typeMap = new BaseTypeMap(new MissingResolver());
+        typeMap.add(SomeClosableClass.class, SomeClosableClass.class);
+        SomeClosableClass closable = (SomeClosableClass) typeMap.resolve(SomeClosableClass.class);
+        typeMap.remove(SomeClosableClass.class);
+        typeMap.close();
+        assertThat(closable.closed, is(false));
+    }
+
     public static class SomeClosableClass implements Closeable{
         public boolean closed = false;
 
