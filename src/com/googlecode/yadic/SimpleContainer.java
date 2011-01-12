@@ -6,7 +6,6 @@ import com.googlecode.yadic.resolvers.Resolvers;
 import java.lang.reflect.Type;
 import java.util.concurrent.Callable;
 
-import static com.googlecode.totallylazy.Callables.curry;
 import static com.googlecode.totallylazy.Callables.returns;
 import static com.googlecode.yadic.resolvers.Resolvers.*;
 import static com.googlecode.yadic.resolvers.Resolvers.asResolver;

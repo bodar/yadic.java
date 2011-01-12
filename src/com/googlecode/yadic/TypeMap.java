@@ -12,8 +12,6 @@ public interface TypeMap extends Resolver<Object>, Closeable {
 
     TypeMap add(Type type, Type concrete);
 
-    TypeMap add(Type type, Resolver<?> resolver, Closeable closeable);
-
     <T> Resolver<T> getResolver(Type type);
 
     <T> Resolver<T> remove(Type type);

@@ -21,8 +21,8 @@ import static com.googlecode.totallylazy.Pair.pair;
 import static com.googlecode.totallylazy.Predicates.is;
 import static com.googlecode.totallylazy.Predicates.where;
 import static com.googlecode.totallylazy.Sequences.sequence;
-import static com.googlecode.totallylazy.callables.LazyCallable1.lazy;
 import static com.googlecode.yadic.generics.Types.matches;
+import static com.googlecode.yadic.resolvers.LazyResolver.lazy;
 import static com.googlecode.yadic.resolvers.Resolvers.*;
 
 public class BaseTypeMap implements TypeMap {
@@ -57,7 +57,11 @@ public class BaseTypeMap implements TypeMap {
     }
 
     public TypeMap add(Type type, Resolver<?> resolver) {
-        add(type, resolver, ignore());
+        if(resolver instanceof Closeable){
+            add(type, resolver, (Closeable) resolver);
+        } else {
+            add(type, resolver, ignore());
+        }
         return this;
     }
 
@@ -66,11 +70,10 @@ public class BaseTypeMap implements TypeMap {
         if (contains(type)) {
             throw new ContainerException(type.toString() + " already added to container");
         }
-        activators.add(Pair.<Type, Resolver<Object>>pair(type, asResolver(lazy(asCallable1(resolver)))));
+        activators.add(Pair.<Type, Resolver<Object>>pair(type, lazy(resolver)));
         closeables.add(pair(type, closeable));
         return this;
     }
-
 
     @SuppressWarnings("unchecked")
     public <T> Resolver<T> remove(Type type) {
