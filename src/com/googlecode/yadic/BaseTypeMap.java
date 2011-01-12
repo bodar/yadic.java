@@ -21,6 +21,7 @@ import static com.googlecode.totallylazy.Predicates.is;
 import static com.googlecode.totallylazy.Predicates.where;
 import static com.googlecode.totallylazy.Sequences.sequence;
 import static com.googlecode.yadic.generics.Types.matches;
+import static com.googlecode.yadic.resolvers.ClosableResolver.closable;
 import static com.googlecode.yadic.resolvers.LazyResolver.lazy;
 import static com.googlecode.yadic.resolvers.Resolvers.*;
 
@@ -46,8 +47,7 @@ public class BaseTypeMap implements TypeMap {
     }
 
     public TypeMap add(Type type, Type concrete) {
-        ClosableResolver closableResolver = ClosableResolver.closable(create(concrete, this));
-        return add(type, closableResolver);
+        return add(type, closable(create(concrete, this)));
     }
 
     public TypeMap add(Type type, Class<? extends Resolver> resolverClass) {
