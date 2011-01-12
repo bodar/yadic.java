@@ -2,29 +2,40 @@ package com.googlecode.yadic.resolvers;
 
 import com.googlecode.yadic.Resolver;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.concurrent.Callable;
 
+import static com.googlecode.yadic.resolvers.LazyResolver.lazy;
 import static com.googlecode.yadic.resolvers.Resolvers.create;
 
-public class ActivatorResolver<T> implements Resolver<T> {
-    private final Type activator;
-    private final Resolver resolver;
+public class ActivatorResolver<T> implements Resolver<T>, Closeable {
+    private final Type activatorType;
+    private Resolver<Object> activatorResolver;
 
-    public ActivatorResolver(Type activator, Resolver resolver) {
-        this.activator = activator;
-        this.resolver = resolver;
+    public ActivatorResolver(Type activatorType, Resolver resolver) {
+        this.activatorType = activatorType;
+        activatorResolver = lazy(create(activatorType, resolver));
+
     }
 
     @SuppressWarnings("unchecked")
     public T resolve(Type type) throws Exception {
-        Object instance = create(activator, resolver).resolve(type);
-        if(instance instanceof Callable){
-            return (T) ((Callable) instance).call();
+        Object activator = activatorResolver.resolve(null);
+        if(activator instanceof Callable){
+            return (T) ((Callable) activator).call();
         }
-        if(instance instanceof Resolver){
-            return (T) ((Resolver) instance).resolve(type);
+        if(activator instanceof Resolver){
+            return (T) ((Resolver) activator).resolve(type);
         }
-        throw new UnsupportedOperationException("Unsupported activator type " + activator);
+        throw new UnsupportedOperationException("Unsupported activatorType type " + activatorType);
+    }
+
+    public void close() throws IOException {
+        Object activator = Resolvers.resolve(activatorResolver, null);
+        if(activator instanceof Closeable){
+            ((Closeable) activator).close();
+        }
     }
 }
