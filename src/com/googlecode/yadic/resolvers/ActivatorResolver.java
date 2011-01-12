@@ -17,7 +17,6 @@ public class ActivatorResolver<T> implements Resolver<T>, Closeable {
     public ActivatorResolver(Type activatorType, Resolver resolver) {
         this.activatorType = activatorType;
         activatorResolver = lazy(create(activatorType, resolver));
-
     }
 
     @SuppressWarnings("unchecked")
