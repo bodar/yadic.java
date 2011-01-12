@@ -2,13 +2,15 @@ package com.googlecode.yadic.resolvers;
 
 import com.googlecode.yadic.Resolver;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
 import static java.util.Collections.synchronizedMap;
 
-public class LazyResolver<T> implements Resolver<T> {
+public class LazyResolver<T> implements Resolver<T>, Closeable {
     private final Resolver<? extends T> resolver;
     private Map<Type, T> state = synchronizedMap(new HashMap<Type, T>());
 
@@ -26,6 +28,12 @@ public class LazyResolver<T> implements Resolver<T> {
                 state.put(type, resolver.resolve(type));
             }
             return state.get(type);
+        }
+    }
+
+    public void close() throws IOException {
+        if(resolver instanceof Closeable){
+            ((Closeable) resolver).close();
         }
     }
 }

@@ -12,11 +12,15 @@ import java.util.List;
 import static com.googlecode.totallylazy.Sequences.sequence;
 
 public class ClosableResolver<T> implements Resolver<T>, Closeable{
-    private final Resolver<T> resolver;
+    private final Resolver<? extends T> resolver;
     private final List<Closeable> closeables = new ArrayList<Closeable>();
 
-    public ClosableResolver(Resolver<T> resolver) {
+    private ClosableResolver(Resolver<? extends T> resolver) {
         this.resolver = resolver;
+    }
+
+    public static <T> ClosableResolver<T> closable(Resolver<? extends T> resolver) {
+        return new ClosableResolver<T>(resolver);
     }
 
     public void close() throws IOException {
