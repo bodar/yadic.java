@@ -13,12 +13,12 @@ import java.util.List;
 import static com.googlecode.totallylazy.Callables.cast;
 import static com.googlecode.totallylazy.Option.none;
 import static com.googlecode.totallylazy.Option.some;
+import static com.googlecode.totallylazy.Predicates.arguments;
 import static com.googlecode.totallylazy.Predicates.modifier;
+import static com.googlecode.totallylazy.Predicates.not;
 import static com.googlecode.totallylazy.Sequences.sequence;
 import static com.googlecode.yadic.generics.TypeConverter.convertParametersToInstances;
-import static com.googlecode.yadic.generics.TypeConverter.typeConverter;
 import static com.googlecode.yadic.generics.Types.classOf;
-import static com.googlecode.yadic.resolvers.Resolvers.asCallable1;
 import static java.lang.reflect.Modifier.PUBLIC;
 import static java.lang.reflect.Modifier.STATIC;
 
@@ -31,7 +31,7 @@ public class StaticMethodResolver<T> implements Resolver<T> {
 
     public T resolve(Type type) throws Exception {
         Class<T> concrete = classOf(type);
-        Sequence<Method> methods = sequence(concrete.getMethods()).filter(modifier(PUBLIC).and(modifier(STATIC)).and(returnType(type)));
+        Sequence<Method> methods = sequence(concrete.getMethods()).filter(modifier(PUBLIC).and(modifier(STATIC)).and(returnType(type)).and(not(arguments(concrete))));
         if (methods.isEmpty()) {
             throw new ContainerException(concrete.getName() + " does not have any public static methods that return " + type);
         }

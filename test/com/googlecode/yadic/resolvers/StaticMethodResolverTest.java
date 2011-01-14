@@ -1,6 +1,7 @@
 package com.googlecode.yadic.resolvers;
 
 import com.googlecode.yadic.Container;
+import com.googlecode.yadic.ContainerException;
 import com.googlecode.yadic.SimpleContainer;
 import org.junit.Test;
 
@@ -30,6 +31,13 @@ public class StaticMethodResolverTest {
         assertThat(resolver.resolve(MyStaticMethodClass.class), is(notNullValue()));
     }
 
+    @Test(expected = ContainerException.class)
+    public void ignoresSelfReferencingStaticMethods() throws Exception {
+        Container resolver = new SimpleContainer();
+        resolver.add(SelfReferencingClass.class);
+        resolver.resolve(SelfReferencingClass.class);
+    }
+
     private Container containerWith(String value) {
         return new SimpleContainer().addInstance(String.class, value);
     }
@@ -41,6 +49,15 @@ public class StaticMethodResolverTest {
 
         public static MyStaticMethodClass myStaticMethodClass(String parameter) {
             return new MyStaticMethodClass();
+        }
+    }
+
+    private static class SelfReferencingClass {
+        private SelfReferencingClass() {
+        }
+
+        public static SelfReferencingClass myStaticMethodClass(SelfReferencingClass self) {
+            return new SelfReferencingClass();
         }
     }
 
