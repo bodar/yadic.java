@@ -10,6 +10,7 @@ import java.util.concurrent.TimeUnit;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.fail;
 
 public class StaticMethodResolverTest {
 
@@ -57,7 +58,11 @@ public class StaticMethodResolverTest {
         }
 
         public static SelfReferencingClass myStaticMethodClass(SelfReferencingClass self) {
-            return new SelfReferencingClass();
+            throw new AssertionError();
+        }
+
+        public static SelfReferencingClass myStaticMethodClass(SelfReferencingClass self, SelfReferencingClass anotherSelf) {
+            throw new AssertionError();
         }
     }
 

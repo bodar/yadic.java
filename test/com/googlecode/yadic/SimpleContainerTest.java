@@ -1,11 +1,13 @@
 package com.googlecode.yadic;
 
 import com.googlecode.totallylazy.Sequence;
+import com.googlecode.totallylazy.Some;
 import com.googlecode.totallylazy.callables.CountingCallable;
 import com.googlecode.yadic.examples.*;
 import org.junit.Test;
 
 import java.lang.reflect.Type;
+import java.util.Date;
 import java.util.concurrent.Callable;
 
 import static com.googlecode.totallylazy.Callers.callConcurrently;
@@ -24,6 +26,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class SimpleContainerTest {
+
     @Test
     public void allowsRegisteringAClassAgainstMultipleTypes() throws Exception {
         Container container = new SimpleContainer();
