@@ -3,6 +3,9 @@ package com.googlecode.yadic.resolvers;
 import com.googlecode.yadic.Container;
 import com.googlecode.yadic.ContainerException;
 import com.googlecode.yadic.SimpleContainer;
+import com.googlecode.yadic.examples.MyStaticMethodClass;
+import com.googlecode.yadic.examples.SelfReferencingClass;
+import com.googlecode.yadic.examples.ThrowingClass;
 import org.junit.Test;
 
 import java.util.concurrent.TimeUnit;
@@ -39,31 +42,15 @@ public class StaticMethodResolverTest {
         resolver.resolve(SelfReferencingClass.class);
     }
 
-    private Container containerWith(String value) {
+    @Test
+    public void choosesFirstMethodThatDoesNotThrowAnException() throws Exception {
+        Container resolver = containerWith("foo");
+        resolver.add(ThrowingClass.class);
+        resolver.resolve(ThrowingClass.class);
+    }
+
+    public static Container containerWith(String value) {
         return new SimpleContainer().addInstance(String.class, value);
-    }
-
-
-    private static class MyStaticMethodClass {
-        private MyStaticMethodClass() {
-        }
-
-        public static MyStaticMethodClass myStaticMethodClass(String parameter) {
-            return new MyStaticMethodClass();
-        }
-    }
-
-    private static class SelfReferencingClass {
-        private SelfReferencingClass() {
-        }
-
-        public static SelfReferencingClass myStaticMethodClass(SelfReferencingClass self) {
-            throw new AssertionError();
-        }
-
-        public static SelfReferencingClass myStaticMethodClass(SelfReferencingClass self, SelfReferencingClass anotherSelf) {
-            throw new AssertionError();
-        }
     }
 
 }
