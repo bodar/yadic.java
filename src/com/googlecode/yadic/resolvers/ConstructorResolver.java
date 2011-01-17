@@ -32,18 +32,18 @@ public class ConstructorResolver<T> implements Resolver<T> {
         if (constructors.isEmpty()) {
             throw new ContainerException(concrete.getName() + " does not have a public constructor");
         }
-        final List<ContainerException> exceptions = new ArrayList<ContainerException>();
+        final List<Exception> exceptions = new ArrayList<Exception>();
         return constructors.tryPick(firstSatisfiableConstructor(exceptions, type)).map(cast(concrete)).
                 getOrElse(Callables.<T>callThrows(new ContainerException(concrete.getName() + " does not have a satisfiable constructor", exceptions)));
     }
 
-    private Callable1<Constructor<?>, Option<Object>> firstSatisfiableConstructor(final List<ContainerException> exceptions, final Type type) {
+    private Callable1<Constructor<?>, Option<Object>> firstSatisfiableConstructor(final List<Exception> exceptions, final Type type) {
         return new Callable1<Constructor<?>, Option<Object>>() {
             public Option<Object> call(Constructor<?> constructor) throws Exception {
                 try {
                     Object[] instances = convertParametersToInstances(resolver, type, sequence(constructor.getGenericParameterTypes()));
                     return some(constructor.newInstance(instances));
-                } catch (ContainerException e) {
+                } catch (Exception e) {
                     exceptions.add(e);
                     return none();
                 }

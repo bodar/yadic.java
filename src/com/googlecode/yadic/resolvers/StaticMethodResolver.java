@@ -41,18 +41,18 @@ public class StaticMethodResolver<T> implements Resolver<T> {
         if (methods.isEmpty()) {
             throw new ContainerException(concrete.getName() + " does not have any public static methods that return " + type);
         }
-        final List<ContainerException> exceptions = new ArrayList<ContainerException>();
+        final List<Exception> exceptions = new ArrayList<Exception>();
         return methods.tryPick(firstSatisfiableMethod(exceptions, type)).map(cast(concrete)).
                 getOrElse(Callables.<T>callThrows(new ContainerException(concrete.getName() + " does not have a satisfiable public static method", exceptions)));
     }
 
-    private Callable1<Method, Option<Object>> firstSatisfiableMethod(final List<ContainerException> exceptions, final Type type) {
+    private Callable1<Method, Option<Object>> firstSatisfiableMethod(final List<Exception> exceptions, final Type type) {
         return new Callable1<Method, Option<Object>>() {
             public Option<Object> call(Method method) throws Exception {
                 try {
                     Object[] instances = convertParametersToInstances(resolver, type, sequence(method.getGenericParameterTypes()));
                     return some(method.invoke(null, instances));
-                } catch (ContainerException e) {
+                } catch (Exception e) {
                     exceptions.add(e);
                     return none();
                 }
