@@ -1,7 +1,10 @@
 package com.googlecode.yadic.resolvers;
 
 import com.googlecode.yadic.Container;
+import com.googlecode.yadic.ContainerException;
 import com.googlecode.yadic.SimpleContainer;
+import com.googlecode.yadic.examples.SelfReferencingClass;
+import com.googlecode.yadic.examples.SelfReferencingConstructorClass;
 import com.googlecode.yadic.examples.ThrowingClass;
 import com.googlecode.yadic.examples.ThrowingConstructorClass;
 import org.junit.Test;
@@ -17,4 +20,12 @@ public class ConstructorResolverTest {
         resolver.add(ThrowingConstructorClass.class);
         resolver.resolve(ThrowingConstructorClass.class);
     }
+
+    @Test(expected = ContainerException.class)
+    public void ignoresSelfReferencingConstructors() throws Exception {
+        Container resolver = new SimpleContainer();
+        resolver.add(SelfReferencingConstructorClass.class);
+        resolver.resolve(SelfReferencingConstructorClass.class);
+    }
+
 }
