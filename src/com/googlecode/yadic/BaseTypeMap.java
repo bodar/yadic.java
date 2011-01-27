@@ -4,8 +4,7 @@ import com.googlecode.totallylazy.Callables;
 import com.googlecode.totallylazy.First;
 import com.googlecode.totallylazy.Pair;
 import com.googlecode.totallylazy.predicates.LogicalPredicate;
-import com.googlecode.yadic.resolvers.ClosableResolver;
-import com.googlecode.yadic.resolvers.ObjectResolver;
+import com.googlecode.yadic.resolvers.ProgrammerErrorResolver;
 import com.googlecode.yadic.resolvers.Resolvers;
 
 import java.io.Closeable;
@@ -31,7 +30,7 @@ public class BaseTypeMap implements TypeMap {
 
     public BaseTypeMap(Resolver parent) {
         this.parent = parent;
-        add(Object.class, new ObjectResolver());
+        add(Object.class, new ProgrammerErrorResolver(Object.class));
     }
 
     public Object resolve(Type type) throws Exception {
