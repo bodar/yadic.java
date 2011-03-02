@@ -45,7 +45,7 @@ public class Resolvers {
     public static Resolver<Object> constructor(final Type concrete, final Resolver<?> resolver) {
         return new Resolver<Object>() {
             public Object resolve(Type type) throws Exception {
-                return new ConstructorResolver<Object>(resolver).resolve(concrete);
+                return new ConstructorResolver<Object>(resolver, concrete).resolve(type);
             }
         };
     }

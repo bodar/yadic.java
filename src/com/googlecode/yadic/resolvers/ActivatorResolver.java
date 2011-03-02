@@ -21,7 +21,7 @@ public class ActivatorResolver<T> implements Resolver<T>, Closeable {
 
     @SuppressWarnings("unchecked")
     public T resolve(Type type) throws Exception {
-        Object activator = activatorResolver.resolve(null);
+        Object activator = activatorResolver.resolve(activatorType);
         if(activator instanceof Callable){
             return (T) ((Callable) activator).call();
         }
@@ -32,7 +32,7 @@ public class ActivatorResolver<T> implements Resolver<T>, Closeable {
     }
 
     public void close() throws IOException {
-        Object activator = Resolvers.resolve(activatorResolver, null);
+        Object activator = Resolvers.resolve(activatorResolver, activatorType);
         if(activator instanceof Closeable){
             ((Closeable) activator).close();
         }
