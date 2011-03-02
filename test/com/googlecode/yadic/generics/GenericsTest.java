@@ -1,11 +1,15 @@
 package com.googlecode.yadic.generics;
 
 import com.googlecode.totallylazy.Option;
-import com.googlecode.totallylazy.Predicates;
 import com.googlecode.yadic.Container;
 import com.googlecode.yadic.SimpleContainer;
+import com.googlecode.yadic.examples.FlexibleNode;
+import com.googlecode.yadic.examples.GenericType;
+import com.googlecode.yadic.examples.Instance;
+import com.googlecode.yadic.examples.Node;
+import com.googlecode.yadic.examples.RootNode;
+import com.googlecode.yadic.examples.UsesGenericType;
 import com.googlecode.yadic.resolvers.OptionResolver;
-import com.googlecode.yadic.examples.*;
 import org.junit.Test;
 
 import static com.googlecode.totallylazy.Predicates.always;
@@ -15,6 +19,15 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
 public class GenericsTest {
+    @Test
+    public void containerShouldSupportGenericWithWildCardOnConcrete() throws Exception {
+        Container container = new SimpleContainer();
+        container.addInstance(Integer.class, 1);
+        container.add(new TypeFor<GenericType<?>>(){{}}.get(), new TypeFor<GenericType<?>>(){{}}.get());
+        GenericType<Integer> genericType = (GenericType<Integer>) container.resolve(new TypeFor<GenericType<Integer>>(){{}}.get());
+        assertThat(genericType.instance(), is(1));
+    }
+
     @Test
     public void containerShouldSupportGenericClassUsingTypeFor() throws Exception {
         Container container = new SimpleContainer();
