@@ -6,6 +6,7 @@ import com.googlecode.totallylazy.Option;
 import com.googlecode.totallylazy.Sequence;
 import com.googlecode.yadic.ContainerException;
 import com.googlecode.yadic.Resolver;
+import com.googlecode.yadic.generics.TypeConverter;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Type;
@@ -21,21 +22,21 @@ import static com.googlecode.totallylazy.Option.some;
 import static com.googlecode.totallylazy.Predicates.not;
 import static com.googlecode.totallylazy.Predicates.where;
 import static com.googlecode.totallylazy.Sequences.sequence;
-import static com.googlecode.yadic.generics.TypeConverter.convertParametersToInstances;
 import static com.googlecode.yadic.generics.Types.classOf;
 import static com.googlecode.yadic.generics.Types.matches;
 
 public class ConstructorResolver<T> implements Resolver<T> {
     private final Resolver<?> resolver;
     private final Type concrete;
+    private final Class<T> concreteClass;
 
     public ConstructorResolver(Resolver<?> resolver, Type concrete) {
         this.resolver = resolver;
         this.concrete = concrete;
+        concreteClass = classOf(concrete);
     }
 
     public T resolve(Type type) throws Exception {
-        Class<T> concreteClass = classOf(concrete);
         Sequence<Constructor<?>> constructors = sequence(concreteClass.getConstructors()).
                 filter(where(genericParameterTypes(), not(exists(matches(concrete))))).
                 sortBy(descending(numberOfParamters()));
@@ -51,7 +52,7 @@ public class ConstructorResolver<T> implements Resolver<T> {
         return new Callable1<Constructor<?>, Option<Object>>() {
             public Option<Object> call(Constructor<?> constructor) throws Exception {
                 try {
-                    Object[] instances = convertParametersToInstances(resolver, type, sequence(constructor.getGenericParameterTypes()));
+                    Object[] instances = TypeConverter.convertParametersToInstances(resolver, type, concreteClass, sequence(constructor.getGenericParameterTypes()));
                     return some(constructor.newInstance(instances));
                 } catch (Exception e) {
                     exceptions.add(e);

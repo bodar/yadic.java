@@ -5,37 +5,64 @@ import com.googlecode.totallylazy.Maps;
 import com.googlecode.totallylazy.Sequence;
 import com.googlecode.yadic.Resolver;
 
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
 import java.util.HashMap;
 import java.util.Map;
 
 import static com.googlecode.totallylazy.Sequences.sequence;
-import static com.googlecode.yadic.generics.Types.classTypeParameters;
 import static com.googlecode.yadic.resolvers.Resolvers.asCallable1;
 
+
 public class TypeConverter<T> implements Callable1<Type, Type> {
-    private final Map<Type, Type> typeMap;
+    private final Map<TypeVariable, Type> typeMap;
 
-    private TypeConverter(Type type, final Sequence<Type> genericParameterTypes) {
-        typeMap = genericParameterTypes.
-                zip(classTypeParameters(type)).
-                fold(new HashMap<Type, Type>(), Maps.<Type, Type>asMap());
-    }
-
-    public static <T> Callable1<Type, Type> typeConverter(Type type, final Sequence<Type> genericParameterTypes) {
-        return new TypeConverter<T>(type, genericParameterTypes);
-    }
-
-    public static Object[] convertParametersToInstances(final Resolver<?> resolver, Type type, final Sequence<Type> genericParameterTypes) {
-        return genericParameterTypes.
-                map(typeConverter(type, genericParameterTypes)).
-                map(asCallable1(resolver)).toArray(Object.class);
+    public TypeConverter(Map<TypeVariable, Type> typeMap) {
+        this.typeMap = typeMap;
     }
 
     public Type call(Type type) throws Exception {
-        if(typeMap.containsKey(type)){
-            return typeMap.get(type);
+        if (type instanceof ParameterizedType) {
+            ParameterizedType parameterizedType = (ParameterizedType) type;
+            return Types.parameterizedType(parameterizedType.getRawType(), typeArgumentsOf(parameterizedType).map(this));
+        }
+        if (type instanceof TypeVariable) {
+            TypeVariable typeVariable = (TypeVariable) type;
+            if (!typeMap.containsKey(typeVariable)) {
+                throw new UnsupportedOperationException("Unknown TypeVariable " + typeVariable);
+            }
+            return typeMap.get(typeVariable);
         }
         return type;
     }
+
+    public static Object[] convertParametersToInstances(Resolver<?> resolver, Type requiredType, Class concrete, Sequence<Type> genericParameterTypes) {
+        return genericParameterTypes.
+                map(new TypeConverter(typeMap(requiredType, concrete))).
+                map(asCallable1(resolver)).toArray(Object.class);
+    }
+
+    public static Map<TypeVariable, Type> typeMap(Type requiredType, Class concreteType) {
+        return typeArgumentsOf(concreteType).
+                zip(typeArgumentsOf(requiredType)).
+                fold(new HashMap<TypeVariable, Type>(), Maps.<TypeVariable, Type>asMap());
+    }
+
+    public static Sequence<Type> typeArgumentsOf(Type type) {
+        if (type instanceof ParameterizedType) {
+            return typeArgumentsOf((ParameterizedType) type);
+        }
+        return sequence(type);
+    }
+
+    public static Sequence<Type> typeArgumentsOf(ParameterizedType type) {
+        return sequence(type.getActualTypeArguments());
+    }
+
+    public static Sequence<TypeVariable> typeArgumentsOf(Class aClass) {
+        return sequence((aClass.getTypeParameters()));
+    }
+
+
 }

@@ -2,6 +2,7 @@ package com.googlecode.yadic.resolvers;
 
 import com.googlecode.yadic.Resolver;
 import com.googlecode.yadic.TypeMap;
+import com.googlecode.yadic.generics.Types;
 
 import java.lang.reflect.Type;
 
@@ -17,6 +18,6 @@ public class DecoratorResolver<T> implements Resolver<T> {
     }
 
     public T resolve(Type type) throws Exception {
-        return type.equals(anInterface) ? existing.resolve(type) : (T) typeMap.resolve(type);
+        return Types.matches(type, anInterface) ? existing.resolve(type) : (T) typeMap.resolve(type);
     }
 }

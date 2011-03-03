@@ -1,7 +1,5 @@
 package com.googlecode.yadic;
 
-import com.googlecode.totallylazy.Callable1;
-
 import java.io.Closeable;
 import java.lang.reflect.Type;
 
@@ -18,4 +16,5 @@ public interface TypeMap extends Resolver<Object>, Closeable {
 
     boolean contains(Type type);
 
+    <I, C extends I> TypeMap decorate(Type anInterface, Type concrete);
 }

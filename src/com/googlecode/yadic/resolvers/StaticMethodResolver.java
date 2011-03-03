@@ -27,30 +27,33 @@ import static java.lang.reflect.Modifier.STATIC;
 
 public class StaticMethodResolver<T> implements Resolver<T> {
     private final Resolver<?> resolver;
+    private final Type concrete;
+    private final Class<T> concreteClass;
 
-    public StaticMethodResolver(Resolver<?> resolver) {
+    public StaticMethodResolver(Resolver<?> resolver, Type concrete) {
         this.resolver = resolver;
+        this.concrete = concrete;
+        concreteClass = classOf(concrete);
     }
 
     public T resolve(Type type) throws Exception {
-        Class<T> concrete = classOf(type);
-        Sequence<Method> methods = sequence(concrete.getMethods()).
+        Sequence<Method> methods = sequence(concreteClass.getMethods()).
                 filter(modifier(PUBLIC).and(modifier(STATIC)).
                         and(where(genericReturnType(), matches(type)).
                                 and(where(genericParameterTypes(), not(exists(matches(type)))))));
         if (methods.isEmpty()) {
-            throw new ContainerException(concrete.getName() + " does not have any public static methods that return " + type);
+            throw new ContainerException(concreteClass.getName() + " does not have any public static methods that return " + type);
         }
         final List<Exception> exceptions = new ArrayList<Exception>();
-        return methods.tryPick(firstSatisfiableMethod(exceptions, type)).map(cast(concrete)).
-                getOrElse(Callables.<T>callThrows(new ContainerException(concrete.getName() + " does not have a satisfiable public static method", exceptions)));
+        return methods.tryPick(firstSatisfiableMethod(exceptions, type)).map(cast(concreteClass)).
+                getOrElse(Callables.<T>callThrows(new ContainerException(concreteClass.getName() + " does not have a satisfiable public static method", exceptions)));
     }
 
     private Callable1<Method, Option<Object>> firstSatisfiableMethod(final List<Exception> exceptions, final Type type) {
         return new Callable1<Method, Option<Object>>() {
             public Option<Object> call(Method method) throws Exception {
                 try {
-                    Object[] instances = convertParametersToInstances(resolver, type, sequence(method.getGenericParameterTypes()));
+                    Object[] instances = convertParametersToInstances(resolver, type, concreteClass, sequence(method.getGenericParameterTypes()));
                     return some(method.invoke(null, instances));
                 } catch (Exception e) {
                     exceptions.add(e);
