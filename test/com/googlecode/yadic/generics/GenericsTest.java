@@ -3,6 +3,7 @@ package com.googlecode.yadic.generics;
 import com.googlecode.totallylazy.Option;
 import com.googlecode.yadic.Container;
 import com.googlecode.yadic.SimpleContainer;
+import com.googlecode.yadic.examples.DecoratedGenericType;
 import com.googlecode.yadic.examples.FlexibleNode;
 import com.googlecode.yadic.examples.GenericType;
 import com.googlecode.yadic.examples.Instance;
@@ -19,6 +20,16 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
 public class GenericsTest {
+    @Test
+    public void containerShouldSupportGenericsDecoration() throws Exception {
+        Container container = new SimpleContainer();
+        container.addInstance(Integer.class, 1);
+        container.add(new TypeFor<Instance<Integer>>() {}.get(), new TypeFor<GenericType<Integer>>() {}.get());
+        container.decorate(new TypeFor<Instance<Integer>>() {}.get(), new TypeFor<DecoratedGenericType<Integer>>() {}.get());
+        Instance<Integer> instance = (Instance<Integer>) container.resolve(new TypeFor<Instance<Integer>>(){{}}.get());
+        assertThat(instance, is(instanceOf(DecoratedGenericType.class)));
+    }
+
     @Test
     public void containerShouldSupportGenericWithWildCardOnConcrete() throws Exception {
         Container container = new SimpleContainer();

@@ -15,14 +15,15 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 import static com.googlecode.totallylazy.Callables.first;
-import static com.googlecode.totallylazy.Callables.second;
 import static com.googlecode.totallylazy.Predicates.is;
 import static com.googlecode.totallylazy.Predicates.where;
 import static com.googlecode.totallylazy.Sequences.sequence;
 import static com.googlecode.yadic.generics.Types.matches;
 import static com.googlecode.yadic.resolvers.ClosableResolver.closable;
 import static com.googlecode.yadic.resolvers.LazyResolver.lazy;
-import static com.googlecode.yadic.resolvers.Resolvers.*;
+import static com.googlecode.yadic.resolvers.Resolvers.activator;
+import static com.googlecode.yadic.resolvers.Resolvers.create;
+import static com.googlecode.yadic.resolvers.Resolvers.decorator;
 
 public class BaseTypeMap implements TypeMap {
     private final List<Pair<Type, Resolver<Object>>> activators = new ArrayList<Pair<Type, Resolver<Object>>>();
@@ -47,6 +48,10 @@ public class BaseTypeMap implements TypeMap {
 
     public TypeMap add(Type type, Type concrete) {
         return add(type, closable(create(concrete, this)));
+    }
+
+    public TypeMap decorate(final Type anInterface, final Type concrete) {
+        return add(anInterface, decorator(this, anInterface, concrete));
     }
 
     public TypeMap add(Type type, Class<? extends Resolver> resolverClass) {
