@@ -1,6 +1,7 @@
 package com.googlecode.yadic;
 
 import com.googlecode.totallylazy.Callables;
+import com.googlecode.totallylazy.Closeables;
 import com.googlecode.totallylazy.First;
 import com.googlecode.totallylazy.Pair;
 import com.googlecode.totallylazy.predicates.LogicalPredicate;
@@ -88,6 +89,6 @@ public class BaseTypeMap implements TypeMap {
     }
 
     public void close() throws IOException {
-        sequence(activators).map(Callables.<Resolver<Object>>second()).safeCast(Closeable.class).forEach(Resolvers.close());
+        sequence(activators).map(Callables.<Resolver<Object>>second()).safeCast(Closeable.class).forEach(Closeables.close());
     }
 }

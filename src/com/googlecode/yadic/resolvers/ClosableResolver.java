@@ -1,6 +1,6 @@
 package com.googlecode.yadic.resolvers;
 
-import com.googlecode.totallylazy.Runnable1;
+import com.googlecode.totallylazy.Closeables;
 import com.googlecode.yadic.Resolver;
 
 import java.io.Closeable;
@@ -24,7 +24,7 @@ public class ClosableResolver<T> implements Resolver<T>, Closeable{
     }
 
     public void close() throws IOException {
-        sequence(closeables).forEach(Resolvers.close());
+        sequence(closeables).forEach(Closeables.close());
     }
 
     public T resolve(Type type) throws Exception {
