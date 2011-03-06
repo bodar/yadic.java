@@ -1,7 +1,7 @@
 package com.googlecode.yadic.resolvers;
 
 import com.googlecode.totallylazy.Callable1;
-import com.googlecode.totallylazy.Runnable1;
+import com.googlecode.totallylazy.Runnables;
 import com.googlecode.yadic.ContainerException;
 import com.googlecode.yadic.Resolver;
 import com.googlecode.yadic.TypeMap;
@@ -36,7 +36,7 @@ public class Resolvers {
     }
 
     public static Resolver<Object> create(final Type t, Resolver<?> resolver) {
-        if(classOf(t).getConstructors().length > 0){
+        if (classOf(t).getConstructors().length > 0) {
             return constructor(t, resolver);
         }
         return staticMethod(t, resolver);
@@ -111,18 +111,6 @@ public class Resolvers {
             throw new ContainerException(type + " cannot be created", e);
         }
 
-    }
-
-    public static Runnable1<Closeable> close() {
-        return new Runnable1<Closeable>() {
-            public void run(Closeable closeable) {
-                try {
-                    closeable.close();
-                } catch (IOException e) {
-                    throw new UnsupportedOperationException(e);
-                }
-            }
-        };
     }
 
     public static Closeable ignore() {
