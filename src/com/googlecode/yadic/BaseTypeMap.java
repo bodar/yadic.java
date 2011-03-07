@@ -21,6 +21,7 @@ import static com.googlecode.totallylazy.Predicates.where;
 import static com.googlecode.totallylazy.Sequences.sequence;
 import static com.googlecode.yadic.generics.Types.matches;
 import static com.googlecode.yadic.resolvers.ClosableResolver.closable;
+import static com.googlecode.yadic.resolvers.CloseGuard.closeGuard;
 import static com.googlecode.yadic.resolvers.LazyResolver.lazy;
 import static com.googlecode.yadic.resolvers.Resolvers.activator;
 import static com.googlecode.yadic.resolvers.Resolvers.create;
@@ -64,7 +65,7 @@ public class BaseTypeMap implements TypeMap {
         if (contains(type)) {
             throw new ContainerException(type.toString() + " already added to container");
         }
-        activators.add(Pair.<Type, Resolver<Object>>pair(type, lazy(resolver)));
+        activators.add(Pair.<Type, Resolver<Object>>pair(type, closeGuard(lazy(resolver))));
         return this;
     }
 

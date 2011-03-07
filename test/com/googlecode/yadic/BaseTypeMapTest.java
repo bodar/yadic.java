@@ -9,6 +9,7 @@ import java.lang.reflect.Type;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.fail;
 
 public class BaseTypeMapTest {
     @Test (expected = ContainerException.class)
@@ -41,6 +42,16 @@ public class BaseTypeMapTest {
         typeMap.remove(SomeClosableClass.class);
         typeMap.close();
         assertThat(closable.closed, is(false));
+    }
+
+    @Test
+    public void doesNotResolveAResolverWhenClosing() throws Exception {
+        TypeMap typeMap = new BaseTypeMap(new MissingResolver());
+        CustomResolver resolver = new CustomResolver();
+        typeMap.add(SomeClosableClass.class, resolver);
+        assertThat(resolver.wasResolved(), is(false));
+        typeMap.close();
+        assertThat(resolver.wasResolved(), is(false));
     }
 
     @Test
@@ -80,7 +91,14 @@ public class BaseTypeMapTest {
         }
 
         public void close() throws IOException {
+            if(closable == null){
+                fail("Should never call close if resolve was not called first");
+            }
             closable.close();
+        }
+
+        public boolean wasResolved() {
+            return closable != null;
         }
     }
 }
