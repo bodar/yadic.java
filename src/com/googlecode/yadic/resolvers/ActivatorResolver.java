@@ -25,7 +25,7 @@ public class ActivatorResolver<T> implements Resolver<T>, Closeable {
         if(activator instanceof Callable){
             return (T) ((Callable) activator).call();
         }
-        if(activator instanceof Resolver){
+        if (activator instanceof Resolver) {
             return (T) ((Resolver) activator).resolve(type);
         }
         throw new UnsupportedOperationException("Unsupported activatorType type " + activatorType);
