@@ -50,21 +50,25 @@ public class Types {
         }
 
         if (a instanceof ParameterizedType && b instanceof ParameterizedType) {
-            ParameterizedType pa = (ParameterizedType) a;
-            ParameterizedType pb = (ParameterizedType) b;
-            return equalTo(pa.getOwnerType(), pb.getOwnerType()) &&
-                    equalTo(pa.getRawType(), pb.getRawType()) &&
-                    sequence(pa.getActualTypeArguments()).zip(sequence(pb.getActualTypeArguments())).forAll(equalTo());
+            return equalTo((ParameterizedType) a, (ParameterizedType) b);
         }
 
         if (a instanceof WildcardType && b instanceof WildcardType) {
-            WildcardType aWildcard = (WildcardType) a;
-            WildcardType bWildcard = (WildcardType) b;
-            return sequence(aWildcard.getUpperBounds()).zip(sequence(bWildcard.getUpperBounds())).forAll(equalTo()) &&
-                    sequence(aWildcard.getLowerBounds()).zip(sequence(bWildcard.getLowerBounds())).forAll(equalTo());
+            return equalTo((WildcardType) a, (WildcardType) b);
         }
 
         return false;
+    }
+
+    public static boolean equalTo(WildcardType aWildcard, WildcardType bWildcard) {
+        return sequence(aWildcard.getUpperBounds()).zip(sequence(bWildcard.getUpperBounds())).forAll(equalTo()) &&
+                sequence(aWildcard.getLowerBounds()).zip(sequence(bWildcard.getLowerBounds())).forAll(equalTo());
+    }
+
+    public static boolean equalTo(ParameterizedType pa, ParameterizedType pb) {
+        return equalTo(pa.getOwnerType(), pb.getOwnerType()) &&
+                equalTo(pa.getRawType(), pb.getRawType()) &&
+                sequence(pa.getActualTypeArguments()).zip(sequence(pb.getActualTypeArguments())).forAll(equalTo());
     }
 
     public static Predicate<? super Pair<Type, Type>> equalTo() {
@@ -93,31 +97,37 @@ public class Types {
         }
 
         if (concrete instanceof ParameterizedType && possibleWildCard instanceof ParameterizedType) {
-            ParameterizedType pa = (ParameterizedType) concrete;
-            ParameterizedType pb = (ParameterizedType) possibleWildCard;
-            return matches(pa.getOwnerType(), pb.getOwnerType()) &&
-                    matches(pa.getRawType(), pb.getRawType()) &&
-                    sequence(pa.getActualTypeArguments()).zip(sequence(pb.getActualTypeArguments())).forAll(matches());
+            return matches((ParameterizedType) concrete, (ParameterizedType) possibleWildCard);
         }
 
         if (concrete instanceof WildcardType && possibleWildCard instanceof WildcardType) {
-            WildcardType aWildcard = (WildcardType) concrete;
-            WildcardType bWildcard = (WildcardType) possibleWildCard;
-            return sequence(aWildcard.getUpperBounds()).zip(sequence(bWildcard.getUpperBounds())).forAll(matches()) &&
-                    sequence(aWildcard.getLowerBounds()).zip(sequence(bWildcard.getLowerBounds())).forAll(matches());
+            return matches((WildcardType) concrete, (WildcardType) possibleWildCard);
         }
 
         if (possibleWildCard instanceof WildcardType) {
-            WildcardType wildcardType = (WildcardType) possibleWildCard;
-            return withInUpperBounds(concrete, sequence(wildcardType.getUpperBounds())) &&
-                    withInLowerBounds(concrete, sequence(wildcardType.getLowerBounds()));
+            return withinBounds(concrete, (WildcardType) possibleWildCard);
         }
-
 
         return false;
     }
 
-    private static boolean withInUpperBounds(Type concrete, Sequence<Type> upperBounds) {
+    public static boolean matches(WildcardType aWildcard, WildcardType bWildcard) {
+        return sequence(aWildcard.getUpperBounds()).zip(sequence(bWildcard.getUpperBounds())).forAll(matches()) &&
+                sequence(aWildcard.getLowerBounds()).zip(sequence(bWildcard.getLowerBounds())).forAll(matches());
+    }
+
+    public static boolean matches(ParameterizedType type, ParameterizedType anotherType) {
+        return matches(type.getOwnerType(), anotherType.getOwnerType()) &&
+                matches(type.getRawType(), anotherType.getRawType()) &&
+                sequence(type.getActualTypeArguments()).zip(sequence(anotherType.getActualTypeArguments())).forAll(matches());
+    }
+
+    public static boolean withinBounds(Type concrete, WildcardType wildcardType) {
+        return withInUpperBounds(concrete, sequence(wildcardType.getUpperBounds())) &&
+                withInLowerBounds(concrete, sequence(wildcardType.getLowerBounds()));
+    }
+
+    public static boolean withInUpperBounds(Type concrete, Sequence<Type> upperBounds) {
         if (upperBounds.isEmpty()) {
             return true;
         }
@@ -127,7 +137,7 @@ public class Types {
         throw new UnsupportedOperationException();
     }
 
-    private static boolean withInLowerBounds(Type concrete, Sequence<Type> lowerBounds) {
+    public static boolean withInLowerBounds(Type concrete, Sequence<Type> lowerBounds) {
         if (lowerBounds.isEmpty()) {
             return true;
         }
