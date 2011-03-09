@@ -13,5 +13,4 @@ public class TypeCoercerTest {
         byte[] bytes = (byte[]) resolver.resolve(byte[].class);
         assertThat(bytes, is(input.getBytes()));
     }
-
 }
