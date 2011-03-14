@@ -1,7 +1,6 @@
 package com.googlecode.yadic.resolvers;
 
 import com.googlecode.totallylazy.Callable1;
-import com.googlecode.totallylazy.Runnables;
 import com.googlecode.yadic.ContainerException;
 import com.googlecode.yadic.Resolver;
 import com.googlecode.yadic.TypeMap;
@@ -119,6 +118,4 @@ public class Resolvers {
             }
         };
     }
-
-
 }
