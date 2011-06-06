@@ -12,16 +12,17 @@ import static com.googlecode.yadic.resolvers.Resolvers.create;
 
 public class ActivatorResolver<T> implements Resolver<T>, Closeable {
     private final Type activatorType;
-    private Resolver<Object> activatorResolver;
+    private final Resolver resolver;
+    private Object activator;
 
     public ActivatorResolver(Type activatorType, Resolver resolver) {
         this.activatorType = activatorType;
-        activatorResolver = lazy(create(activatorType, resolver));
+        this.resolver = resolver;
     }
 
     @SuppressWarnings("unchecked")
     public T resolve(Type type) throws Exception {
-        Object activator = activatorResolver.resolve(activatorType);
+        activator = create(activatorType, resolver).resolve(activatorType);
         if(activator instanceof Callable){
             return (T) ((Callable) activator).call();
         }
@@ -32,7 +33,6 @@ public class ActivatorResolver<T> implements Resolver<T>, Closeable {
     }
 
     public void close() throws IOException {
-        Object activator = Resolvers.resolve(activatorResolver, activatorType);
         if(activator instanceof Closeable){
             ((Closeable) activator).close();
         }

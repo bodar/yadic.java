@@ -12,13 +12,13 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.fail;
 
 public class BaseTypeMapTest {
-    @Test (expected = ContainerException.class)
+    @Test(expected = ContainerException.class)
     public void canNeverAddAnObjectType() throws Exception {
         TypeMap typeMap = new BaseTypeMap(new MissingResolver());
         typeMap.add(Object.class, Object.class);
     }
 
-    @Test (expected = ContainerException.class)
+    @Test(expected = ContainerException.class)
     public void canNeverResolveAnObjectType() throws Exception {
         TypeMap typeMap = new BaseTypeMap(new MissingResolver());
         typeMap.resolve(Object.class);
@@ -49,9 +49,21 @@ public class BaseTypeMapTest {
         TypeMap typeMap = new BaseTypeMap(new MissingResolver());
         CustomResolver resolver = new CustomResolver();
         typeMap.add(SomeClosableClass.class, resolver);
-        assertThat(resolver.wasResolved(), is(false));
+        assertThat(resolver.resolved(), is(false));
         typeMap.close();
-        assertThat(resolver.wasResolved(), is(false));
+        assertThat(resolver.resolved(), is(false));
+    }
+
+    @Test
+    public void doesNotCloseAResolverIfTheResolverFailedToBeCreated() throws Exception {
+        TypeMap typeMap = new BaseTypeMap(new MissingResolver());
+        typeMap.add(SomeClosableClass.class, UnsatisfiableResolver.class);
+        try {
+            typeMap.resolve(SomeClosableClass.class);
+        } catch (ContainerException e) {
+            // ignore
+        }
+        typeMap.close();
     }
 
     @Test
@@ -74,7 +86,7 @@ public class BaseTypeMapTest {
         assertThat(closable.closed, is(true));
     }
 
-    public static class SomeClosableClass implements Closeable{
+    public static class SomeClosableClass implements Closeable {
         public boolean closed = false;
 
         public void close() throws IOException {
@@ -91,14 +103,31 @@ public class BaseTypeMapTest {
         }
 
         public void close() throws IOException {
-            if(closable == null){
+            if (closable == null) {
                 fail("Should never call close if resolve was not called first");
             }
             closable.close();
         }
 
-        public boolean wasResolved() {
+        public boolean resolved() {
             return closable != null;
         }
     }
+
+    public static class UnsatisfiableResolver implements Resolver<SomeClosableClass>, Closeable {
+        private final String value;
+
+        public UnsatisfiableResolver(String value) {
+            this.value = value;
+        }
+
+        public SomeClosableClass resolve(Type type) throws Exception {
+            throw new AssertionError("Should never be able to create");
+        }
+
+        public void close() throws IOException {
+
+        }
+    }
+
 }
