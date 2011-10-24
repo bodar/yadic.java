@@ -3,15 +3,13 @@ package com.googlecode.yadic.resolvers;
 import com.googlecode.yadic.Container;
 import com.googlecode.yadic.ContainerException;
 import com.googlecode.yadic.SimpleContainer;
-import com.googlecode.yadic.examples.SelfReferencingClass;
 import com.googlecode.yadic.examples.SelfReferencingConstructorClass;
-import com.googlecode.yadic.examples.ThrowingClass;
 import com.googlecode.yadic.examples.ThrowingConstructorClass;
 import org.junit.Test;
 
 import java.util.Date;
 
-import static com.googlecode.totallylazy.Dates.date;
+import static com.googlecode.totallylazy.time.Dates.date;
 
 public class ConstructorResolverTest {
     @Test
@@ -27,5 +25,4 @@ public class ConstructorResolverTest {
         resolver.add(SelfReferencingConstructorClass.class);
         resolver.resolve(SelfReferencingConstructorClass.class);
     }
-
 }
