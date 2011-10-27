@@ -1,13 +1,19 @@
 package com.googlecode.yadic;
 
 import com.googlecode.totallylazy.Sequence;
-import com.googlecode.totallylazy.Some;
 import com.googlecode.totallylazy.callables.CountingCallable;
-import com.googlecode.yadic.examples.*;
+import com.googlecode.yadic.examples.ChildNode;
+import com.googlecode.yadic.examples.DecorateNodeActivator;
+import com.googlecode.yadic.examples.DecoratedNode;
+import com.googlecode.yadic.examples.DecoratedNodeWithAdditionalArguments;
+import com.googlecode.yadic.examples.GrandChildNode;
+import com.googlecode.yadic.examples.Node;
+import com.googlecode.yadic.examples.NodeActivator;
+import com.googlecode.yadic.examples.NodeResolver;
+import com.googlecode.yadic.examples.RootNode;
 import org.junit.Test;
 
 import java.lang.reflect.Type;
-import java.util.Date;
 import java.util.concurrent.Callable;
 
 import static com.googlecode.totallylazy.Callers.callConcurrently;
@@ -188,6 +194,18 @@ public class SimpleContainerTest {
         Container container = new SimpleContainer();
         container.add(Node.class, RootNode.class);
         container.decorate(Node.class, DecoratedNode.class);
+
+        Node node = container.get(Node.class);
+
+        assertThat(node, is(instanceOf(DecoratedNode.class)));
+        assertThat(node.parent(), is(instanceOf(RootNode.class)));
+    }
+
+    @Test
+    public void shouldDecorateUsingActivator() throws Exception {
+        Container container = new SimpleContainer();
+        container.add(Node.class, RootNode.class);
+        Containers.decorateUsingActivator(container, Node.class, DecorateNodeActivator.class);
 
         Node node = container.get(Node.class);
 
