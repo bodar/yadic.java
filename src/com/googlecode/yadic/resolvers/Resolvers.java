@@ -1,6 +1,7 @@
 package com.googlecode.yadic.resolvers;
 
 import com.googlecode.totallylazy.Callable1;
+import com.googlecode.totallylazy.Function1;
 import com.googlecode.yadic.ContainerException;
 import com.googlecode.yadic.Resolver;
 import com.googlecode.yadic.TypeMap;
@@ -12,7 +13,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-import static com.googlecode.totallylazy.Callables.curry;
 import static com.googlecode.yadic.generics.Types.classOf;
 
 public class Resolvers {
@@ -58,7 +58,7 @@ public class Resolvers {
     }
 
     public static <T> Callable<T> asCallable(final Resolver<? extends T> resolver, final Type type) {
-        return curry(asCallable1(resolver), type);
+        return asFunction1(resolver).deferApply(type);
     }
 
     public static Resolver<Object> listOf(final Resolver<?>... resolvers) {
@@ -79,6 +79,14 @@ public class Resolvers {
 
     public static <T> Callable1<Type, T> asCallable1(final Resolver<? extends T> resolver) {
         return new Callable1<Type, T>() {
+            public T call(Type type) throws Exception {
+                return resolver.resolve(type);
+            }
+        };
+    }
+
+    public static <T> Function1<Type, T> asFunction1(final Resolver<? extends T> resolver) {
+        return new Function1<Type, T>() {
             public T call(Type type) throws Exception {
                 return resolver.resolve(type);
             }
@@ -109,7 +117,6 @@ public class Resolvers {
         } catch (Exception e) {
             throw new ContainerException(type + " cannot be created", e);
         }
-
     }
 
     public static Closeable ignore() {
