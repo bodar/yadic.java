@@ -1,5 +1,6 @@
 package com.googlecode.yadic;
 
+import com.googlecode.yadic.examples.SomeClosableClass;
 import com.googlecode.yadic.resolvers.MissingResolver;
 import org.junit.Test;
 
@@ -84,14 +85,6 @@ public class BaseTypeMapTest {
         assertThat(closable.closed, is(false));
         typeMap.close();
         assertThat(closable.closed, is(true));
-    }
-
-    public static class SomeClosableClass implements Closeable {
-        public boolean closed = false;
-
-        public void close() throws IOException {
-            closed = true;
-        }
     }
 
     public static class CustomResolver implements Resolver<SomeClosableClass>, Closeable {
