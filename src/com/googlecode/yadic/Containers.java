@@ -14,6 +14,6 @@ public class Containers {
 
     public static <I> Container decorateUsingActivator(Container container, final Class<I> anInterface, final Class<? extends Callable<? extends I>> activator){
         Resolver<Object> existing = container.remove(anInterface);
-        return (Container) container.add(anInterface, activator(new DecoratorResolver(anInterface, existing, container), activator));
+        return (Container) container.addType(anInterface, activator(new DecoratorResolver(anInterface, existing, container), activator));
     }
 }

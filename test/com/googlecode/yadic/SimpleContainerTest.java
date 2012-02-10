@@ -90,7 +90,7 @@ public class SimpleContainerTest {
     @Test
     public void shouldBeAbleToRegisterAResolverClassAsAnActivator() {
         Container container = new SimpleContainer();
-        container.add(Node.class, NodeResolver.class);
+        container.addType(Node.class, NodeResolver.class);
         assertThat(container.get(Node.class), is(instanceOf(RootNode.class)));
     }
 

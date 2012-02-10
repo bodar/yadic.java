@@ -33,7 +33,7 @@ public class BaseTypeMap implements TypeMap {
 
     public BaseTypeMap(Resolver parent) {
         this.parent = parent;
-        add(Object.class, new ProgrammerErrorResolver(Object.class));
+        addType(Object.class, new ProgrammerErrorResolver(Object.class));
     }
 
     public Object resolve(Type type) throws Exception {
@@ -48,20 +48,20 @@ public class BaseTypeMap implements TypeMap {
         return (Resolver<T>) sequence(activators).find(pairFor(type)).map(Callables.<Resolver<Object>>second()).get();
     }
 
-    public TypeMap add(Type type, Type concrete) {
-        return add(type, closable(create(concrete, this)));
+    public TypeMap addType(Type type, Type concrete) {
+        return addType(type, closable(create(concrete, this)));
     }
 
-    public TypeMap decorate(final Type anInterface, final Type concrete) {
-        return add(anInterface, decorator(this, anInterface, concrete));
+    public TypeMap decorateType(final Type anInterface, final Type concrete) {
+        return addType(anInterface, decorator(this, anInterface, concrete));
     }
 
-    public TypeMap add(Type type, Class<? extends Resolver> resolverClass) {
-        return add(type, activator(this, resolverClass));
+    public TypeMap addType(Type type, Class<? extends Resolver> resolverClass) {
+        return addType(type, activator(this, resolverClass));
     }
 
     @SuppressWarnings("unchecked")
-    public TypeMap add(Type type, Resolver<?> resolver) {
+    public TypeMap addType(Type type, Resolver<?> resolver) {
         if (contains(type)) {
             throw new ContainerException(type.toString() + " already added to container");
         }
