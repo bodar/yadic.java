@@ -24,8 +24,12 @@ public class GenericsTest {
     public void containerShouldSupportGenericsDecoration() throws Exception {
         Container container = new SimpleContainer();
         container.addInstance(Integer.class, 1);
-        container.add(new TypeFor<Instance<Integer>>() {}.get(), new TypeFor<GenericType<Integer>>() {}.get());
-        container.decorate(new TypeFor<Instance<Integer>>() {}.get(), new TypeFor<DecoratedGenericType<Integer>>() {}.get());
+        container.addType(new TypeFor<Instance<Integer>>() {
+        }.get(), new TypeFor<GenericType<Integer>>() {
+        }.get());
+        container.decorateType(new TypeFor<Instance<Integer>>() {
+        }.get(), new TypeFor<DecoratedGenericType<Integer>>() {
+        }.get());
         Instance<Integer> instance = (Instance<Integer>) container.resolve(new TypeFor<Instance<Integer>>(){{}}.get());
         assertThat(instance, is(instanceOf(DecoratedGenericType.class)));
     }
@@ -34,7 +38,9 @@ public class GenericsTest {
     public void containerShouldSupportGenericWithWildCardOnConcrete() throws Exception {
         Container container = new SimpleContainer();
         container.addInstance(Integer.class, 1);
-        container.add(new TypeFor<GenericType<?>>(){{}}.get(), new TypeFor<GenericType<?>>(){{}}.get());
+        container.addType(new TypeFor<GenericType<?>>() {{
+        }}.get(), new TypeFor<GenericType<?>>() {{
+        }}.get());
         GenericType<Integer> genericType = (GenericType<Integer>) container.resolve(new TypeFor<GenericType<Integer>>(){{}}.get());
         assertThat(genericType.instance(), is(1));
     }
@@ -44,7 +50,9 @@ public class GenericsTest {
         Container container = new SimpleContainer();
         container.addInstance(String.class, "bob");
         container.addInstance(Integer.class, 1);
-        container.add(new TypeFor<GenericType<Integer>>(){{}}.get(), new TypeFor<GenericType<Integer>>(){{}}.get());
+        container.addType(new TypeFor<GenericType<Integer>>() {{
+        }}.get(), new TypeFor<GenericType<Integer>>() {{
+        }}.get());
         container.add(UsesGenericType.class);
         UsesGenericType genericType = container.get(UsesGenericType.class);
         assertThat(genericType.instance().instance(), is(1));
@@ -55,7 +63,7 @@ public class GenericsTest {
         Container container = new SimpleContainer();
         container.addInstance(String.class, "bob");
         container.addInstance(Integer.class, 1);
-        container.add(parameterizedType(GenericType.class, Integer.class), parameterizedType(GenericType.class, Integer.class));
+        container.addType(parameterizedType(GenericType.class, Integer.class), parameterizedType(GenericType.class, Integer.class));
         container.add(UsesGenericType.class);
         UsesGenericType genericType = container.get(UsesGenericType.class);
         assertThat(genericType.instance().instance(), is(1));
@@ -66,7 +74,7 @@ public class GenericsTest {
         Container container = new SimpleContainer();
         container.addInstance(String.class, "bob");
         container.addInstance(Integer.class, 1);
-        container.add(parameterizedType(Instance.class, Integer.class), parameterizedType(GenericType.class, Integer.class));
+        container.addType(parameterizedType(Instance.class, Integer.class), parameterizedType(GenericType.class, Integer.class));
         container.add(UsesGenericType.class);
         UsesGenericType genericType = container.get(UsesGenericType.class);
         assertThat(genericType.instance().instance(), is(1));
@@ -75,7 +83,8 @@ public class GenericsTest {
     @Test
     public void containerShouldSupportWildcards() throws Exception {
         Container container = new SimpleContainer();
-        container.add(new TypeFor<Option<?>>(){{}}.get(), new OptionResolver(container, always()));
+        container.addType(new TypeFor<Option<?>>() {{
+        }}.get(), new OptionResolver(container, always()));
         container.add(Node.class, RootNode.class);
         container.add(FlexibleNode.class);
         assertThat(container.get(FlexibleNode.class).parent(), is(instanceOf(RootNode.class)));
@@ -84,7 +93,8 @@ public class GenericsTest {
     @Test
     public void containerShouldSupportSomeOption() throws Exception {
         Container container = new SimpleContainer();
-        container.add(new TypeFor<Option<Node>>(){{}}.get(), new OptionResolver(container, always()));
+        container.addType(new TypeFor<Option<Node>>() {{
+        }}.get(), new OptionResolver(container, always()));
         container.add(Node.class, RootNode.class);
         container.add(FlexibleNode.class);
         assertThat(container.get(FlexibleNode.class).parent(), is(instanceOf(RootNode.class)));
@@ -93,7 +103,8 @@ public class GenericsTest {
     @Test
     public void containerShouldSupportNoneOption() throws Exception {
         Container container = new SimpleContainer();
-        container.add(new TypeFor<Option<Node>>(){{}}.get(), new OptionResolver(container, always()));
+        container.addType(new TypeFor<Option<Node>>() {{
+        }}.get(), new OptionResolver(container, always()));
         container.add(FlexibleNode.class);
         Option<Node> none = Option.none(Node.class);
         assertThat(container.get(FlexibleNode.class).optionalParent(), is(none));

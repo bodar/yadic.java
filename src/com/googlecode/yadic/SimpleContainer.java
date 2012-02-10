@@ -29,12 +29,12 @@ public class SimpleContainer extends BaseTypeMap implements Container {
     }
 
     public <T> Container add(final Class<T> concrete) {
-        add((Type)concrete, concrete);
+        addType((Type) concrete, concrete);
         return this;
     }
 
     public <I, C extends I> Container add(Class<I> anInterface, Class<C> concrete) {
-        add((Type)anInterface, concrete);
+        addType((Type) anInterface, concrete);
         return this;
     }
 
@@ -44,17 +44,17 @@ public class SimpleContainer extends BaseTypeMap implements Container {
 
     @SuppressWarnings("unchecked")
     public <T, A extends Callable<T>> Container addActivator(Class<T> aClass, final Class<A> activator) {
-        add(aClass, activator(this, activator));
+        addType(aClass, activator(this, activator));
         return this;
     }
 
     public <T> Container addActivator(Class<T> aClass, final Callable<? extends T> activator) {
-        add(aClass, asResolver(activator));
+        addType(aClass, asResolver(activator));
         return this;
     }
 
     public <I, C extends I> Container decorate(final Class<I> anInterface, final Class<C> concrete) {
-        add(anInterface, decorator(this, anInterface, concrete));
+        addType(anInterface, decorator(this, anInterface, concrete));
         return this;
     }
 
