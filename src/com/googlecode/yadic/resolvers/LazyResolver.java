@@ -1,13 +1,16 @@
 package com.googlecode.yadic.resolvers;
 
+import com.googlecode.totallylazy.Closeables;
 import com.googlecode.yadic.Resolver;
 
 import java.io.Closeable;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
+import static com.googlecode.totallylazy.Sequences.sequence;
 import static java.util.Collections.synchronizedMap;
 
 public class LazyResolver<T> implements Resolver<T>, Closeable {
@@ -34,6 +37,10 @@ public class LazyResolver<T> implements Resolver<T>, Closeable {
     public void close() throws IOException {
         if(resolver instanceof Closeable){
             ((Closeable) resolver).close();
+        } else {
+            synchronized (state){
+                sequence(state.values()).safeCast(Closeable.class).each(Closeables.close());
+            }
         }
     }
 }

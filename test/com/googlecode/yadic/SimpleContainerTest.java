@@ -2,15 +2,8 @@ package com.googlecode.yadic;
 
 import com.googlecode.totallylazy.Sequence;
 import com.googlecode.totallylazy.callables.CountingCallable;
-import com.googlecode.yadic.examples.ChildNode;
-import com.googlecode.yadic.examples.DecorateNodeActivator;
-import com.googlecode.yadic.examples.DecoratedNode;
-import com.googlecode.yadic.examples.DecoratedNodeWithAdditionalArguments;
-import com.googlecode.yadic.examples.GrandChildNode;
-import com.googlecode.yadic.examples.Node;
-import com.googlecode.yadic.examples.NodeActivator;
-import com.googlecode.yadic.examples.NodeResolver;
-import com.googlecode.yadic.examples.RootNode;
+import com.googlecode.yadic.examples.*;
+import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
 import java.lang.reflect.Type;
@@ -32,6 +25,54 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class SimpleContainerTest {
+
+    @Test
+    public void addingAClosableActivatorClassForAClosableTypeWillCallCloseOnTheActivatorNotTheInstance() throws Exception {
+        Container container = new SimpleContainer();
+        container.addActivator(SomeClosableClass.class, ThrowingClosableClassActivator.class);
+
+        final SomeClosableClass instance = container.get(SomeClosableClass.class);
+
+        assertThat(instance.closed, CoreMatchers.is(false));
+
+        try {
+            container.close();
+            fail("Should have got exception from activator");
+        } catch (ActivatorClosedCalled e){
+            assertThat(instance.closed, CoreMatchers.is(false));
+        }
+    }
+
+    @Test
+    public void addingAClosableActivatorForAClosableTypeWillCallCloseOnTheActivatorNotTheInstance() throws Exception {
+        Container container = new SimpleContainer();
+        SomeClosableClassActivator activator = new SomeClosableClassActivator();
+        container.addActivator(SomeClosableClass.class, activator);
+
+        final SomeClosableClass instance = container.get(SomeClosableClass.class);
+
+        assertThat(instance.closed, CoreMatchers.is(false));
+        assertThat(activator.closed, CoreMatchers.is(false));
+        container.close();
+        assertThat(instance.closed, CoreMatchers.is(false));
+        assertThat(activator.closed, CoreMatchers.is(true));
+    }
+
+    @Test
+    public void addingANonClosableActivatorForAClosableTypeWillStillCloseOnShutdown() throws Exception {
+        Container container = new SimpleContainer();
+        container.addActivator(SomeClosableClass.class, new Callable<SomeClosableClass>() {
+            public SomeClosableClass call() throws Exception {
+                return new SomeClosableClass();
+            }
+        });
+
+        final SomeClosableClass instance = container.get(SomeClosableClass.class);
+
+        assertThat(instance.closed, CoreMatchers.is(false));
+        container.close();
+        assertThat(instance.closed, CoreMatchers.is(true));
+    }
 
     @Test
     public void allowsRegisteringAClassAgainstMultipleTypes() throws Exception {

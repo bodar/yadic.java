@@ -1,6 +1,7 @@
 package com.googlecode.yadic.resolvers;
 
 import com.googlecode.totallylazy.Callable1;
+import com.googlecode.totallylazy.Closeables;
 import com.googlecode.totallylazy.Function1;
 import com.googlecode.yadic.ContainerException;
 import com.googlecode.yadic.Resolver;
@@ -27,11 +28,11 @@ public class Resolvers {
     }
 
     public static <T, A extends Resolver<T>> Resolver<T> activator(final Resolver resolver, final Class<A> activator) {
-        return new ActivatorResolver<T>(activator, resolver);
+        return activatorResolver(activator, resolver);
     }
 
     public static Resolver<Object> activator(final Resolver resolver, final Type activator) {
-        return new ActivatorResolver<Object>(activator, resolver);
+        return activatorResolver(activator, resolver);
     }
 
     public static Resolver<Object> create(final Type t, Resolver<?> resolver) {
@@ -94,6 +95,9 @@ public class Resolvers {
     }
 
     public static <T> Resolver<T> asResolver(final Callable<? extends T> activator) {
+        if(activator instanceof Closeable){
+            return new ClosableResolver<T>(activator);
+        }
         return new Resolver<T>() {
             public T resolve(Type ignored) throws Exception {
                 return activator.call();
@@ -124,5 +128,28 @@ public class Resolvers {
             public void close() throws IOException {
             }
         };
+    }
+
+    public static <T> ActivatorResolver<T> activatorResolver(Type activatorType, Resolver resolver) {
+        if( Closeable.class.isAssignableFrom(classOf(activatorType))){
+            return new ClosableActivatorResolver<T>(activatorType, resolver);
+        }
+        return new ActivatorResolver<T>(activatorType, resolver);
+    }
+
+    private static class ClosableResolver<T> implements Resolver<T>, Closeable {
+        private final Callable<? extends T> activator;
+
+        public ClosableResolver(Callable<? extends T> activator) {
+            this.activator = activator;
+        }
+
+        public T resolve(Type type) throws Exception {
+            return activator.call();
+        }
+
+        public void close() throws IOException {
+            Closeables.close(activator);
+        }
     }
 }
