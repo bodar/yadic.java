@@ -9,6 +9,8 @@ public interface Container extends TypeMap {
 
     <I, C extends I> Container addInstance(Class<I> anInterface, C instance);
 
+    <I, C extends I> Container addClosableInstance(Class<I> anInterface, C instance);
+
     <T, A extends Callable<T>> Container addActivator(Class<T> aClass, Class<A> activator);
 
     <T> Container addActivator(Class<T> aClass, Callable<? extends T> activator);

@@ -25,6 +25,38 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class SimpleContainerTest {
+    @Test
+    public void canAddAClosableInstance() throws Exception {
+        Container container = new SimpleContainer();
+
+        SomeClosableClass instance = new SomeClosableClass();
+        container.addClosableInstance(SomeClosableClass.class, instance);
+        container.get(SomeClosableClass.class);
+
+        assertThat(instance.closed, CoreMatchers.is(false));
+        container.close();
+        assertThat(instance.closed, CoreMatchers.is(true));
+    }
+
+    @Test
+    public void registeringContainerDoesNotCauseStackOverflowWhenClosing() throws Exception {
+        Container container = Containers.selfRegister(new SimpleContainer());
+        container.get(Container.class);
+        container.close();
+    }
+
+    @Test
+    public void addingAnInstanceOfAClosableClassWillNeverGetClosed() throws Exception {
+        Container container = new SimpleContainer();
+
+        SomeClosableClass instance = new SomeClosableClass();
+        container.addInstance(SomeClosableClass.class, instance);
+        container.get(SomeClosableClass.class);
+
+        assertThat(instance.closed, CoreMatchers.is(false));
+        container.close();
+        assertThat(instance.closed, CoreMatchers.is(false));
+    }
 
     @Test
     public void addingAClosableActivatorClassForAClosableTypeWillCallCloseOnTheActivatorNotTheInstance() throws Exception {
@@ -38,7 +70,7 @@ public class SimpleContainerTest {
         try {
             container.close();
             fail("Should have got exception from activator");
-        } catch (ActivatorClosedCalled e){
+        } catch (ActivatorClosedCalled e) {
             assertThat(instance.closed, CoreMatchers.is(false));
         }
     }
