@@ -1,28 +1,23 @@
 package com.googlecode.yadic.resolvers;
 
+import com.googlecode.yadic.Creator;
 import com.googlecode.yadic.Resolver;
 
-import java.io.Closeable;
-import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.concurrent.Callable;
 
-import static com.googlecode.yadic.resolvers.LazyResolver.lazy;
-import static com.googlecode.yadic.resolvers.Resolvers.create;
-
 public class ActivatorResolver<T> implements Resolver<T> {
     private final Type activatorType;
-    private final Resolver resolver;
-    protected Object activator;
+    private final Creator creator;
 
-    ActivatorResolver(Type activatorType, Resolver resolver) {
+    public ActivatorResolver(Creator creator, Type activatorType) {
         this.activatorType = activatorType;
-        this.resolver = resolver;
+        this.creator = creator;
     }
 
     @SuppressWarnings("unchecked")
     public T resolve(Type type) throws Exception {
-        activator = create(activatorType, resolver).resolve(activatorType);
+        Object activator = creator.create(activatorType);
         if (activator instanceof Callable) {
             return (T) ((Callable) activator).call();
         }

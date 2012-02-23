@@ -3,7 +3,7 @@ package com.googlecode.yadic;
 import java.io.Closeable;
 import java.lang.reflect.Type;
 
-public interface TypeMap extends Resolver<Object>, Closeable {
+public interface TypeMap extends Resolver<Object>, Creator {
     TypeMap addType(Type type, Resolver<?> resolver);
 
     TypeMap addType(Type type, Class<? extends Resolver> resolverClass);

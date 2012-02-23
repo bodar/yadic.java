@@ -1,6 +1,7 @@
 package com.googlecode.yadic;
 
 import com.googlecode.totallylazy.Closeables;
+import com.googlecode.totallylazy.Function;
 import com.googlecode.yadic.resolvers.MissingResolver;
 import com.googlecode.yadic.resolvers.Resolvers;
 
@@ -13,13 +14,26 @@ import static com.googlecode.totallylazy.Callables.returns;
 import static com.googlecode.yadic.resolvers.Resolvers.*;
 import static com.googlecode.yadic.resolvers.Resolvers.asResolver;
 
-public class SimpleContainer extends BaseTypeMap implements Container {
-    public SimpleContainer(Resolver parent) {
-        super(parent);
+public class SimpleContainer extends DelegatingTypeMap implements Container {
+    private SimpleContainer(TypeMap typeMap) {
+        super(typeMap);
+    }
+
+    public SimpleContainer(Resolver<?> parent) {
+        this(new BaseTypeMap(parent));
     }
 
     public SimpleContainer() {
         this(new MissingResolver());
+    }
+
+    public static SimpleContainer container(TypeMap typeMap) {
+        return new SimpleContainer(typeMap);
+    }
+
+    @Override
+    protected TypeMap self() {
+        return this;
     }
 
     @SuppressWarnings("unchecked")
@@ -41,12 +55,8 @@ public class SimpleContainer extends BaseTypeMap implements Container {
         return this;
     }
 
-    public <I, C extends I> Container addInstance(Class<I> anInterface, C instance) {
-        return addActivator(anInterface, new IgnoresClose<I>(instance));
-    }
-
-    public <I, C extends I> Container addClosableInstance(Class<I> anInterface, C instance) {
-        return addActivator(anInterface, new AlwaysClose<I>(instance));
+    public <I, C extends I> Container addInstance(Class<I> anInterface, final C instance) {
+        return addActivator(anInterface, Function.returns(instance));
     }
 
     @SuppressWarnings("unchecked")
@@ -70,34 +80,4 @@ public class SimpleContainer extends BaseTypeMap implements Container {
         return add(anInterface, newConcrete);
     }
 
-    private static class IgnoresClose<I> implements Callable<I>, Closeable {
-        private I instance;
-
-        public IgnoresClose(I instance) {
-            this.instance = instance;
-        }
-
-        public I call() throws Exception {
-            return instance;
-        }
-
-        public void close() throws IOException {
-        }
-    }
-
-    private static class AlwaysClose<I> implements Callable<I>, Closeable {
-        private I instance;
-
-        public AlwaysClose(I instance) {
-            this.instance = instance;
-        }
-
-        public I call() throws Exception {
-            return instance;
-        }
-
-        public void close() throws IOException {
-            Closeables.close(instance);
-        }
-    }
 }

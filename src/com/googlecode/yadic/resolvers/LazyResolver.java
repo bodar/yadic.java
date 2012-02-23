@@ -13,7 +13,7 @@ import java.util.Map;
 import static com.googlecode.totallylazy.Sequences.sequence;
 import static java.util.Collections.synchronizedMap;
 
-public class LazyResolver<T> implements Resolver<T>, Closeable {
+public class LazyResolver<T> implements Resolver<T> {
     private final Resolver<? extends T> resolver;
     private Map<Type, T> state = synchronizedMap(new HashMap<Type, T>());
 
@@ -31,16 +31,6 @@ public class LazyResolver<T> implements Resolver<T>, Closeable {
                 state.put(type, resolver.resolve(type));
             }
             return state.get(type);
-        }
-    }
-
-    public void close() throws IOException {
-        if(resolver instanceof Closeable){
-            ((Closeable) resolver).close();
-        } else {
-            synchronized (state){
-                sequence(state.values()).safeCast(Closeable.class).each(Closeables.close());
-            }
         }
     }
 }
