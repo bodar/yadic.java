@@ -1,37 +1,31 @@
 package com.googlecode.yadic;
 
 import com.googlecode.totallylazy.Callables;
-import com.googlecode.totallylazy.Closeables;
 import com.googlecode.totallylazy.First;
 import com.googlecode.totallylazy.Pair;
+import com.googlecode.totallylazy.Predicate;
 import com.googlecode.totallylazy.predicates.LogicalPredicate;
 import com.googlecode.yadic.resolvers.ProgrammerErrorResolver;
 import com.googlecode.yadic.resolvers.Resolvers;
 
-import java.io.Closeable;
-import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
 import static com.googlecode.totallylazy.Callables.first;
-import static com.googlecode.totallylazy.Predicates.is;
 import static com.googlecode.totallylazy.Predicates.where;
 import static com.googlecode.totallylazy.Sequences.sequence;
+import static com.googlecode.totallylazy.Unchecked.cast;
 import static com.googlecode.yadic.generics.Types.matches;
-import static com.googlecode.yadic.resolvers.ClosableResolver.closable;
-import static com.googlecode.yadic.resolvers.CloseGuard.closeGuard;
 import static com.googlecode.yadic.resolvers.LazyResolver.lazy;
-import static com.googlecode.yadic.resolvers.Resolvers.activator;
-import static com.googlecode.yadic.resolvers.Resolvers.create;
-import static com.googlecode.yadic.resolvers.Resolvers.decorator;
+import static com.googlecode.yadic.resolvers.Resolvers.*;
 
 public class BaseTypeMap implements TypeMap {
     private final List<Pair<Type, Resolver<Object>>> activators = new ArrayList<Pair<Type, Resolver<Object>>>();
-    protected final Resolver parent;
+    protected final Resolver<?> parent;
 
-    public BaseTypeMap(Resolver parent) {
+    public BaseTypeMap(Resolver<?> parent) {
         this.parent = parent;
         addType(Object.class, new ProgrammerErrorResolver(Object.class));
     }
@@ -43,13 +37,17 @@ public class BaseTypeMap implements TypeMap {
         return Resolvers.resolve(getResolver(type), type);
     }
 
+    public <T> T create(Type type) throws Exception {
+        return cast(Resolvers.create(type, this).resolve(type));
+    }
+
     @SuppressWarnings("unchecked")
     public <T> Resolver<T> getResolver(Type type) {
-        return (Resolver<T>) sequence(activators).find(pairFor(type)).map(Callables.<Resolver<Object>>second()).get();
+        return (Resolver<T>) find(activators, pairFor(type));
     }
 
     public TypeMap addType(Type type, Type concrete) {
-        return addType(type, closable(create(concrete, this)));
+        return addType(type, Resolvers.create(concrete, this));
     }
 
     public TypeMap decorateType(final Type anInterface, final Type concrete) {
@@ -65,7 +63,7 @@ public class BaseTypeMap implements TypeMap {
         if (contains(type)) {
             throw new ContainerException(type.toString() + " already added to container");
         }
-        activators.add(Pair.<Type, Resolver<Object>>pair(type, closeGuard(lazy(resolver))));
+        activators.add(Pair.<Type, Resolver<Object>>pair(type, lazy(resolver)));
         return this;
     }
 
@@ -84,12 +82,13 @@ public class BaseTypeMap implements TypeMap {
         return sequence(activators).exists(pairFor(type));
     }
 
-    @SuppressWarnings("unchecked")
-    private LogicalPredicate<First<Type>> pairFor(Type type) {
-        return where(first(Type.class), is(matches(type)));
+    public static LogicalPredicate<First<Type>> pairFor(Type type) {
+        return where(first(Type.class), matches(type));
     }
 
-    public void close() throws IOException {
-        sequence(activators).map(Callables.<Resolver<Object>>second()).safeCast(Closeable.class).forEach(Closeables.close());
+    public static <A, B> B find(final Iterable<Pair<A, B>> iterable, Predicate<First<A>> predicate) {
+        return sequence(iterable).find(predicate).map(Callables.<B>second()).get();
     }
+
+
 }
