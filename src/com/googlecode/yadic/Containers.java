@@ -17,17 +17,20 @@ public class Containers {
     public static <I> Container decorateUsingActivator(final Container container, final Class<I> anInterface, final Class<? extends Callable<? extends I>> activator) {
         final Resolver<Object> existing = container.remove(anInterface);
         final DecoratorResolver decoratorResolver = new DecoratorResolver(anInterface, existing, container);
-        return (Container) container.addType(anInterface, activator(asCreator(decoratorResolver, activator), activator));
+        return (Container) container.addType(anInterface, activator(asResolver(decoratorResolver, activator), activator));
     }
 
-    private static Creator asCreator(final Resolver<?> resolver, final Class<?> activator) {
-        return new Creator() {
-            public <T> T create(Type type) throws Exception {
+    private static <I> TypeMap asResolver(final DecoratorResolver decoratorResolver, final Class<? extends Callable<? extends I>> activator) {
+        return new BaseTypeMap(new Resolver<Object>() {
+            public Object resolve(Type type) throws Exception {
                 if(Types.matches(type, activator)){
-                    return new SimpleContainer(resolver).create(activator);
+                    return new SimpleContainer(decoratorResolver).create(activator);
                 }
-                return (T) resolver.resolve(type);
+                return decoratorResolver.resolve(type);
+
             }
-        };
+        });
     }
+
+
 }

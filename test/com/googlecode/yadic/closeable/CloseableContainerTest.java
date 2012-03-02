@@ -3,6 +3,7 @@ package com.googlecode.yadic.closeable;
 import com.googlecode.totallylazy.Closeables;
 import com.googlecode.yadic.Container;
 import com.googlecode.yadic.Containers;
+import com.googlecode.yadic.examples.ClosableStringCallable;
 import com.googlecode.yadic.examples.SomeClosableClass;
 import com.googlecode.yadic.examples.SomeClosableClassActivator;
 import org.hamcrest.CoreMatchers;
@@ -53,7 +54,21 @@ public class CloseableContainerTest {
         assertThat(activatorClosed.get(), CoreMatchers.is(false));
         container.close();
         assertThat(instance.closed, CoreMatchers.is(false));
+        assertThat(activatorClosed.get(), CoreMatchers.is(true));
+    }
+
+    @Test
+    public void addingAClosableActivatorClassForANonClosableTypeWillCallCloseOnTheActivatorNotTheInstance() throws Exception {
+        CloseableContainer container = CloseableContainer.closeableContainer();
+        AtomicBoolean activatorClosed = new AtomicBoolean(false);
+        container.addInstance(AtomicBoolean.class, activatorClosed);
+        container.addActivator(String.class, ClosableStringCallable.class);
+
+        container.get(String.class);
+
         assertThat(activatorClosed.get(), CoreMatchers.is(false));
+        container.close();
+        assertThat(activatorClosed.get(), CoreMatchers.is(true));
     }
 
     @Test
