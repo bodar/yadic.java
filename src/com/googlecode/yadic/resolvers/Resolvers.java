@@ -25,11 +25,11 @@ public class Resolvers {
         return create(concrete, new DecoratorResolver<Object>(anInterface, typeMap.remove(anInterface), typeMap));
     }
 
-    public static <T, A extends Resolver<T>> Resolver<T> activator(final Creator creator, final Class<A> activator) {
+    public static <T, A extends Resolver<T>> Resolver<T> activator(final TypeMap creator, final Class<A> activator) {
         return activatorResolver(creator, activator);
     }
 
-    public static Resolver<Object> activator(final Creator creator, final Type activator) {
+    public static Resolver<Object> activator(final TypeMap creator, final Type activator) {
         return activatorResolver(creator, activator);
     }
 
@@ -118,7 +118,7 @@ public class Resolvers {
         }
     }
 
-    public static <T> ActivatorResolver<T> activatorResolver(Creator creator, Type activatorType) {
+    public static <T> ActivatorResolver<T> activatorResolver(TypeMap creator, Type activatorType) {
         return new ActivatorResolver<T>(creator, activatorType);
     }
 
