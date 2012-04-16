@@ -1,6 +1,6 @@
 package com.googlecode.yadic.closeable;
 
-import com.googlecode.totallylazy.Closeables;
+import com.googlecode.totallylazy.Callable1;
 import com.googlecode.yadic.BaseTypeMap;
 import com.googlecode.yadic.Resolver;
 import com.googlecode.yadic.TypeMap;
@@ -23,8 +23,8 @@ public class CloseableTypeMap extends BaseTypeMap implements CloseableMap<Closea
     }
 
     public void close() throws IOException {
-        sequence(mustClose.values()).each(Closeables.close())
-;    }
+        sequence(mustClose.values()).each(tryToClose());
+    }
 
     @Override
     public <T> Resolver<T> remove(Type type) {
@@ -112,5 +112,16 @@ public class CloseableTypeMap extends BaseTypeMap implements CloseableMap<Closea
         return addCloseable(aClass, closeActivator(activator));
     }
 
-
+    private Callable1<Closeable, Void> tryToClose() {
+        return new Callable1<Closeable, Void>() {
+            public Void call(Closeable closeable) throws Exception {
+                try {
+                    closeable.close();
+                } catch (Exception e) {
+                    //ignore
+                }
+                return null;
+            }
+        };
+    }
 }
