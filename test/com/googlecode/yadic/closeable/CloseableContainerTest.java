@@ -7,7 +7,6 @@ import com.googlecode.yadic.examples.ClosableStringCallable;
 import com.googlecode.yadic.examples.SomeClosableClass;
 import com.googlecode.yadic.examples.SomeClosableClassActivator;
 import org.hamcrest.CoreMatchers;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.Closeable;
@@ -15,6 +14,7 @@ import java.io.IOException;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import static com.googlecode.totallylazy.matchers.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public class CloseableContainerTest {
@@ -101,6 +101,25 @@ public class CloseableContainerTest {
         container.close();
         assertThat(instance.closed, CoreMatchers.is(true));
     }
+
+    @Test
+    public void addingAClassWithCloseMethodNotOnInterfaceStillGetsClosedOnShutdown() throws Exception {
+        CloseableContainer container = CloseableContainer.closeableContainer();
+        container.add(Cloneable.class, CloseableClass.class);
+        CloseableClass closeableClass = (CloseableClass) container.get(Cloneable.class);
+        assertThat(closeableClass.closed, is(false));
+        container.close();
+        assertThat(closeableClass.closed, is(true));
+    }
+
+    public static class CloseableClass implements Closeable, Cloneable {
+        private boolean closed = false;
+
+        public void close() {
+            this.closed = true;
+        }
+    }
+
 
     public static class CalledCloseActivator implements Callable<SomeClosableClass>, Closeable {
         private final AtomicBoolean called;

@@ -4,6 +4,7 @@ import com.googlecode.totallylazy.Closeables;
 import com.googlecode.yadic.BaseTypeMap;
 import com.googlecode.yadic.Resolver;
 import com.googlecode.yadic.TypeMap;
+import com.googlecode.yadic.resolvers.Resolvers;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -37,6 +38,20 @@ public class CloseableTypeMap extends BaseTypeMap implements CloseableMap<Closea
         super.addType(type, resolverClass);
         if(isCloseable(type) && isCloseable(resolverClass)){
             removeCloseable(type);
+        }
+        return this;
+    }
+
+    @Override
+    public TypeMap addType(final Type type, final Type concrete) {
+        super.addType(type, concrete);
+        if(isCloseable(concrete)) {
+            final Resolver<Object> resolver = getResolver(type);
+            addCloseable(type, new Closeable() {
+                public void close() throws IOException {
+                    ((Closeable) Resolvers.resolve(resolver, type)).close();
+                }
+            });
         }
         return this;
     }
