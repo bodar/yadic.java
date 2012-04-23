@@ -2,9 +2,10 @@ package com.googlecode.yadic.closeable;
 
 import com.googlecode.yadic.ContainerException;
 import com.googlecode.yadic.Resolver;
-import com.googlecode.yadic.examples.ActivatorClosedCalled;
 import com.googlecode.yadic.examples.ClosableStringResolver;
 import com.googlecode.yadic.examples.SomeClosableClass;
+import com.googlecode.yadic.examples.ThrowingClosableClass;
+import com.googlecode.yadic.examples.ThrowingClosableResolver;
 import com.googlecode.yadic.resolvers.MissingResolver;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
@@ -44,20 +45,18 @@ public class CloseableTypeMapTest {
     @Test
     public void addingAClosableActivatorClassForAClosableTypeWillCallCloseOnTheActivatorNotTheInstance() throws Exception {
         CloseableTypeMap typeMap = new CloseableTypeMap(new MissingResolver());
-        typeMap.addType(SomeClosableClass.class, new ThrowingClosableResolver());
+
+        AtomicBoolean closed = new AtomicBoolean(false);
+        typeMap.addType(SomeClosableClass.class, new CustomResolver(closed));
 
         final SomeClosableClass instance = (SomeClosableClass) typeMap.resolve(SomeClosableClass.class);
-
         assertThat(instance.closed, CoreMatchers.is(false));
 
-        try {
-            typeMap.close();
-            fail("Should have got exception from activator");
-        } catch (ActivatorClosedCalled e) {
-            assertThat(instance.closed, CoreMatchers.is(false));
-        }
-    }
+        typeMap.close();
 
+        assertThat(closed.get(), CoreMatchers.is(true));
+        assertThat(instance.closed, CoreMatchers.is(false));
+    }
 
     @Test
     public void removingTheTypeAlsoStopsInstanceBeingClosed() throws Exception {
@@ -125,6 +124,24 @@ public class CloseableTypeMapTest {
         assertThat(closable.closed, is(false));
         assertThat(closed.get(), is(true));
     }
+    
+    @Test
+    public void closeAllClosablesEvenWhenPreviousCloseMethodsThrowException() throws Exception {
+        CloseableTypeMap typeMap = new CloseableTypeMap(new MissingResolver());
+        typeMap.addType(Integer.class, ThrowingClosableResolver.forType(1));
+        typeMap.addType(ThrowingClosableClass.class, ThrowingClosableClass.class);
+        typeMap.addType(SomeClosableClass.class, SomeClosableClass.class);
+
+        SomeClosableClass someClosableClass = (SomeClosableClass) typeMap.resolve(SomeClosableClass.class);
+        typeMap.resolve(Integer.class);
+        typeMap.resolve(ThrowingClosableClass.class);
+
+        assertThat(someClosableClass.closed, is(false));
+
+        typeMap.close();
+
+        assertThat(someClosableClass.closed, is(true));
+    }
 
     public static class CustomResolver implements Resolver<SomeClosableClass>, Closeable {
         public final AtomicBoolean closed;
@@ -167,13 +184,4 @@ public class CloseableTypeMapTest {
         }
     }
 
-    public static class ThrowingClosableResolver implements Resolver<SomeClosableClass>, Closeable {
-        public SomeClosableClass resolve(Type type) throws Exception {
-            return new SomeClosableClass();
-        }
-
-        public void close() throws IOException {
-            throw new ActivatorClosedCalled();
-        }
-    }
 }
