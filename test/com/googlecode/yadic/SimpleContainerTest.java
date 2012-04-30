@@ -3,11 +3,15 @@ package com.googlecode.yadic;
 import com.googlecode.totallylazy.Sequence;
 import com.googlecode.totallylazy.callables.CountingCallable;
 import com.googlecode.yadic.examples.*;
+import com.googlecode.yadic.generics.TypeFor;
 import org.junit.Test;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Callable;
 
+import static com.googlecode.totallylazy.Arrays.list;
 import static com.googlecode.totallylazy.Callers.callConcurrently;
 import static com.googlecode.totallylazy.callables.SleepyCallable.sleepy;
 import static com.googlecode.yadic.resolvers.Resolvers.asCallable;
@@ -362,6 +366,7 @@ public class SimpleContainerTest {
 
     public static class ManyStringsClass {
         public ManyStringsClass(String a, String b) {
+            throw new AssertionError("Should not be called");
         }
     }
 
@@ -375,8 +380,34 @@ public class SimpleContainerTest {
 
     public static class ManyStringsClass2 {
         public ManyStringsClass2(String a, String b) {
+            throw new AssertionError("Should not be called");
         }
         public ManyStringsClass2(String a) {
+        }
+    }
+
+    @Test
+    public void canStillConstructClassWithManyMatchingGenericTypeConstructors() {
+        Container container = new SimpleContainer();
+        container.add(ManyStringsClass3.class);
+        container.addType(new TypeFor<List<String>>(){}.get(), new Resolver<List<String>>() {
+            public List<String> resolve(Type type) throws Exception {
+                return list("hello", "world");
+            }
+        });
+        container.addType(new TypeFor<List<Integer>>(){}.get(), new Resolver<List<Integer>>() {
+            public List<Integer> resolve(Type type) throws Exception {
+                return list(666, 69);
+            }
+        });
+        container.get(ManyStringsClass3.class);
+    }
+
+    public static class ManyStringsClass3 {
+        public ManyStringsClass3(List<String> a, List<Integer> b) {
+        }
+        public ManyStringsClass3() {
+            throw new AssertionError("Should not be called");
         }
     }
 }

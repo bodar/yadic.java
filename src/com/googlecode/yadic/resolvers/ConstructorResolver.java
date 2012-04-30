@@ -16,9 +16,11 @@ import static com.googlecode.totallylazy.Callables.descending;
 import static com.googlecode.totallylazy.Constructors.genericParameterTypes;
 import static com.googlecode.totallylazy.Option.none;
 import static com.googlecode.totallylazy.Option.some;
+import static com.googlecode.totallylazy.Predicates.equalTo;
 import static com.googlecode.totallylazy.Predicates.not;
 import static com.googlecode.totallylazy.Predicates.where;
 import static com.googlecode.totallylazy.Sequences.sequence;
+import static com.googlecode.totallylazy.Sequences.unique;
 import static com.googlecode.yadic.generics.Types.classOf;
 import static com.googlecode.yadic.generics.Types.matches;
 
@@ -49,7 +51,7 @@ public class ConstructorResolver<T> implements Resolver<T> {
     private Predicate<? super Constructor<?>> constructorsWithUniqueParamTypes() {
         return new Predicate<Constructor<?>>() {
             public boolean matches(Constructor<?> constructor) {
-                final Sequence<Class<?>> types = sequence(constructor.getParameterTypes());
+                final Sequence<Type> types = sequence(constructor.getGenericExceptionTypes());
                 return types.unique().equals(types);
             }
         };
