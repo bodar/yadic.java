@@ -1,9 +1,6 @@
 package com.googlecode.yadic.resolvers;
 
-import com.googlecode.totallylazy.Callable1;
-import com.googlecode.totallylazy.Callables;
-import com.googlecode.totallylazy.Option;
-import com.googlecode.totallylazy.Sequence;
+import com.googlecode.totallylazy.*;
 import com.googlecode.yadic.ContainerException;
 import com.googlecode.yadic.Resolver;
 import com.googlecode.yadic.generics.TypeConverter;
@@ -39,13 +36,23 @@ public class ConstructorResolver<T> implements Resolver<T> {
     public T resolve(Type type) throws Exception {
         Sequence<Constructor<?>> constructors = sequence(concreteClass.getConstructors()).
                 filter(where(genericParameterTypes(), not(exists(matches(concrete))))).
-                sortBy(descending(numberOfParamters()));
+                filter(constructorsWithUniqueParamTypes()).
+                sortBy(descending(numberOfParameters()));
         if (constructors.isEmpty()) {
             throw new ContainerException(concreteClass.getName() + " does not have a public constructor");
         }
         final List<Exception> exceptions = new ArrayList<Exception>();
         return constructors.tryPick(firstSatisfiableConstructor(exceptions, type)).map(cast(concreteClass)).
                 getOrElse(Callables.<T>callThrows(new ContainerException(concreteClass.getName() + " does not have a satisfiable constructor", exceptions)));
+    }
+
+    private Predicate<? super Constructor<?>> constructorsWithUniqueParamTypes() {
+        return new Predicate<Constructor<?>>() {
+            public boolean matches(Constructor<?> constructor) {
+                final Sequence<Class<?>> types = sequence(constructor.getParameterTypes());
+                return types.unique().equals(types);
+            }
+        };
     }
 
     private Callable1<Constructor<?>, Option<Object>> firstSatisfiableConstructor(final List<Exception> exceptions, final Type type) {
@@ -62,7 +69,7 @@ public class ConstructorResolver<T> implements Resolver<T> {
         };
     }
 
-    private Callable1<Constructor<?>, Comparable> numberOfParamters() {
+    private Callable1<Constructor<?>, Comparable> numberOfParameters() {
         return new Callable1<Constructor<?>, Comparable>() {
             public Comparable call(Constructor<?> constructor) throws Exception {
                 return constructor.getParameterTypes().length;
