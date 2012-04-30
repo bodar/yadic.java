@@ -1,6 +1,5 @@
 package com.googlecode.yadic;
 
-import java.io.Closeable;
 import java.lang.reflect.Type;
 
 public interface TypeMap extends Resolver<Object>, Creator {

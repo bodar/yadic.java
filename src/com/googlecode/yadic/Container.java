@@ -20,6 +20,4 @@ public interface Container extends TypeMap {
     <T> Callable<T> getActivator(Class<T> aClass);
 
     <I, C extends I> Container replace(Class<I> anInterface, Class<C> newConcrete);
-
-
 }

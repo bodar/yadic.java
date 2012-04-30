@@ -352,4 +352,31 @@ public class SimpleContainerTest {
         }
     }
 
+    @Test(expected = ContainerException.class)
+    public void shouldNotBeAbleToSelectConstructorsWithMultipleParametersOfSameType() throws Exception {
+        Container container = new SimpleContainer();
+        container.add(ManyStringsClass.class);
+        container.add(String.class);
+        container.get(ManyStringsClass.class);
+    }
+
+    public static class ManyStringsClass {
+        public ManyStringsClass(String a, String b) {
+        }
+    }
+
+    @Test
+    public void canStillConstructClassWithManyMatchingTypeConstructorByOtherConstructor() {
+        Container container = new SimpleContainer();
+        container.add(ManyStringsClass2.class);
+        container.add(String.class);
+        container.get(ManyStringsClass2.class);
+    }
+
+    public static class ManyStringsClass2 {
+        public ManyStringsClass2(String a, String b) {
+        }
+        public ManyStringsClass2(String a) {
+        }
+    }
 }
