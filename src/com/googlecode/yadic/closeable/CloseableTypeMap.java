@@ -80,7 +80,7 @@ public class CloseableTypeMap extends BaseTypeMap implements CloseableMap<Closea
 
     @Override
     public <T> T create(Type type) throws Exception {
-        T result = super.create(type);
+        T result = super.<T>create(type);
         if (shouldClose(type)) {
             mustClose.put(type, mightClose.get(type));
         }
