@@ -1,9 +1,6 @@
 package com.googlecode.yadic;
 
-import com.googlecode.totallylazy.Callables;
-import com.googlecode.totallylazy.First;
-import com.googlecode.totallylazy.Pair;
-import com.googlecode.totallylazy.Predicate;
+import com.googlecode.totallylazy.*;
 import com.googlecode.totallylazy.predicates.LogicalPredicate;
 import com.googlecode.yadic.resolvers.ProgrammerErrorResolver;
 import com.googlecode.yadic.resolvers.Resolvers;
@@ -38,7 +35,7 @@ public class BaseTypeMap implements TypeMap {
     }
 
     public <T> T create(Type type) throws Exception {
-        return cast(Resolvers.create(type, this).resolve(type));
+        return Unchecked.<T>cast(Resolvers.create(type, this).resolve(type));
     }
 
     @SuppressWarnings("unchecked")

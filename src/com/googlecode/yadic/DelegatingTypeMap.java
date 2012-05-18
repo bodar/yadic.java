@@ -48,6 +48,6 @@ public abstract class DelegatingTypeMap implements TypeMap{
     }
 
     public <T> T create(Type type) throws Exception {
-        return map.create(type);
+        return map.<T>create(type);
     }
 }
