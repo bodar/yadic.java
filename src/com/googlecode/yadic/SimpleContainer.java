@@ -1,18 +1,13 @@
 package com.googlecode.yadic;
 
-import com.googlecode.totallylazy.Closeables;
-import com.googlecode.totallylazy.Function;
 import com.googlecode.yadic.resolvers.MissingResolver;
 import com.googlecode.yadic.resolvers.Resolvers;
 
-import java.io.Closeable;
-import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.concurrent.Callable;
 
-import static com.googlecode.totallylazy.Callables.returns;
+import static com.googlecode.totallylazy.Functions.returns;
 import static com.googlecode.yadic.resolvers.Resolvers.*;
-import static com.googlecode.yadic.resolvers.Resolvers.asResolver;
 
 public class SimpleContainer extends DelegatingTypeMap implements Container {
     private SimpleContainer(TypeMap typeMap) {
@@ -56,7 +51,7 @@ public class SimpleContainer extends DelegatingTypeMap implements Container {
     }
 
     public <I, C extends I> Container addInstance(Class<I> anInterface, final C instance) {
-        return addActivator(anInterface, Function.returns(instance));
+        return addActivator(anInterface, returns(instance));
     }
 
     @SuppressWarnings("unchecked")
