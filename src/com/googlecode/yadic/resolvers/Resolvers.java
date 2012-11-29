@@ -1,9 +1,9 @@
 package com.googlecode.yadic.resolvers;
 
 import com.googlecode.totallylazy.Callable1;
+import com.googlecode.totallylazy.Function;
 import com.googlecode.totallylazy.Function1;
 import com.googlecode.yadic.ContainerException;
-import com.googlecode.yadic.Creator;
 import com.googlecode.yadic.Resolver;
 import com.googlecode.yadic.TypeMap;
 
@@ -57,6 +57,10 @@ public class Resolvers {
     }
 
     public static <T> Callable<T> asCallable(final Resolver<? extends T> resolver, final Type type) {
+        return asFunction(resolver, type);
+    }
+
+    public static <T> Function<T> asFunction(final Resolver<? extends T> resolver, final Type type) {
         return asFunction1(resolver).deferApply(type);
     }
 
