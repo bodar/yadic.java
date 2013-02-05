@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 import static com.googlecode.totallylazy.Callables.first;
+import static com.googlecode.totallylazy.Option.none;
+import static com.googlecode.totallylazy.Option.some;
 import static com.googlecode.totallylazy.Predicates.where;
 import static com.googlecode.totallylazy.Sequences.sequence;
 import static com.googlecode.totallylazy.Unchecked.cast;
@@ -66,13 +68,17 @@ public class BaseTypeMap implements TypeMap {
 
     @SuppressWarnings("unchecked")
     public <T> Resolver<T> remove(Type type) {
+        return this.<T>removeOption(type).get();
+    }
+
+    public <T> Option<Resolver<T>> removeOption(Type type) {
         for (int i = 0; i < activators.size(); i++) {
             Pair<Type, Resolver<Object>> activator = activators.get(i);
             if (pairFor(type).matches(activator)) {
-                return (Resolver<T>) activators.remove(i).second();
+                return some((Resolver<T>) activators.remove(i).second());
             }
         }
-        throw new NoSuchElementException();
+        return none();
     }
 
     public boolean contains(Type type) {
