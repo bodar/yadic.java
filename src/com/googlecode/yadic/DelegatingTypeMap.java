@@ -1,5 +1,7 @@
 package com.googlecode.yadic;
 
+import com.googlecode.totallylazy.Option;
+
 import java.lang.reflect.Type;
 
 public abstract class DelegatingTypeMap implements TypeMap{
@@ -45,6 +47,10 @@ public abstract class DelegatingTypeMap implements TypeMap{
 
     public Object resolve(Type type) throws Exception {
         return map.resolve(type);
+    }
+
+    public <T> Option<Resolver<T>> removeOption(Type type) {
+        return map.removeOption(type);
     }
 
     public <T> T create(Type type) throws Exception {

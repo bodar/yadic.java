@@ -25,6 +25,9 @@
     <option name="LOCALE" />
     <option name="OPEN_IN_BROWSER" value="true" />
   </component>
+  <component name="ProjectKey">
+    <option name="state" value="project://3c6f5ffd-02a7-4e93-9494-d74cca0ee8db" />
+  </component>
   <component name="ProjectResources">
     <default-html-doctype>http://www.w3.org/1999/xhtml</default-html-doctype>
   </component>

@@ -1,5 +1,7 @@
 package com.googlecode.yadic;
 
+import com.googlecode.totallylazy.Option;
+
 import java.lang.reflect.Type;
 
 public interface TypeMap extends Resolver<Object>, Creator {
@@ -12,6 +14,8 @@ public interface TypeMap extends Resolver<Object>, Creator {
     <T> Resolver<T> getResolver(Type type);
 
     <T> Resolver<T> remove(Type type);
+
+    <T> Option<Resolver<T>> removeOption(Type type);
 
     boolean contains(Type type);
 
