@@ -1,5 +1,7 @@
 package com.googlecode.yadic;
 
+import com.googlecode.totallylazy.Mapper;
+
 import java.util.concurrent.Callable;
 
 public interface Container extends TypeMap {
@@ -20,4 +22,15 @@ public interface Container extends TypeMap {
     <T> Callable<T> getActivator(Class<T> aClass);
 
     <I, C extends I> Container replace(Class<I> anInterface, Class<C> newConcrete);
+
+    class functions{
+        public static <T> Mapper<Container, T> get(final Class<T> aClass) {
+            return new Mapper<Container, T>() {
+                @Override
+                public T call(Container container) throws Exception {
+                    return container.get(aClass);
+                }
+            };
+        }
+    }
 }
