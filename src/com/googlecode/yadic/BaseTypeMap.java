@@ -9,6 +9,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import static com.googlecode.totallylazy.Callables.first;
 import static com.googlecode.totallylazy.Option.none;
@@ -21,7 +22,7 @@ import static com.googlecode.yadic.resolvers.LazyResolver.lazy;
 import static com.googlecode.yadic.resolvers.Resolvers.*;
 
 public class BaseTypeMap implements TypeMap {
-    private final List<Pair<Type, Resolver<Object>>> activators = new ArrayList<Pair<Type, Resolver<Object>>>();
+    private final List<Pair<Type, Resolver<Object>>> activators = new CopyOnWriteArrayList<Pair<Type, Resolver<Object>>>();
     protected final Resolver<?> parent;
 
     public BaseTypeMap(Resolver<?> parent) {

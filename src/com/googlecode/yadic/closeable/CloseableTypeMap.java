@@ -11,13 +11,14 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static com.googlecode.totallylazy.Sequences.sequence;
 import static com.googlecode.yadic.generics.Types.classOf;
 
 public class CloseableTypeMap extends BaseTypeMap implements CloseableMap<CloseableTypeMap> {
-    private final Map<Type, Closeable> mightClose = new LinkedHashMap<Type, Closeable>();
-    private final Map<Type, Closeable> mustClose = new LinkedHashMap<Type, Closeable>();
+    private final Map<Type, Closeable> mightClose = new ConcurrentHashMap<Type, Closeable>();
+    private final Map<Type, Closeable> mustClose = new ConcurrentHashMap<Type, Closeable>();
 
     public CloseableTypeMap(Resolver<?> parent) {
         super(parent);
