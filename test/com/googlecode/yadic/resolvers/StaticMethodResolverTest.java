@@ -30,8 +30,18 @@ public class StaticMethodResolverTest {
 
     @Test
     public void supportsStaticFactoryMethodWithSameName() throws Exception {
-        StaticMethodResolver resolver = new StaticMethodResolver(containerWith("foobar"), MyStaticMethodClass.class);
-        assertThat(resolver.resolve(MyStaticMethodClass.class), is(notNullValue()));
+        StaticMethodResolver<MyStaticMethodClass> resolver = new StaticMethodResolver<MyStaticMethodClass>(containerWith("foobar"), MyStaticMethodClass.class);
+        MyStaticMethodClass staticMethodClass = resolver.resolve(MyStaticMethodClass.class);
+        assertThat(staticMethodClass, is(notNullValue()));
+        assertThat(staticMethodClass.constructedBy, is("myStaticMethodClass1"));
+    }
+
+    @Test
+    public void choosesLargestArity() throws Exception {
+        StaticMethodResolver<MyStaticMethodClass> resolver = new StaticMethodResolver<MyStaticMethodClass>(containerWith("foobar").addInstance(Integer.class, 1), MyStaticMethodClass.class);
+        MyStaticMethodClass staticMethodClass = resolver.resolve(MyStaticMethodClass.class);
+        assertThat(staticMethodClass, is(notNullValue()));
+        assertThat(staticMethodClass.constructedBy, is("myStaticMethodClass2"));
     }
 
     @Test(expected = ContainerException.class)
