@@ -1,6 +1,10 @@
 package com.googlecode.yadic.resolvers;
 
-import com.googlecode.totallylazy.*;
+import com.googlecode.totallylazy.Callable1;
+import com.googlecode.totallylazy.Callables;
+import com.googlecode.totallylazy.Option;
+import com.googlecode.totallylazy.Predicate;
+import com.googlecode.totallylazy.Sequence;
 import com.googlecode.yadic.ContainerException;
 import com.googlecode.yadic.Resolver;
 import com.googlecode.yadic.generics.TypeConverter;
@@ -16,13 +20,12 @@ import static com.googlecode.totallylazy.Callables.descending;
 import static com.googlecode.totallylazy.Constructors.genericParameterTypes;
 import static com.googlecode.totallylazy.Option.none;
 import static com.googlecode.totallylazy.Option.some;
-import static com.googlecode.totallylazy.Predicates.equalTo;
 import static com.googlecode.totallylazy.Predicates.not;
 import static com.googlecode.totallylazy.Predicates.where;
 import static com.googlecode.totallylazy.Sequences.sequence;
-import static com.googlecode.totallylazy.Sequences.unique;
 import static com.googlecode.yadic.generics.Types.classOf;
 import static com.googlecode.yadic.generics.Types.matches;
+import static java.lang.String.format;
 
 public class ConstructorResolver<T> implements Resolver<T> {
     private final Resolver<?> resolver;
@@ -45,7 +48,7 @@ public class ConstructorResolver<T> implements Resolver<T> {
         }
         final List<Exception> exceptions = new ArrayList<Exception>();
         return constructors.tryPick(firstSatisfiableConstructor(exceptions, type)).map(cast(concreteClass)).
-                getOrElse(Callables.<T>callThrows(new ContainerException(concreteClass.getName() + " does not have a satisfiable constructor", exceptions)));
+                getOrElse(Callables.<T>callThrows(new ContainerException(format("Could not resolve %s- please check root exception for details.", concreteClass.getName()), exceptions)));
     }
 
     private Predicate<? super Constructor<?>> constructorsWithUniqueParamTypes() {

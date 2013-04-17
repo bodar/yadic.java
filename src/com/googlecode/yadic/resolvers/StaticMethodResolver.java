@@ -26,6 +26,7 @@ import static com.googlecode.totallylazy.Sequences.sequence;
 import static com.googlecode.yadic.generics.TypeConverter.convertParametersToInstances;
 import static com.googlecode.yadic.generics.Types.classOf;
 import static com.googlecode.yadic.generics.Types.matches;
+import static java.lang.String.format;
 import static java.lang.reflect.Modifier.PUBLIC;
 import static java.lang.reflect.Modifier.STATIC;
 
@@ -50,7 +51,7 @@ public class StaticMethodResolver<T> implements Resolver<T> {
         }
         final List<Exception> exceptions = new ArrayList<Exception>();
         return methods.tryPick(firstSatisfiableMethod(exceptions, type)).map(cast(concreteClass)).
-                getOrElse(Callables.<T>callThrows(new ContainerException(concreteClass.getName() + " does not have a satisfiable public static method", exceptions)));
+                getOrElse(Callables.<T>callThrows(new ContainerException(format("Could not resolve %s- please check root exception for details", concreteClass.getName()), exceptions)));
     }
 
     private Callable1<Method, Comparable> arity() {
