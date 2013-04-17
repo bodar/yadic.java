@@ -51,7 +51,7 @@ public class StaticMethodResolver<T> implements Resolver<T> {
         }
         final List<Exception> exceptions = new ArrayList<Exception>();
         return methods.tryPick(firstSatisfiableMethod(exceptions, type)).map(cast(concreteClass)).
-                getOrElse(Callables.<T>callThrows(new ContainerException(format("Could not resolve %s- please check root exception for details", concreteClass.getName()), exceptions)));
+                getOrElse(Callables.<T>callThrows(new ContainerException(format("Could not resolve %s using static factory methods- please check root exception for details", concreteClass.getName()), exceptions)));
     }
 
     private Callable1<Method, Comparable> arity() {
