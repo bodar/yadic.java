@@ -48,7 +48,7 @@ public class ConstructorResolver<T> implements Resolver<T> {
         }
         final List<Exception> exceptions = new ArrayList<Exception>();
         return constructors.tryPick(firstSatisfiableConstructor(exceptions, type)).map(cast(concreteClass)).
-                getOrElse(Callables.<T>callThrows(new ContainerException(format("Could not resolve %s- please check root exception for details.", concreteClass.getName()), exceptions)));
+                getOrElse(Callables.<T>callThrows(new ContainerException(format("Could not resolve %s using constructors- please check root exception for details.", concreteClass.getName()), exceptions)));
     }
 
     private Predicate<? super Constructor<?>> constructorsWithUniqueParamTypes() {
