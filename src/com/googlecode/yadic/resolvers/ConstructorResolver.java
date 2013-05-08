@@ -35,7 +35,7 @@ public class ConstructorResolver<T> implements Resolver<T> {
     public ConstructorResolver(Resolver<?> resolver, Type concrete) {
         this.resolver = resolver;
         this.concrete = concrete;
-        concreteClass = classOf(concrete);
+        this.concreteClass = classOf(concrete);
     }
 
     public T resolve(Type type) throws Exception {
@@ -74,9 +74,9 @@ public class ConstructorResolver<T> implements Resolver<T> {
         };
     }
 
-    private Callable1<Constructor<?>, Comparable> numberOfParameters() {
-        return new Callable1<Constructor<?>, Comparable>() {
-            public Comparable call(Constructor<?> constructor) throws Exception {
+    private Callable1<Constructor<?>, Integer> numberOfParameters() {
+        return new Callable1<Constructor<?>, Integer>() {
+            public Integer call(Constructor<?> constructor) throws Exception {
                 return constructor.getParameterTypes().length;
             }
         };

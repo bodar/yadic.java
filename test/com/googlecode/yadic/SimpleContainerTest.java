@@ -2,12 +2,19 @@ package com.googlecode.yadic;
 
 import com.googlecode.totallylazy.Sequence;
 import com.googlecode.totallylazy.callables.CountingCallable;
-import com.googlecode.yadic.examples.*;
+import com.googlecode.yadic.examples.ChildNode;
+import com.googlecode.yadic.examples.DecorateNodeActivator;
+import com.googlecode.yadic.examples.DecoratedNode;
+import com.googlecode.yadic.examples.DecoratedNodeWithAdditionalArguments;
+import com.googlecode.yadic.examples.GrandChildNode;
+import com.googlecode.yadic.examples.Node;
+import com.googlecode.yadic.examples.NodeActivator;
+import com.googlecode.yadic.examples.NodeResolver;
+import com.googlecode.yadic.examples.RootNode;
 import com.googlecode.yadic.generics.TypeFor;
 import org.junit.Test;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 
@@ -338,7 +345,7 @@ public class SimpleContainerTest {
     @Test
     public void shouldSupportDifferentCallables() {
         Container container = new SimpleContainer();
-        CountingCallable count = CountingCallable.counting();
+        CountingCallable<Integer> count = CountingCallable.counting();
         container.addActivator(Integer.class, count);
         assertNotNull(container.get(Integer.class));
         assertEquals(1, count.count());
@@ -365,6 +372,7 @@ public class SimpleContainerTest {
     }
 
     public static class ManyStringsClass {
+        @SuppressWarnings("unused")
         public ManyStringsClass(String a, String b) {
             throw new AssertionError("Should not be called");
         }
@@ -378,10 +386,12 @@ public class SimpleContainerTest {
         container.get(ManyStringsClass2.class);
     }
 
+    @SuppressWarnings("unused")
     public static class ManyStringsClass2 {
         public ManyStringsClass2(String a, String b) {
             throw new AssertionError("Should not be called");
         }
+
         public ManyStringsClass2(String a) {
         }
     }
@@ -390,12 +400,14 @@ public class SimpleContainerTest {
     public void canStillConstructClassWithManyMatchingGenericTypeConstructors() {
         Container container = new SimpleContainer();
         container.add(ManyStringsClass3.class);
-        container.addType(new TypeFor<List<String>>(){}.get(), new Resolver<List<String>>() {
+        container.addType(new TypeFor<List<String>>() {
+        }.get(), new Resolver<List<String>>() {
             public List<String> resolve(Type type) throws Exception {
                 return list("hello", "world");
             }
         });
-        container.addType(new TypeFor<List<Integer>>(){}.get(), new Resolver<List<Integer>>() {
+        container.addType(new TypeFor<List<Integer>>() {
+        }.get(), new Resolver<List<Integer>>() {
             public List<Integer> resolve(Type type) throws Exception {
                 return list(666, 69);
             }
@@ -403,9 +415,11 @@ public class SimpleContainerTest {
         container.get(ManyStringsClass3.class);
     }
 
+    @SuppressWarnings("unused")
     public static class ManyStringsClass3 {
         public ManyStringsClass3(List<String> a, List<Integer> b) {
         }
+
         public ManyStringsClass3() {
             throw new AssertionError("Should not be called");
         }

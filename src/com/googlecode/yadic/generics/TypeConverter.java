@@ -37,6 +37,7 @@ public class TypeConverter<T> implements Callable1<Type, Type> {
         return type;
     }
 
+    @SuppressWarnings("unchecked")
     public static Object[] convertParametersToInstances(Resolver<?> resolver, Type requiredType, Class concrete, Sequence<Type> genericParameterTypes) {
         return genericParameterTypes.
                 map(new TypeConverter(typeMap(requiredType, concrete))).

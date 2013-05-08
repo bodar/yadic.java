@@ -3,6 +3,7 @@ package com.googlecode.yadic.generics;
 import com.googlecode.totallylazy.Pair;
 import com.googlecode.totallylazy.Predicate;
 import com.googlecode.totallylazy.Sequence;
+import com.googlecode.totallylazy.Unchecked;
 import com.googlecode.totallylazy.numbers.Numbers;
 
 import java.lang.reflect.ParameterizedType;
@@ -10,6 +11,7 @@ import java.lang.reflect.Type;
 import java.lang.reflect.WildcardType;
 
 import static com.googlecode.totallylazy.Sequences.sequence;
+import static com.googlecode.totallylazy.Unchecked.cast;
 
 public class Types {
     public static ParameterizedType parameterizedType(final Type rawType, final Type... typeArguments) {
@@ -30,9 +32,9 @@ public class Types {
         throw new UnsupportedOperationException();
     }
 
-    public static Class classOf(Type concrete) {
+    public static <T> Class<T> classOf(Type concrete) {
         if (concrete instanceof Class) {
-            return (Class) concrete;
+            return cast(concrete);
         }
         if (concrete instanceof ParameterizedType) {
             return classOf(((ParameterizedType) concrete).getRawType());
@@ -127,6 +129,7 @@ public class Types {
                 withInLowerBounds(concrete, sequence(wildcardType.getLowerBounds()));
     }
 
+    @SuppressWarnings("unchecked")
     public static boolean withInUpperBounds(Type concrete, Sequence<Type> upperBounds) {
         if (upperBounds.isEmpty()) {
             return true;
@@ -137,6 +140,7 @@ public class Types {
         throw new UnsupportedOperationException();
     }
 
+    @SuppressWarnings("unchecked")
     public static boolean withInLowerBounds(Type concrete, Sequence<Type> lowerBounds) {
         if (lowerBounds.isEmpty()) {
             return true;

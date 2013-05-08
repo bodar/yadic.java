@@ -37,8 +37,12 @@ public class BaseTypeMap implements TypeMap {
         return Resolvers.resolve(getResolver(type), type);
     }
 
-    public <T> T create(Type type) throws Exception {
-        return Unchecked.<T>cast(Resolvers.create(type, this).resolve(type));
+    public <T> T create(Type type) throws ContainerException {
+        try {
+            return Unchecked.<T>cast(Resolvers.create(type, this).resolve(type));
+        } catch (Exception e) {
+            throw new ContainerException("Could not create " + type, e);
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -54,8 +58,8 @@ public class BaseTypeMap implements TypeMap {
         return addType(anInterface, decorator(this, anInterface, concrete));
     }
 
-    public TypeMap addType(Type type, Class<? extends Resolver> resolverClass) {
-        return addType(type, activator(this, resolverClass));
+    public TypeMap addType(Type type, Class<? extends Resolver<?>> resolverClass) {
+        return addType(type, activator(this, Unchecked.<Class<Resolver<Object>>>cast(resolverClass)));
     }
 
     @SuppressWarnings("unchecked")
@@ -76,7 +80,7 @@ public class BaseTypeMap implements TypeMap {
         for (int i = 0; i < activators.size(); i++) {
             Pair<Type, Resolver<Object>> activator = activators.get(i);
             if (pairFor(type).matches(activator)) {
-                return some((Resolver<T>) activators.remove(i).second());
+                return some(Unchecked.<Resolver<T>>cast(activators.remove(i).second()));
             }
         }
         return none();
