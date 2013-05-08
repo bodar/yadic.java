@@ -19,6 +19,7 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
+@SuppressWarnings("unchecked")
 public class GenericsTest {
     @Test
     public void containerShouldSupportGenericsDecoration() throws Exception {

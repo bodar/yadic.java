@@ -1,5 +1,6 @@
 package com.googlecode.yadic.resolvers;
 
+import com.googlecode.totallylazy.Unchecked;
 import com.googlecode.yadic.Resolver;
 import com.googlecode.yadic.TypeMap;
 import com.googlecode.yadic.generics.Types;
@@ -18,6 +19,6 @@ public class DecoratorResolver<T> implements Resolver<T> {
     }
 
     public T resolve(Type type) throws Exception {
-        return Types.matches(type, anInterface) ? existing.resolve(type) : (T) typeMap.resolve(type);
+        return Types.matches(type, anInterface) ? existing.resolve(type) : Unchecked.<T>cast(typeMap.resolve(type));
     }
 }

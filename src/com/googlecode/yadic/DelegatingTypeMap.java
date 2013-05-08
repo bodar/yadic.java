@@ -18,7 +18,7 @@ public abstract class DelegatingTypeMap implements TypeMap{
         return self();
     }
 
-    public TypeMap addType(Type type, Class<? extends Resolver> resolverClass) {
+    public TypeMap addType(Type type, Class<? extends Resolver<?>> resolverClass) {
         map.addType(type, resolverClass);
         return self();
     }
@@ -53,7 +53,7 @@ public abstract class DelegatingTypeMap implements TypeMap{
         return map.removeOption(type);
     }
 
-    public <T> T create(Type type) throws Exception {
+    public <T> T create(Type type) {
         return map.<T>create(type);
     }
 }

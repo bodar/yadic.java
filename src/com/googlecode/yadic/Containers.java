@@ -11,11 +11,13 @@ import java.util.concurrent.Callable;
 import static com.googlecode.yadic.resolvers.Resolvers.activator;
 
 public class Containers {
+    @SuppressWarnings("unchecked")
     public static Container selfRegister(Container container) {
         return container.addInstance(Container.class, container).
                 addActivator(Resolver.class, container.getActivator(Container.class));
     }
 
+    @SuppressWarnings("unchecked")
     public static <I> Container decorateUsingActivator(final Container container, final Class<I> anInterface, final Class<? extends Callable<? extends I>> activator) {
         final Resolver<Object> existing = container.remove(anInterface);
         final DecoratorResolver decoratorResolver = new DecoratorResolver(anInterface, existing, container);

@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.concurrent.Callable;
 
 import static com.googlecode.yadic.generics.Types.classOf;
+import static com.googlecode.yadic.resolvers.StaticMethodResolver.staticMethodResolver;
 
 public class Resolvers {
 
@@ -51,7 +52,7 @@ public class Resolvers {
     public static Resolver<Object> staticMethod(final Type concrete, final Resolver<?> resolver) {
         return new Resolver<Object>() {
             public Object resolve(Type type) throws Exception {
-                return new StaticMethodResolver<Object>(resolver, concrete).resolve(type);
+                return staticMethodResolver(resolver, concrete).resolve(type);
             }
         };
     }

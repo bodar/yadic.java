@@ -6,6 +6,7 @@ import com.googlecode.totallylazy.Option;
 import com.googlecode.totallylazy.Sequence;
 import com.googlecode.yadic.ContainerException;
 import com.googlecode.yadic.Resolver;
+import com.googlecode.yadic.generics.Types;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
@@ -30,13 +31,18 @@ import static java.lang.String.format;
 import static java.lang.reflect.Modifier.PUBLIC;
 import static java.lang.reflect.Modifier.STATIC;
 
+@SuppressWarnings("unchecked")
 public class StaticMethodResolver<T> implements Resolver<T> {
     private final Resolver<?> resolver;
     private final Class<T> concreteClass;
 
-    public StaticMethodResolver(Resolver<?> resolver, Type concrete) {
+    private StaticMethodResolver(Resolver<?> resolver, Type concrete) {
         this.resolver = resolver;
-        concreteClass = classOf(concrete);
+        this.concreteClass = classOf(concrete);
+    }
+
+    public static <T> StaticMethodResolver<T> staticMethodResolver(Resolver<?> resolver, Type concrete) {
+        return new StaticMethodResolver<T>(resolver, concrete);
     }
 
     public T resolve(Type type) throws Exception {
