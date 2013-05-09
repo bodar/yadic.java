@@ -5,9 +5,9 @@ import com.googlecode.totallylazy.Option;
 import java.lang.reflect.Type;
 
 public interface TypeMap extends Resolver<Object>, Creator {
-    TypeMap addType(Type type, Resolver<?> resolver);
+    TypeMap addResolver(Type type, Resolver<?> resolver);
 
-    TypeMap addType(Type type, Class<? extends Resolver<?>> resolverClass);
+    TypeMap addResolver(Type type, Class<? extends Resolver<?>> resolverClass);
 
     TypeMap addType(Type type, Type concrete);
 

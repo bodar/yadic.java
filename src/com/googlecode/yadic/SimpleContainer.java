@@ -56,17 +56,17 @@ public class SimpleContainer extends DelegatingTypeMap implements Container {
 
     @SuppressWarnings("unchecked")
     public <T, A extends Callable<T>> Container addActivator(Class<T> aClass, final Class<A> activator) {
-        addType(aClass, activator(this, activator));
+        addResolver(aClass, activator(this, activator));
         return this;
     }
 
     public <T> Container addActivator(Class<T> aClass, final Callable<? extends T> activator) {
-        addType(aClass, asResolver(activator));
+        addResolver(aClass, asResolver(activator));
         return this;
     }
 
     public <I, C extends I> Container decorate(final Class<I> anInterface, final Class<C> concrete) {
-        addType(anInterface, decorator(this, anInterface, concrete));
+        addResolver(anInterface, decorator(this, anInterface, concrete));
         return this;
     }
 
