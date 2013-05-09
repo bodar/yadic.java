@@ -55,7 +55,7 @@ public class BaseTypeMap implements TypeMap {
         return addResolver(anInterface, decorator(this, anInterface, concrete));
     }
 
-    public TypeMap addResolver(Type type, Class<? extends Resolver<?>> resolverClass) {
+    public TypeMap addResolver(Type type, Class<? extends Resolver> resolverClass) {
         return addResolver(type, activator(this, Unchecked.<Class<Resolver<Object>>>cast(resolverClass)));
     }
 

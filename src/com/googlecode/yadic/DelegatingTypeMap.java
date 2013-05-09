@@ -18,7 +18,7 @@ public abstract class DelegatingTypeMap implements TypeMap{
         return self();
     }
 
-    public TypeMap addResolver(Type type, Class<? extends Resolver<?>> resolverClass) {
+    public TypeMap addResolver(Type type, Class<? extends Resolver> resolverClass) {
         map.addResolver(type, resolverClass);
         return self();
     }

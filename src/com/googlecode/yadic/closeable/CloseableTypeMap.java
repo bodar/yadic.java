@@ -34,7 +34,7 @@ public class CloseableTypeMap extends BaseTypeMap implements CloseableMap<Closea
     }
 
     @Override
-    public TypeMap addResolver(Type type, Class<? extends Resolver<?>> resolverClass) {
+    public TypeMap addResolver(Type type, Class<? extends Resolver> resolverClass) {
         super.addResolver(type, resolverClass);
         if(isCloseable(type) && isCloseable(resolverClass)){
             removeCloseable(type);
