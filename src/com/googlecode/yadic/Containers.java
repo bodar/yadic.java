@@ -3,7 +3,6 @@ package com.googlecode.yadic;
 import com.googlecode.yadic.closeable.CloseableContainer;
 import com.googlecode.yadic.generics.Types;
 import com.googlecode.yadic.resolvers.DecoratorResolver;
-import com.googlecode.yadic.resolvers.MissingResolver;
 
 import java.lang.reflect.Type;
 import java.util.concurrent.Callable;
@@ -21,7 +20,7 @@ public class Containers {
     public static <I> Container decorateUsingActivator(final Container container, final Class<I> anInterface, final Class<? extends Callable<? extends I>> activator) {
         final Resolver<Object> existing = container.remove(anInterface);
         final DecoratorResolver decoratorResolver = new DecoratorResolver(anInterface, existing, container);
-        return (Container) container.addType(anInterface, activator(asResolver(decoratorResolver, activator), activator));
+        return (Container) container.addResolver(anInterface, activator(asResolver(decoratorResolver, activator), activator));
     }
 
     private static <I> TypeMap asResolver(final DecoratorResolver decoratorResolver, final Class<? extends Callable<? extends I>> activator) {

@@ -92,7 +92,7 @@ public class SimpleContainerTest {
     @Test
     public void shouldBeAbleToRegisterAResolverClassAsAnActivator() {
         Container container = new SimpleContainer();
-        container.addType(Node.class, NodeResolver.class);
+        container.addResolver(Node.class, NodeResolver.class);
         assertThat(container.get(Node.class), is(instanceOf(RootNode.class)));
     }
 
@@ -400,13 +400,13 @@ public class SimpleContainerTest {
     public void canStillConstructClassWithManyMatchingGenericTypeConstructors() {
         Container container = new SimpleContainer();
         container.add(ManyStringsClass3.class);
-        container.addType(new TypeFor<List<String>>() {
+        container.addResolver(new TypeFor<List<String>>() {
         }.get(), new Resolver<List<String>>() {
             public List<String> resolve(Type type) throws Exception {
                 return list("hello", "world");
             }
         });
-        container.addType(new TypeFor<List<Integer>>() {
+        container.addResolver(new TypeFor<List<Integer>>() {
         }.get(), new Resolver<List<Integer>>() {
             public List<Integer> resolve(Type type) throws Exception {
                 return list(666, 69);

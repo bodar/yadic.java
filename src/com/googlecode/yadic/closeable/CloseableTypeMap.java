@@ -9,7 +9,6 @@ import com.googlecode.yadic.resolvers.Resolvers;
 import java.io.Closeable;
 import java.io.IOException;
 import java.lang.reflect.Type;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -35,8 +34,8 @@ public class CloseableTypeMap extends BaseTypeMap implements CloseableMap<Closea
     }
 
     @Override
-    public TypeMap addType(Type type, Class<? extends Resolver<?>> resolverClass) {
-        super.addType(type, resolverClass);
+    public TypeMap addResolver(Type type, Class<? extends Resolver<?>> resolverClass) {
+        super.addResolver(type, resolverClass);
         if(isCloseable(type) && isCloseable(resolverClass)){
             removeCloseable(type);
         }
@@ -58,7 +57,7 @@ public class CloseableTypeMap extends BaseTypeMap implements CloseableMap<Closea
     }
 
     @Override
-    public TypeMap addType(Type type, Resolver<?> resolver) {
+    public TypeMap addResolver(Type type, Resolver<?> resolver) {
         if(isCloseable(type) && !(resolver instanceof Closeable)){
             addCloseable(type, type);
         }
@@ -67,7 +66,7 @@ public class CloseableTypeMap extends BaseTypeMap implements CloseableMap<Closea
             addCloseable(type, (Closeable) resolver);
         }
 
-        return super.addType(type, resolver);
+        return super.addResolver(type, resolver);
     }
 
     @Override

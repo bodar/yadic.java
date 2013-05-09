@@ -24,7 +24,7 @@ public class CloseableTypeMapTest {
     public void ifClassIsNotClosableButTheActivatorIsCallCloseOnTheActivator() throws Exception {
         CloseableTypeMap typeMap = new CloseableTypeMap(new MissingResolver());
         typeMap.addType(AtomicBoolean.class, AtomicBoolean.class);
-        typeMap.addType(String.class, ClosableStringResolver.class);
+        typeMap.addResolver(String.class, ClosableStringResolver.class);
         AtomicBoolean closed = (AtomicBoolean) typeMap.resolve(AtomicBoolean.class);
         assertThat(closed.get(), is(false));
         String resolve = (String) typeMap.resolve(String.class);
@@ -47,7 +47,7 @@ public class CloseableTypeMapTest {
         CloseableTypeMap typeMap = new CloseableTypeMap(new MissingResolver());
 
         AtomicBoolean closed = new AtomicBoolean(false);
-        typeMap.addType(SomeClosableClass.class, new CustomResolver(closed));
+        typeMap.addResolver(SomeClosableClass.class, new CustomResolver(closed));
 
         final SomeClosableClass instance = (SomeClosableClass) typeMap.resolve(SomeClosableClass.class);
         assertThat(instance.closed, CoreMatchers.is(false));
@@ -72,7 +72,7 @@ public class CloseableTypeMapTest {
     public void doesNotResolveAResolverWhenClosing() throws Exception {
         CloseableTypeMap typeMap = new CloseableTypeMap(new MissingResolver());
         CustomResolver resolver = new CustomResolver(new AtomicBoolean());
-        typeMap.addType(SomeClosableClass.class, resolver);
+        typeMap.addResolver(SomeClosableClass.class, resolver);
         assertThat(resolver.resolved(), is(false));
         assertThat(resolver.closed.get(), is(false));
         typeMap.close();
@@ -83,7 +83,7 @@ public class CloseableTypeMapTest {
     @Test
     public void doesNotCloseAResolverIfTheResolverFailedToBeCreated() throws Exception {
         CloseableTypeMap typeMap = new CloseableTypeMap(new MissingResolver());
-        typeMap.addType(SomeClosableClass.class, UnsatisfiableResolver.class);
+        typeMap.addResolver(SomeClosableClass.class, UnsatisfiableResolver.class);
         try {
             typeMap.resolve(SomeClosableClass.class);
         } catch (ContainerException e) {
@@ -96,7 +96,7 @@ public class CloseableTypeMapTest {
     public void canUseCustomResolverAndStillSupportClosingResource() throws Exception {
         CloseableTypeMap typeMap = new CloseableTypeMap(new MissingResolver());
         CustomResolver resolver = new CustomResolver(new AtomicBoolean());
-        typeMap.addType(SomeClosableClass.class, resolver);
+        typeMap.addResolver(SomeClosableClass.class, resolver);
         SomeClosableClass closable = (SomeClosableClass) typeMap.resolve(SomeClosableClass.class);
 
         assertThat(resolver.closed.get(), is(false));
@@ -112,7 +112,7 @@ public class CloseableTypeMapTest {
     public void canUseCustomResolverAndStillSupportClosingResourceEvenWhenActivatorNeedsToBeInstantiated() throws Exception {
         CloseableTypeMap typeMap = new CloseableTypeMap(new MissingResolver());
         typeMap.addType(AtomicBoolean.class, AtomicBoolean.class);
-        typeMap.addType(SomeClosableClass.class, CustomResolver.class);
+        typeMap.addResolver(SomeClosableClass.class, CustomResolver.class);
         SomeClosableClass closable = (SomeClosableClass) typeMap.resolve(SomeClosableClass.class);
         AtomicBoolean closed = (AtomicBoolean) typeMap.resolve(AtomicBoolean.class);
 
@@ -128,7 +128,7 @@ public class CloseableTypeMapTest {
     @Test
     public void closeAllClosablesEvenWhenPreviousCloseMethodsThrowException() throws Exception {
         CloseableTypeMap typeMap = new CloseableTypeMap(new MissingResolver());
-        typeMap.addType(Integer.class, ThrowingClosableResolver.forType(1));
+        typeMap.addResolver(Integer.class, ThrowingClosableResolver.forType(1));
         typeMap.addType(ThrowingClosableClass.class, ThrowingClosableClass.class);
         typeMap.addType(SomeClosableClass.class, SomeClosableClass.class);
 

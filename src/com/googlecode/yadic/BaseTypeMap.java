@@ -6,9 +6,7 @@ import com.googlecode.yadic.resolvers.ProgrammerErrorResolver;
 import com.googlecode.yadic.resolvers.Resolvers;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import static com.googlecode.totallylazy.Callables.first;
@@ -16,7 +14,6 @@ import static com.googlecode.totallylazy.Option.none;
 import static com.googlecode.totallylazy.Option.some;
 import static com.googlecode.totallylazy.Predicates.where;
 import static com.googlecode.totallylazy.Sequences.sequence;
-import static com.googlecode.totallylazy.Unchecked.cast;
 import static com.googlecode.yadic.generics.Types.matches;
 import static com.googlecode.yadic.resolvers.LazyResolver.lazy;
 import static com.googlecode.yadic.resolvers.Resolvers.*;
@@ -27,7 +24,7 @@ public class BaseTypeMap implements TypeMap {
 
     public BaseTypeMap(Resolver<?> parent) {
         this.parent = parent;
-        addType(Object.class, new ProgrammerErrorResolver(Object.class));
+        addResolver(Object.class, new ProgrammerErrorResolver(Object.class));
     }
 
     public Object resolve(Type type) throws Exception {
@@ -51,19 +48,19 @@ public class BaseTypeMap implements TypeMap {
     }
 
     public TypeMap addType(Type type, Type concrete) {
-        return addType(type, Resolvers.create(concrete, this));
+        return addResolver(type, Resolvers.create(concrete, this));
     }
 
     public TypeMap decorateType(final Type anInterface, final Type concrete) {
-        return addType(anInterface, decorator(this, anInterface, concrete));
+        return addResolver(anInterface, decorator(this, anInterface, concrete));
     }
 
-    public TypeMap addType(Type type, Class<? extends Resolver<?>> resolverClass) {
-        return addType(type, activator(this, Unchecked.<Class<Resolver<Object>>>cast(resolverClass)));
+    public TypeMap addResolver(Type type, Class<? extends Resolver<?>> resolverClass) {
+        return addResolver(type, activator(this, Unchecked.<Class<Resolver<Object>>>cast(resolverClass)));
     }
 
     @SuppressWarnings("unchecked")
-    public TypeMap addType(Type type, Resolver<?> resolver) {
+    public TypeMap addResolver(Type type, Resolver<?> resolver) {
         if (contains(type)) {
             throw new ContainerException(type.toString() + " already added to container");
         }
