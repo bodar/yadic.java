@@ -84,7 +84,7 @@ public class GenericsTest {
     @Test
     public void containerShouldSupportWildcards() throws Exception {
         Container container = new SimpleContainer();
-        container.addResolver(new TypeFor<Option<?>>() {{
+        container.addType(new TypeFor<Option<?>>() {{
         }}.get(), new OptionResolver(container, always()));
         container.add(Node.class, RootNode.class);
         container.add(FlexibleNode.class);
@@ -94,7 +94,7 @@ public class GenericsTest {
     @Test
     public void containerShouldSupportSomeOption() throws Exception {
         Container container = new SimpleContainer();
-        container.addResolver(new TypeFor<Option<Node>>() {{
+        container.addType(new TypeFor<Option<Node>>() {{
         }}.get(), new OptionResolver(container, always()));
         container.add(Node.class, RootNode.class);
         container.add(FlexibleNode.class);
@@ -104,7 +104,7 @@ public class GenericsTest {
     @Test
     public void containerShouldSupportNoneOption() throws Exception {
         Container container = new SimpleContainer();
-        container.addResolver(new TypeFor<Option<Node>>() {{
+        container.addType(new TypeFor<Option<Node>>() {{
         }}.get(), new OptionResolver(container, always()));
         container.add(FlexibleNode.class);
         Option<Node> none = Option.none(Node.class);
