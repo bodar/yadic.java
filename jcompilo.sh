@@ -1,8 +1,8 @@
 #!/bin/sh
 
-JAVA_OPTS=${JAVA_OPTS}
+JAVA_OPTS=-Djava.net.useSystemProxies=true ${JAVA_OPTS}
 BUILD_NUMBER=${BUILD_NUMBER-dev.build}
-version=125
+version=149
 artifact=jcompilo
 group=com/googlecode/${artifact}
 repo=repo.bodar.com
@@ -14,7 +14,6 @@ remote_sh=${url}.sh
 
 if [ "$1" = "update" ]; then
 	rm ${jar}
-	shift 1
 fi
 
 if [ ! -f ${jar} ]; then
@@ -22,4 +21,4 @@ if [ ! -f ${jar} ]; then
 	wget -O ${jar} ${remote_jar} || curl -o ${jar} ${remote_jar}
 	wget -O $0 ${remote_sh} || curl -o $0 ${remote_sh}
 fi
-exec java -Dbuild.number=${BUILD_NUMBER} ${JAVA_OPTS} -jar ${jar} $*
+exec java -showversion -Dbuild.number=${BUILD_NUMBER} ${JAVA_OPTS} -jar ${jar} $*
