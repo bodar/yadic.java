@@ -1,16 +1,14 @@
 package com.googlecode.yadic;
 
-import com.googlecode.yadic.examples.SomeClosableClass;
+
+import com.googlecode.yadic.examples.GenericType;
 import com.googlecode.yadic.resolvers.MissingResolver;
 import org.junit.Test;
 
-import java.io.Closeable;
-import java.io.IOException;
 import java.lang.reflect.Type;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.fail;
+import static com.googlecode.totallylazy.Sequences.sequence;
+import static org.junit.Assert.assertTrue;
 
 public class BaseTypeMapTest {
     @Test(expected = ContainerException.class)
@@ -25,5 +23,27 @@ public class BaseTypeMapTest {
         typeMap.resolve(Object.class);
     }
 
+    @Test
+    public void isAbleToIterateThroughTypes() {
+        TypeMap typeMap = new BaseTypeMap(new MissingResolver());
+        
+        typeMap.addType(GenericType.class, GenericType.class);
+        typeMap.addType(Integer.class, new Resolver<Integer>() {
+            @Override
+            public Integer resolve(Type type) throws Exception {
+                return 0;
+            }
+        });
+        typeMap.addType(Long.class, LongResolver.class);
 
+        assertTrue(sequence(typeMap).containsAll(sequence(
+                GenericType.class, Integer.class, Long.class)));
+    }
+
+    public static class LongResolver implements Resolver<Long>{
+        @Override
+        public Long resolve(Type type) throws Exception {
+            return 1L;
+        }
+    }
 }

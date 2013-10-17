@@ -3,6 +3,7 @@ package com.googlecode.yadic;
 import com.googlecode.totallylazy.Option;
 
 import java.lang.reflect.Type;
+import java.util.Iterator;
 
 public abstract class DelegatingTypeMap implements TypeMap{
     private final TypeMap map;
@@ -55,5 +56,10 @@ public abstract class DelegatingTypeMap implements TypeMap{
 
     public <T> T create(Type type) {
         return map.<T>create(type);
+    }
+
+    @Override
+    public Iterator<Type> iterator() {
+        return map.iterator();
     }
 }
