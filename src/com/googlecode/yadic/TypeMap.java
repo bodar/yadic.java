@@ -4,7 +4,7 @@ import com.googlecode.totallylazy.Option;
 
 import java.lang.reflect.Type;
 
-public interface TypeMap extends Resolver<Object>, Creator {
+public interface TypeMap extends Resolver<Object>, Creator, Iterable<Type> {
     TypeMap addType(Type type, Resolver<?> resolver);
 
     TypeMap addType(Type type, Class<? extends Resolver> resolverClass);

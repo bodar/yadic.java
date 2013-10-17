@@ -6,9 +6,8 @@ import com.googlecode.yadic.resolvers.ProgrammerErrorResolver;
 import com.googlecode.yadic.resolvers.Resolvers;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import static com.googlecode.totallylazy.Callables.first;
@@ -16,10 +15,10 @@ import static com.googlecode.totallylazy.Option.none;
 import static com.googlecode.totallylazy.Option.some;
 import static com.googlecode.totallylazy.Predicates.where;
 import static com.googlecode.totallylazy.Sequences.sequence;
-import static com.googlecode.totallylazy.Unchecked.cast;
 import static com.googlecode.yadic.generics.Types.matches;
 import static com.googlecode.yadic.resolvers.LazyResolver.lazy;
-import static com.googlecode.yadic.resolvers.Resolvers.*;
+import static com.googlecode.yadic.resolvers.Resolvers.activator;
+import static com.googlecode.yadic.resolvers.Resolvers.decorator;
 
 public class BaseTypeMap implements TypeMap {
     private final List<Pair<Type, Resolver<Object>>> activators = new CopyOnWriteArrayList<Pair<Type, Resolver<Object>>>();
@@ -98,5 +97,8 @@ public class BaseTypeMap implements TypeMap {
         return sequence(iterable).find(predicate).map(Callables.<B>second()).get();
     }
 
-
+    @Override
+    public Iterator<Type> iterator() {
+        return sequence(activators).map(first(Type.class)).filter(Predicates.<Type>is(Object.class).not()).iterator();
+    }
 }
