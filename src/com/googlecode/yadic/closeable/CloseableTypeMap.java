@@ -1,6 +1,7 @@
 package com.googlecode.yadic.closeable;
 
 import com.googlecode.totallylazy.Closeables;
+import com.googlecode.totallylazy.Predicate;
 import com.googlecode.yadic.BaseTypeMap;
 import com.googlecode.yadic.Resolver;
 import com.googlecode.yadic.TypeMap;
@@ -9,12 +10,11 @@ import com.googlecode.yadic.resolvers.Resolvers;
 import java.io.Closeable;
 import java.io.IOException;
 import java.lang.reflect.Type;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static com.googlecode.totallylazy.Sequences.sequence;
-import static com.googlecode.yadic.generics.Types.classOf;
+import static com.googlecode.yadic.generics.Types.classOption;
 
 public class CloseableTypeMap extends BaseTypeMap implements CloseableMap<CloseableTypeMap> {
     private final Map<Type, Closeable> mightClose = new ConcurrentHashMap<Type, Closeable>();
@@ -37,7 +37,7 @@ public class CloseableTypeMap extends BaseTypeMap implements CloseableMap<Closea
     @Override
     public TypeMap addType(Type type, Class<? extends Resolver> resolverClass) {
         super.addType(type, resolverClass);
-        if(isCloseable(type) && isCloseable(resolverClass)){
+        if (isCloseable(type) && isCloseable(resolverClass)) {
             removeCloseable(type);
         }
         return this;
@@ -46,7 +46,7 @@ public class CloseableTypeMap extends BaseTypeMap implements CloseableMap<Closea
     @Override
     public TypeMap addType(final Type type, final Type concrete) {
         super.addType(type, concrete);
-        if(isCloseable(concrete)) {
+        if (isCloseable(concrete)) {
             final Resolver<Object> resolver = getResolver(type);
             addCloseable(type, new Closeable() {
                 public void close() throws IOException {
@@ -59,7 +59,7 @@ public class CloseableTypeMap extends BaseTypeMap implements CloseableMap<Closea
 
     @Override
     public TypeMap addType(Type type, Resolver<?> resolver) {
-        if(isCloseable(type) && !(resolver instanceof Closeable)){
+        if (isCloseable(type) && !(resolver instanceof Closeable)) {
             addCloseable(type, type);
         }
 
@@ -109,7 +109,12 @@ public class CloseableTypeMap extends BaseTypeMap implements CloseableMap<Closea
     }
 
     public static boolean isCloseable(Type aClass) {
-        return Closeable.class.isAssignableFrom(classOf(aClass));
+        return classOption(aClass).exists(new Predicate<Class<Object>>() {
+            @Override
+            public boolean matches(Class<Object> other) {
+                return Closeable.class.isAssignableFrom(other);
+            }
+        });
     }
 
     public CloseableTypeMap removeCloseable(Type type) {

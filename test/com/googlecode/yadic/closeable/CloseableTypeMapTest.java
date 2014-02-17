@@ -1,13 +1,17 @@
 package com.googlecode.yadic.closeable;
 
+import com.googlecode.yadic.BaseTypeMap;
 import com.googlecode.yadic.ContainerException;
 import com.googlecode.yadic.Resolver;
+import com.googlecode.yadic.TypeMap;
 import com.googlecode.yadic.examples.ClosableStringResolver;
+import com.googlecode.yadic.examples.RootNode;
 import com.googlecode.yadic.examples.SomeClosableClass;
 import com.googlecode.yadic.examples.ThrowingClosableClass;
 import com.googlecode.yadic.examples.ThrowingClosableResolver;
 import com.googlecode.yadic.resolvers.MissingResolver;
 import org.hamcrest.CoreMatchers;
+import org.hamcrest.Matchers;
 import org.junit.Test;
 
 import java.io.Closeable;
@@ -17,9 +21,23 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.fail;
 
 public class CloseableTypeMapTest {
+    @Test
+    public void supportsCustomTypes() throws Exception {
+        Type custom = new Type() {};
+
+        TypeMap typeMap = new CloseableTypeMap(new BaseTypeMap(new MissingResolver()));
+        typeMap.addType(custom, RootNode.class);
+
+        Object resolve = typeMap.resolve(custom);
+        assertThat(resolve, Matchers.is(instanceOf(RootNode.class)));
+
+    }
+
+
     @Test
     public void ifClassIsNotClosableButTheActivatorIsCallCloseOnTheActivator() throws Exception {
         CloseableTypeMap typeMap = new CloseableTypeMap(new MissingResolver());
