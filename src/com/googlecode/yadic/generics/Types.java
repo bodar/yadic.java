@@ -1,5 +1,6 @@
 package com.googlecode.yadic.generics;
 
+import com.googlecode.totallylazy.Objects;
 import com.googlecode.totallylazy.Pair;
 import com.googlecode.totallylazy.Predicate;
 import com.googlecode.totallylazy.Sequence;
@@ -47,10 +48,6 @@ public class Types {
             return true;
         }
 
-        if (a instanceof Class && b instanceof Class) {
-            return a.equals(b);
-        }
-
         if (a instanceof ParameterizedType && b instanceof ParameterizedType) {
             return equalTo((ParameterizedType) a, (ParameterizedType) b);
         }
@@ -59,7 +56,7 @@ public class Types {
             return equalTo((WildcardType) a, (WildcardType) b);
         }
 
-        return false;
+        return Objects.equalTo(a, b);
     }
 
     public static boolean equalTo(WildcardType aWildcard, WildcardType bWildcard) {
@@ -94,10 +91,6 @@ public class Types {
             return true;
         }
 
-        if (concrete instanceof Class && possibleWildCard instanceof Class) {
-            return concrete.equals(possibleWildCard);
-        }
-
         if (concrete instanceof ParameterizedType && possibleWildCard instanceof ParameterizedType) {
             return matches((ParameterizedType) concrete, (ParameterizedType) possibleWildCard);
         }
@@ -110,7 +103,7 @@ public class Types {
             return withinBounds(concrete, (WildcardType) possibleWildCard);
         }
 
-        return false;
+        return Objects.equalTo(concrete, possibleWildCard);
     }
 
     public static boolean matches(WildcardType aWildcard, WildcardType bWildcard) {
