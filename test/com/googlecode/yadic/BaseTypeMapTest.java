@@ -2,15 +2,31 @@ package com.googlecode.yadic;
 
 
 import com.googlecode.yadic.examples.GenericType;
+import com.googlecode.yadic.examples.RootNode;
 import com.googlecode.yadic.resolvers.MissingResolver;
 import org.junit.Test;
 
 import java.lang.reflect.Type;
 
 import static com.googlecode.totallylazy.Sequences.sequence;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertTrue;
 
 public class BaseTypeMapTest {
+    @Test
+    public void supportsCustomTypes() throws Exception {
+        Type custom = new Type() {};
+
+        TypeMap typeMap = new BaseTypeMap(new MissingResolver());
+        typeMap.addType(custom, RootNode.class);
+
+        Object resolve = typeMap.resolve(custom);
+        assertThat(resolve, is(instanceOf(RootNode.class)));
+
+    }
+
     @Test(expected = ContainerException.class)
     public void canNeverAddAnObjectType() throws Exception {
         TypeMap typeMap = new BaseTypeMap(new MissingResolver());
