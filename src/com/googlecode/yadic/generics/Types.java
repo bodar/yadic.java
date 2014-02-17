@@ -1,6 +1,7 @@
 package com.googlecode.yadic.generics;
 
 import com.googlecode.totallylazy.Objects;
+import com.googlecode.totallylazy.Option;
 import com.googlecode.totallylazy.Pair;
 import com.googlecode.totallylazy.Predicate;
 import com.googlecode.totallylazy.Sequence;
@@ -11,6 +12,8 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.WildcardType;
 
+import static com.googlecode.totallylazy.Option.none;
+import static com.googlecode.totallylazy.Option.some;
 import static com.googlecode.totallylazy.Sequences.sequence;
 import static com.googlecode.totallylazy.Unchecked.cast;
 
@@ -34,13 +37,17 @@ public class Types {
     }
 
     public static <T> Class<T> classOf(Type concrete) {
+        return Types.<T>classOption(concrete).getOrThrow(new UnsupportedOperationException());
+    }
+
+    public static <T> Option<Class<T>> classOption(Type concrete) {
         if (concrete instanceof Class) {
-            return cast(concrete);
+            return some(Unchecked.<Class<T>>cast(concrete));
         }
         if (concrete instanceof ParameterizedType) {
-            return classOf(((ParameterizedType) concrete).getRawType());
+            return some(Types.<T>classOf(((ParameterizedType) concrete).getRawType()));
         }
-        throw new UnsupportedOperationException();
+        return none();
     }
 
     public static boolean equalTo(Type a, Type b) {
