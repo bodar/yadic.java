@@ -1,8 +1,6 @@
 package com.googlecode.yadic.resolvers;
 
-import com.googlecode.totallylazy.Callable1;
 import com.googlecode.totallylazy.Function;
-import com.googlecode.totallylazy.Function1;
 import com.googlecode.totallylazy.Returns;
 import com.googlecode.yadic.ContainerException;
 import com.googlecode.yadic.Resolver;
@@ -84,7 +82,7 @@ public class Resolvers {
         return ignored -> activator.call();
     }
 
-    public static <T> Resolver<T> asResolver(final Callable1<Type, ? extends T> activator) {
+    public static <T> Resolver<T> asResolver(final Function<Type, ? extends T> activator) {
         return activator::call;
     }
 
