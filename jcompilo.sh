@@ -1,8 +1,12 @@
-#!/bin/sh
+#!/bin/bash
+set -e
+if [ -n "${JAVA_HOME}" ]; then
+	PATH=${JAVA_HOME}/bin:${PATH}
+fi
 
-JAVA_OPTS=-Djava.net.useSystemProxies=true ${JAVA_OPTS}
+JAVA_OPTS="-Djava.net.useSystemProxies=true ${JAVA_OPTS}"
 BUILD_NUMBER=${BUILD_NUMBER-dev.build}
-version=162
+version=178
 artifact=jcompilo
 group=com/googlecode/${artifact}
 repo=repo.bodar.com
