@@ -2,8 +2,9 @@ package com.googlecode.yadic;
 
 import org.junit.Test;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import java.util.Arrays;
+
+import static com.googlecode.totallylazy.Assert.assertTrue;
 
 public class TypeCoercerTest {
     @Test
@@ -11,6 +12,6 @@ public class TypeCoercerTest {
         String input = "foo";
         Resolver<Object> resolver = new TypeCoercer(input);
         byte[] bytes = (byte[]) resolver.resolve(byte[].class);
-        assertThat(bytes, is(input.getBytes()));
+        assertTrue(Arrays.equals(bytes, input.getBytes("UTF-8")));
     }
 }

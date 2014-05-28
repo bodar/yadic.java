@@ -1,7 +1,8 @@
 package com.googlecode.yadic;
 
-import com.googlecode.totallylazy.Callable1;
+import com.googlecode.totallylazy.Function;
 import com.googlecode.totallylazy.Option;
+import com.googlecode.totallylazy.Seq;
 import com.googlecode.totallylazy.Sequence;
 
 import java.lang.reflect.Method;
@@ -47,15 +48,13 @@ public class TypeCoercer implements Resolver<Object> {
                 getOrElse(callThrows(new ContainerException(concreteClass.getName() + " does not have any callable public instance method that return " + type, exceptions)));
     }
 
-    private Callable1<Method, Option<Object>> firstSatisfiableMethod(final List<Exception> exceptions) {
-        return new Callable1<Method, Option<Object>>() {
-            public Option<Object> call(Method method) throws Exception {
-                try {
-                    return some(method.invoke(instance));
-                } catch (Exception e) {
-                    exceptions.add(e);
-                    return none();
-                }
+    private Function<Method, Option<Object>> firstSatisfiableMethod(final List<Exception> exceptions) {
+        return method -> {
+            try {
+                return some(method.invoke(instance));
+            } catch (Exception e) {
+                exceptions.add(e);
+                return none();
             }
         };
     }

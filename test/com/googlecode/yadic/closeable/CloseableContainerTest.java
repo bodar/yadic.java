@@ -1,5 +1,6 @@
 package com.googlecode.yadic.closeable;
 
+import com.googlecode.totallylazy.Assert;
 import com.googlecode.totallylazy.Closeables;
 import com.googlecode.yadic.Container;
 import com.googlecode.yadic.Containers;
@@ -14,8 +15,9 @@ import java.io.IOException;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static com.googlecode.totallylazy.matchers.Matchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static com.googlecode.totallylazy.Assert.assertThat;
+import static com.googlecode.totallylazy.Predicates.is;
+
 
 public class CloseableContainerTest {
     @Test
@@ -36,9 +38,9 @@ public class CloseableContainerTest {
 
         container.get(SomeClosableClass.class);
 
-        assertThat(instance.closed, CoreMatchers.is(false));
+        assertThat(instance.closed, is(false));
         container.close();
-        assertThat(instance.closed, CoreMatchers.is(false));
+        assertThat(instance.closed, is(false));
     }
 
     @Test
@@ -50,11 +52,11 @@ public class CloseableContainerTest {
 
         final SomeClosableClass instance = container.get(SomeClosableClass.class);
 
-        assertThat(instance.closed, CoreMatchers.is(false));
-        assertThat(activatorClosed.get(), CoreMatchers.is(false));
+        assertThat(instance.closed, is(false));
+        assertThat(activatorClosed.get(), is(false));
         container.close();
-        assertThat(instance.closed, CoreMatchers.is(false));
-        assertThat(activatorClosed.get(), CoreMatchers.is(true));
+        assertThat(instance.closed, is(false));
+        assertThat(activatorClosed.get(), is(true));
     }
 
     @Test
@@ -66,9 +68,9 @@ public class CloseableContainerTest {
 
         container.get(String.class);
 
-        assertThat(activatorClosed.get(), CoreMatchers.is(false));
+        assertThat(activatorClosed.get(), is(false));
         container.close();
-        assertThat(activatorClosed.get(), CoreMatchers.is(true));
+        assertThat(activatorClosed.get(), is(true));
     }
 
     @Test
@@ -79,11 +81,11 @@ public class CloseableContainerTest {
 
         final SomeClosableClass instance = container.get(SomeClosableClass.class);
 
-        assertThat(instance.closed, CoreMatchers.is(false));
-        assertThat(activator.closed, CoreMatchers.is(false));
+        assertThat(instance.closed, is(false));
+        assertThat(activator.closed, is(false));
         container.close();
-        assertThat(instance.closed, CoreMatchers.is(false));
-        assertThat(activator.closed, CoreMatchers.is(true));
+        assertThat(instance.closed, is(false));
+        assertThat(activator.closed, is(true));
     }
 
     @Test
@@ -97,9 +99,9 @@ public class CloseableContainerTest {
 
         final SomeClosableClass instance = container.get(SomeClosableClass.class);
 
-        assertThat(instance.closed, CoreMatchers.is(false));
+        assertThat(instance.closed, is(false));
         container.close();
-        assertThat(instance.closed, CoreMatchers.is(true));
+        assertThat(instance.closed, is(true));
     }
 
     @Test

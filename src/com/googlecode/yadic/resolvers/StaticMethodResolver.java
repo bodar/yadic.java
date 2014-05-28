@@ -1,7 +1,7 @@
 package com.googlecode.yadic.resolvers;
 
-import com.googlecode.totallylazy.Callable1;
 import com.googlecode.totallylazy.Callables;
+import com.googlecode.totallylazy.Function;
 import com.googlecode.totallylazy.Option;
 import com.googlecode.totallylazy.Sequence;
 import com.googlecode.yadic.ContainerException;
@@ -60,8 +60,8 @@ public class StaticMethodResolver<T> implements Resolver<T> {
                 getOrElse(Callables.<T>callThrows(new ContainerException(format("Could not resolve %s using static factory methods- please check root exception for details", concreteClass.getName()), exceptions)));
     }
 
-    private Callable1<Method, Comparable> arity() {
-        return new Callable1<Method, Comparable>() {
+    private Function<Method, Comparable> arity() {
+        return new Function<Method, Comparable>() {
             @Override
             public Comparable call(Method method) throws Exception {
                 return method.getParameterTypes().length;
@@ -69,8 +69,8 @@ public class StaticMethodResolver<T> implements Resolver<T> {
         };
     }
 
-    private Callable1<Method, Option<Object>> firstSatisfiableMethod(final List<Exception> exceptions, final Type type) {
-        return new Callable1<Method, Option<Object>>() {
+    private Function<Method, Option<Object>> firstSatisfiableMethod(final List<Exception> exceptions, final Type type) {
+        return new Function<Method, Option<Object>>() {
             public Option<Object> call(Method method) throws Exception {
                 try {
                     Object[] instances = convertParametersToInstances(resolver, type, concreteClass, sequence(method.getGenericParameterTypes()));

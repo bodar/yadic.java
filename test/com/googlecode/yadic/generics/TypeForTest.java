@@ -4,8 +4,8 @@ import org.junit.Test;
 
 import java.lang.reflect.Type;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static com.googlecode.totallylazy.Assert.assertThat;
+import static com.googlecode.totallylazy.Predicates.is;
 
 public class TypeForTest {
     @Test
