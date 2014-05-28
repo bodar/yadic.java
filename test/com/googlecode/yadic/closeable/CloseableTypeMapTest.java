@@ -11,7 +11,6 @@ import com.googlecode.yadic.examples.ThrowingClosableClass;
 import com.googlecode.yadic.examples.ThrowingClosableResolver;
 import com.googlecode.yadic.resolvers.MissingResolver;
 import org.hamcrest.CoreMatchers;
-import org.hamcrest.Matchers;
 import org.junit.Test;
 
 import java.io.Closeable;
@@ -19,10 +18,11 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.junit.Assert.fail;
+import static com.googlecode.totallylazy.Assert.assertThat;
+import static com.googlecode.totallylazy.Assert.fail;
+import static com.googlecode.totallylazy.Predicates.instanceOf;
+import static com.googlecode.totallylazy.Predicates.is;
+
 
 public class CloseableTypeMapTest {
     @Test
@@ -33,7 +33,7 @@ public class CloseableTypeMapTest {
         typeMap.addType(custom, RootNode.class);
 
         Object resolve = typeMap.resolve(custom);
-        assertThat(resolve, Matchers.is(instanceOf(RootNode.class)));
+        assertThat(resolve, is(instanceOf(RootNode.class)));
 
     }
 
@@ -68,12 +68,12 @@ public class CloseableTypeMapTest {
         typeMap.addType(SomeClosableClass.class, new CustomResolver(closed));
 
         final SomeClosableClass instance = (SomeClosableClass) typeMap.resolve(SomeClosableClass.class);
-        assertThat(instance.closed, CoreMatchers.is(false));
+        assertThat(instance.closed, is(false));
 
         typeMap.close();
 
-        assertThat(closed.get(), CoreMatchers.is(true));
-        assertThat(instance.closed, CoreMatchers.is(false));
+        assertThat(closed.get(), is(true));
+        assertThat(instance.closed, is(false));
     }
 
     @Test

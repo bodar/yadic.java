@@ -1,6 +1,6 @@
 package com.googlecode.yadic.generics;
 
-import com.googlecode.totallylazy.Callable1;
+import com.googlecode.totallylazy.Function;
 import com.googlecode.totallylazy.Maps;
 import com.googlecode.totallylazy.Sequence;
 import com.googlecode.yadic.Resolver;
@@ -15,7 +15,7 @@ import static com.googlecode.totallylazy.Sequences.sequence;
 import static com.googlecode.yadic.resolvers.Resolvers.asFunction1;
 
 
-public class TypeConverter<T> implements Callable1<Type, Type> {
+public class TypeConverter implements Function<Type, Type> {
     private final Map<TypeVariable, Type> typeMap;
 
     public TypeConverter(Map<TypeVariable, Type> typeMap) {
@@ -47,7 +47,7 @@ public class TypeConverter<T> implements Callable1<Type, Type> {
     public static Map<TypeVariable, Type> typeMap(Type requiredType, Class concreteType) {
         return typeArgumentsOf(concreteType).
                 zip(typeArgumentsOf(requiredType)).
-                fold(new HashMap<TypeVariable, Type>(), Maps.<TypeVariable, Type>asMap());
+                fold(new HashMap<>(), Maps.<TypeVariable, Type>asMap());
     }
 
     public static Sequence<Type> typeArgumentsOf(Type type) {

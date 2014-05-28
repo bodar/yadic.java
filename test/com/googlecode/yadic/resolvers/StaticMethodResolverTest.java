@@ -10,9 +10,9 @@ import org.junit.Test;
 
 import java.util.concurrent.TimeUnit;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static com.googlecode.totallylazy.Assert.assertThat;
+import static com.googlecode.totallylazy.Predicates.is;
+import static com.googlecode.totallylazy.Predicates.notNullValue;
 
 public class StaticMethodResolverTest {
 
@@ -32,7 +32,7 @@ public class StaticMethodResolverTest {
     public void supportsStaticFactoryMethodWithSameName() throws Exception {
         StaticMethodResolver<MyStaticMethodClass> resolver = StaticMethodResolver.staticMethodResolver(containerWith("foobar"), MyStaticMethodClass.class);
         MyStaticMethodClass staticMethodClass = resolver.resolve(MyStaticMethodClass.class);
-        assertThat(staticMethodClass, is(notNullValue()));
+        assertThat(staticMethodClass, is(notNullValue(MyStaticMethodClass.class)));
         assertThat(staticMethodClass.constructedBy, is("myStaticMethodClass1"));
     }
 
@@ -40,7 +40,7 @@ public class StaticMethodResolverTest {
     public void choosesLargestArity() throws Exception {
         StaticMethodResolver<MyStaticMethodClass> resolver = StaticMethodResolver.staticMethodResolver(containerWith("foobar").addInstance(Integer.class, 1), MyStaticMethodClass.class);
         MyStaticMethodClass staticMethodClass = resolver.resolve(MyStaticMethodClass.class);
-        assertThat(staticMethodClass, is(notNullValue()));
+        assertThat(staticMethodClass, is(notNullValue(MyStaticMethodClass.class)));
         assertThat(staticMethodClass.constructedBy, is("myStaticMethodClass2"));
     }
 
