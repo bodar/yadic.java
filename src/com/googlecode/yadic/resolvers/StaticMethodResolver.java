@@ -61,24 +61,17 @@ public class StaticMethodResolver<T> implements Resolver<T> {
     }
 
     private Function<Method, Comparable> arity() {
-        return new Function<Method, Comparable>() {
-            @Override
-            public Comparable call(Method method) throws Exception {
-                return method.getParameterTypes().length;
-            }
-        };
+        return method -> method.getParameterTypes().length;
     }
 
     private Function<Method, Option<Object>> firstSatisfiableMethod(final List<Exception> exceptions, final Type type) {
-        return new Function<Method, Option<Object>>() {
-            public Option<Object> call(Method method) throws Exception {
-                try {
-                    Object[] instances = convertParametersToInstances(resolver, type, concreteClass, sequence(method.getGenericParameterTypes()));
-                    return some(method.invoke(null, instances));
-                } catch (Exception e) {
-                    exceptions.add(e);
-                    return none();
-                }
+        return method -> {
+            try {
+                Object[] instances = convertParametersToInstances(resolver, type, concreteClass, sequence(method.getGenericParameterTypes()));
+                return some(method.invoke(null, instances));
+            } catch (Exception e) {
+                exceptions.add(e);
+                return none();
             }
         };
     }
