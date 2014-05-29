@@ -1,5 +1,6 @@
 package com.googlecode.yadic.collections;
 
+import com.googlecode.yadic.ContainerException;
 import com.googlecode.yadic.Resolver;
 import com.googlecode.yadic.examples.ChildNode;
 import com.googlecode.yadic.examples.RootNode;
@@ -12,7 +13,7 @@ import static com.googlecode.totallylazy.collections.PersistentList.constructors
 import static com.googlecode.yadic.collections.Activator.activator;
 import static com.googlecode.yadic.collections.ListResolver.listResolver;
 
-public class ClassMapsTest {
+public class ListResolverTest {
     @Test
     public void supportsConstructionOfClass() throws Exception {
         Resolver<?> resolver = listResolver(list(activator(RootNode.class)));
@@ -44,5 +45,8 @@ public class ClassMapsTest {
         assertThat(instance.closed, is(true));
     }
 
-
+    @Test(expected = ContainerException.class)
+    public void throwsExceptionIfNotFound() throws Exception {
+        listResolver(list()).resolve(SomeClosableClass.class);
+    }
 }
