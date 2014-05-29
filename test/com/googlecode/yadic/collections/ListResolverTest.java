@@ -3,6 +3,7 @@ package com.googlecode.yadic.collections;
 import com.googlecode.yadic.ContainerException;
 import com.googlecode.yadic.Resolver;
 import com.googlecode.yadic.examples.ChildNode;
+import com.googlecode.yadic.examples.Node;
 import com.googlecode.yadic.examples.RootNode;
 import com.googlecode.yadic.examples.SomeClosableClass;
 import org.junit.Test;
@@ -49,4 +50,12 @@ public class ListResolverTest {
     public void throwsExceptionIfNotFound() throws Exception {
         listResolver(list()).resolve(SomeClosableClass.class);
     }
+
+    @Test
+    public void supportsRegisteringAgainstInterfaces() throws Exception {
+        ListResolver resolver = listResolver(list(activator(RootNode.class).interfaces(Node.class)));
+        Node instance = (Node) resolver.resolve(Node.class);
+        assertThat(instance, instanceOf(RootNode.class));
+    }
+
 }
