@@ -1,12 +1,12 @@
 package com.googlecode.yadic.collections;
 
+import com.googlecode.totallylazy.collections.PersistentList;
 import com.googlecode.yadic.ContainerException;
 import com.googlecode.yadic.Resolver;
-import com.googlecode.yadic.examples.ChildNode;
-import com.googlecode.yadic.examples.Node;
-import com.googlecode.yadic.examples.RootNode;
-import com.googlecode.yadic.examples.SomeClosableClass;
+import com.googlecode.yadic.examples.*;
 import org.junit.Test;
+
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.googlecode.totallylazy.Assert.assertThat;
 import static com.googlecode.totallylazy.Predicates.*;
@@ -57,5 +57,41 @@ public class ListResolverTest {
         Node instance = (Node) resolver.resolve(Node.class);
         assertThat(instance, instanceOf(RootNode.class));
     }
+
+    @Test
+    public void supportsDecoration() throws Exception {
+        PersistentList<Activator<?>> original = list(activator(RootNode.class).interfaces(Node.class));
+        ListResolver resolver = listResolver(activator(DecoratedNode.class).decorate(original, Node.class));
+        DecoratedNode instance = (DecoratedNode) resolver.resolve(Node.class);
+        assertThat(instance.parent(), instanceOf(RootNode.class));
+    }
+
+    @Test
+    public void supportsCustomConstruction() throws Exception {
+        RootNode instance = new RootNode();
+        ListResolver resolver = listResolver(list(activator(RootNode.class).constructor(list -> instance)));
+        assertThat(resolver.resolve(RootNode.class), sameInstance(instance));
+    }
+
+    @Test
+    public void supportsInstance() throws Exception {
+        RootNode instance = new RootNode();
+        ListResolver resolver = listResolver(list(activator(RootNode.class).instance(instance)));
+        assertThat(resolver.resolve(RootNode.class), sameInstance(instance));
+    }
+
+    @Test
+    public void supportsCustomDestruction() throws Exception {
+        AtomicBoolean called = new AtomicBoolean(false);
+        ListResolver resolver = listResolver(list(activator(SomeClosableClass.class).destructor(instance -> called.set(true))));
+        SomeClosableClass instance = (SomeClosableClass) resolver.resolve(SomeClosableClass.class);
+        assertThat(called.get(), is(false));
+        assertThat(instance.closed, is(false));
+        resolver.close();
+        assertThat(called.get(), is(true));
+        assertThat(instance.closed, is(false));
+    }
+
+
 
 }
