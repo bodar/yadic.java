@@ -1,11 +1,15 @@
 package com.googlecode.yadic.collections;
 
+import com.googlecode.totallylazy.Eq;
+import com.googlecode.totallylazy.Value;
+import com.googlecode.totallylazy.annotations.multimethod;
 import com.googlecode.totallylazy.collections.PersistentList;
 import com.googlecode.yadic.ContainerException;
 import com.googlecode.yadic.Resolver;
 import com.googlecode.yadic.examples.*;
 import org.junit.Test;
 
+import java.lang.reflect.Type;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.googlecode.totallylazy.Assert.assertThat;
@@ -91,7 +95,4 @@ public class ListResolverTest {
         assertThat(called.get(), is(true));
         assertThat(instance.closed, is(false));
     }
-
-
-
 }
