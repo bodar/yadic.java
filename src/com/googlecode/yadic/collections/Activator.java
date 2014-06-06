@@ -58,7 +58,7 @@ public class Activator<T> implements Function<Iterable<Activator<?>>, T>, Predic
                 type -> sequence(interfaces).exists(i -> Types.matches(i, type)));
     }
 
-    public PersistentList<Activator<?>> decorate(PersistentList<Activator<?>> activators, Class<?> decorate) {
+    public PersistentList<Activator<?>> decorate(PersistentList<Activator<?>> activators, Type decorate) {
         Activator<?> original = activators.find(a -> a.matches(decorate)).get();
         return activators.delete(original).
                 cons(new Activator<>(
