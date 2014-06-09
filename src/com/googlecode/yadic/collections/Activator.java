@@ -83,5 +83,4 @@ public class Activator<T> implements Function<Iterable<Activator<?>>, T>, Predic
                         type -> Types.matches(typeToDecorate, type))
         ));
     }
-
 }
