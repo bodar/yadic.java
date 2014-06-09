@@ -1,15 +1,11 @@
 package com.googlecode.yadic.collections;
 
-import com.googlecode.totallylazy.Eq;
-import com.googlecode.totallylazy.Value;
-import com.googlecode.totallylazy.annotations.multimethod;
 import com.googlecode.totallylazy.collections.PersistentList;
 import com.googlecode.yadic.ContainerException;
 import com.googlecode.yadic.Resolver;
 import com.googlecode.yadic.examples.*;
 import org.junit.Test;
 
-import java.lang.reflect.Type;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.googlecode.totallylazy.Assert.assertThat;
@@ -65,7 +61,8 @@ public class ListResolverTest {
     @Test
     public void supportsDecoration() throws Exception {
         PersistentList<Activator<?>> original = list(activator(RootNode.class).interfaces(Node.class));
-        ListResolver resolver = listResolver(activator(DecoratedNode.class).decorate(original, Node.class));
+        ListResolver resolver = listResolver(activator(DecoratedNode.class).decorate(Node.class,
+                original));
         DecoratedNode instance = (DecoratedNode) resolver.resolve(Node.class);
         assertThat(instance.parent(), instanceOf(RootNode.class));
     }
@@ -95,4 +92,6 @@ public class ListResolverTest {
         assertThat(called.get(), is(true));
         assertThat(instance.closed, is(false));
     }
+
+
 }

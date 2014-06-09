@@ -7,6 +7,7 @@ import com.googlecode.totallylazy.Sequences;
 import com.googlecode.totallylazy.callables.LazyFunction;
 import com.googlecode.totallylazy.collections.PersistentList;
 import com.googlecode.yadic.generics.Types;
+import com.googlecode.yadic.resolvers.Resolvers;
 
 import java.lang.reflect.Type;
 
@@ -21,7 +22,7 @@ public class Activator<T> implements Function<Iterable<Activator<?>>, T>, Predic
     private final Predicate<? super Type> matcher;
     private final LazyFunction<Iterable<Activator<?>>, T> instances;
 
-    private Activator(Function<? super Iterable<Activator<?>>, T> constructor, Block<? super T> destructor, Predicate<? super Type> matcher) {
+    public Activator(Function<? super Iterable<Activator<?>>, T> constructor, Block<? super T> destructor, Predicate<? super Type> matcher) {
         this.matcher = matcher;
         this.constructor = constructor;
         this.destructor = destructor;
@@ -45,8 +46,8 @@ public class Activator<T> implements Function<Iterable<Activator<?>>, T>, Predic
 
     public static <T> Activator<T> activator(Class<T> aClass) {
         return new Activator<T>(
-                list -> cast(create(aClass, ListResolver.listResolver(list)).resolve(aClass)),
-                AutoCloseable.class.isAssignableFrom(aClass) ? t -> ((AutoCloseable) t).close() : t -> {},
+                list -> Activators.create(aClass, list),
+                Activators.destructor(aClass),
                 type -> Types.matches(aClass, type));
     }
 
@@ -58,14 +59,6 @@ public class Activator<T> implements Function<Iterable<Activator<?>>, T>, Predic
                 type -> sequence(interfaces).exists(i -> Types.matches(i, type)));
     }
 
-    public PersistentList<Activator<?>> decorate(PersistentList<Activator<?>> activators, Type decorate) {
-        Activator<?> original = activators.find(a -> a.matches(decorate)).get();
-        return activators.delete(original).
-                cons(new Activator<>(
-                        list -> constructor.apply(Sequences.cons(original, list)),
-                        destructor,
-                        type -> Types.matches(decorate, type)));
-    }
 
     public Activator<T> constructor(Function<? super Iterable<Activator<?>>, T> constructor) {
         return new Activator<>(constructor, destructor, matcher);
@@ -78,4 +71,14 @@ public class Activator<T> implements Function<Iterable<Activator<?>>, T>, Predic
     public Activator<T> destructor(Block<T> destructor) {
         return new Activator<>(constructor, destructor, matcher);
     }
+
+    public PersistentList<Activator<?>> decorate(Type typeToDecorate, PersistentList<Activator<?>> activators) {
+        Activator<?> original = activators.find(a -> a.matches(typeToDecorate)).get();
+        return activators.delete(original).
+                cons(new Activator<>(
+                        list -> constructor.call(Sequences.cons(original, list)),
+                        destructor,
+                        type -> Types.matches(typeToDecorate, type)));
+    }
+
 }
