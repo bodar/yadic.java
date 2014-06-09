@@ -61,8 +61,7 @@ public class ListResolverTest {
     @Test
     public void supportsDecoration() throws Exception {
         PersistentList<Activator<?>> original = list(activator(RootNode.class).interfaces(Node.class));
-        ListResolver resolver = listResolver(activator(DecoratedNode.class).decorate(Node.class,
-                original));
+        ListResolver resolver = listResolver(activator(DecoratedNode.class).decorate(Node.class, original));
         DecoratedNode instance = (DecoratedNode) resolver.resolve(Node.class);
         assertThat(instance.parent(), instanceOf(RootNode.class));
     }
