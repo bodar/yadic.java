@@ -12,28 +12,28 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static com.googlecode.totallylazy.Assert.assertThat;
 import static com.googlecode.totallylazy.Predicates.*;
 import static com.googlecode.totallylazy.collections.PersistentList.constructors.list;
-import static com.googlecode.yadic.collections.Activator.activator;
+import static com.googlecode.yadic.collections.Activator.concreate;
 import static com.googlecode.yadic.collections.Activator.instance;
 import static com.googlecode.yadic.collections.ListResolver.listResolver;
 
 public class ListResolverTest {
     @Test
-    public void supportsConstructionOfClass() throws Exception {
-        Resolver<?> resolver = listResolver(list(activator(RootNode.class)));
+    public void supportsCreatingAClassByConstructors() throws Exception {
+        Resolver<?> resolver = listResolver(concreate(RootNode.class));
         Object instance = resolver.resolve(RootNode.class);
         assertThat(instance, instanceOf(RootNode.class));
     }
 
     @Test
     public void supportsDependencies() throws Exception {
-        Resolver<?> resolver = listResolver(list(activator(RootNode.class), activator(ChildNode.class)));
+        Resolver<?> resolver = listResolver(concreate(RootNode.class), concreate(ChildNode.class));
         Object instance = resolver.resolve(ChildNode.class);
         assertThat(instance, instanceOf(ChildNode.class));
     }
 
     @Test
     public void onlyCreatesObjectsOnce() throws Exception {
-        Resolver<?> resolver = listResolver(list(activator(RootNode.class), activator(ChildNode.class)));
+        Resolver<?> resolver = listResolver(concreate(RootNode.class), concreate(ChildNode.class));
         ChildNode instance = (ChildNode) resolver.resolve(ChildNode.class);
         assertThat(resolver.resolve(ChildNode.class), sameInstance(instance));
         assertThat(resolver.resolve(RootNode.class), sameInstance(instance.parent()));
@@ -41,7 +41,7 @@ public class ListResolverTest {
 
     @Test
     public void supportsClosingClass() throws Exception {
-        ListResolver resolver = listResolver(list(activator(SomeClosableClass.class)));
+        ListResolver resolver = listResolver(concreate(SomeClosableClass.class));
         SomeClosableClass instance = (SomeClosableClass) resolver.resolve(SomeClosableClass.class);
         assertThat(instance.closed, is(false));
         resolver.close();
@@ -55,15 +55,15 @@ public class ListResolverTest {
 
     @Test
     public void supportsRegisteringAgainstInterfaces() throws Exception {
-        ListResolver resolver = listResolver(list(activator(RootNode.class).interfaces(Node.class)));
+        ListResolver resolver = listResolver(list(concreate(RootNode.class).interfaces(Node.class)));
         Node instance = (Node) resolver.resolve(Node.class);
         assertThat(instance, instanceOf(RootNode.class));
     }
 
     @Test
     public void supportsDecoration() throws Exception {
-        PersistentList<Activator<?>> original = list(activator(RootNode.class).interfaces(Node.class));
-        ListResolver resolver = listResolver(activator(DecoratedNode.class).decorate(Node.class, original));
+        PersistentList<Activator<?>> original = list(concreate(RootNode.class).interfaces(Node.class));
+        ListResolver resolver = listResolver(concreate(DecoratedNode.class).decorate(Node.class, original));
         DecoratedNode instance = (DecoratedNode) resolver.resolve(Node.class);
         assertThat(instance.parent(), instanceOf(RootNode.class));
     }
@@ -71,7 +71,7 @@ public class ListResolverTest {
     @Test
     public void supportsCustomConstruction() throws Exception {
         RootNode instance = new RootNode();
-        ListResolver resolver = listResolver(list(activator(RootNode.class).constructor(list -> instance)));
+        ListResolver resolver = listResolver(list(concreate(RootNode.class).constructor(list -> instance)));
         assertThat(resolver.resolve(RootNode.class), sameInstance(instance));
     }
 
@@ -92,7 +92,7 @@ public class ListResolverTest {
     @Test
     public void supportsCustomDestruction() throws Exception {
         AtomicBoolean called = new AtomicBoolean(false);
-        ListResolver resolver = listResolver(list(activator(SomeClosableClass.class).destructor(instance -> called.set(true))));
+        ListResolver resolver = listResolver(list(concreate(SomeClosableClass.class).destructor(instance -> called.set(true))));
         SomeClosableClass instance = (SomeClosableClass) resolver.resolve(SomeClosableClass.class);
         assertThat(called.get(), is(false));
         assertThat(instance.closed, is(false));
@@ -106,8 +106,8 @@ public class ListResolverTest {
         Resolver resolver = listResolver(list(
                 instance("bob"),
                 instance(1),
-                activator(GenericType.class).types(new TypeFor<GenericType<Integer>>() { }),
-                activator(UsesGenericType.class)
+                concreate(GenericType.class).types(new TypeFor<GenericType<Integer>>() { }),
+                concreate(UsesGenericType.class)
         ));
         UsesGenericType genericType = (UsesGenericType) resolver.resolve(UsesGenericType.class);
         assertThat(genericType.instance().instance(), is(1));
