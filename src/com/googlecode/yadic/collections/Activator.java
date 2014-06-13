@@ -14,31 +14,32 @@ import static com.googlecode.totallylazy.Sequences.sequence;
 import static com.googlecode.totallylazy.Unchecked.cast;
 
 public class Activator<T> implements Function2<Type, Iterable<Activator<?>>, T>, Predicate<Type>, AutoCloseable, Value<Sequence<T>> {
+    private final Predicate<? super Type> matcher;
     private final Function2<? super Type, ? super Iterable<Activator<?>>, T> constructor;
     private final Block<? super T> destructor;
-    private final Predicate<? super Type> matcher;
     private final LazyFunction<Pair<Type, Iterable<Activator<?>>>, T> instances;
 
-    private Activator(Function2<? super Type, ? super Iterable<Activator<?>>, T> constructor, Block<? super T> destructor, Predicate<? super Type> matcher) {
+    private Activator(Predicate<? super Type> matcher, Function2<? super Type, ? super Iterable<Activator<?>>, T> constructor, Block<? super T> destructor) {
         this.matcher = matcher;
         this.constructor = constructor;
         this.destructor = destructor;
         instances = LazyFunction.lazy(p -> constructor.call(p.first(), p.second()));
     }
 
-    public static <T> Activator<T> activator(Function2<? super Type, ? super Iterable<Activator<?>>, T> constructor, Block<? super T> destructor, Predicate<? super Type> matcher) {
-        return new Activator<T>(constructor, destructor, matcher);
+    public static <T> Activator<T> activator(Predicate<? super Type> matcher, Function2<? super Type, ? super Iterable<Activator<?>>, T> constructor, Block<? super T> destructor) {
+        return new Activator<T>(matcher, constructor, destructor);
     }
 
-    public static <T> Activator<T> activator(Class<T> aClass) {
+    public static <T> Activator<T> concreate(Class<T> aClass) {
         return activator(
-                (type, list) -> Activators.create(type, aClass, list),
-                Activators.destructor(aClass),
-                type -> Types.matches(aClass, type));
+                Activators.types(aClass),
+                Activators.create(aClass),
+                Activators.destructor(aClass)
+        );
     }
 
     public static <T> Activator<T> instance(T instance) {
-        return Activator.<T>activator(cast(instance.getClass())).
+        return Activator.<T>concreate(cast(instance.getClass())).
                 constructor(constant(instance));
     }
 
@@ -77,7 +78,7 @@ public class Activator<T> implements Function2<Type, Iterable<Activator<?>>, T>,
     }
 
     public Activator<T> types(Iterable<? extends Type> types) {
-        return matcher(type -> sequence(types).exists(i -> Types.matches(i, type)));
+        return matcher(Activators.types(types));
     }
 
     public Activator<T> constructor(Returns<T> constructor) {
@@ -89,23 +90,24 @@ public class Activator<T> implements Function2<Type, Iterable<Activator<?>>, T>,
     }
 
     public Activator<T> constructor(Function2<Type, ? super Iterable<Activator<?>>, T> constructor) {
-        return activator(constructor, destructor, matcher);
+        return activator(matcher, constructor, destructor);
     }
 
     public Activator<T> destructor(Block<T> destructor) {
-        return activator(constructor, destructor, matcher);
+        return activator(matcher, constructor, destructor);
     }
 
     public Activator<T> matcher(Predicate<? super Type> predicate) {
-        return activator(constructor, destructor, predicate);
+        return activator(predicate, constructor, destructor);
     }
 
     public PersistentList<Activator<?>> decorate(Type typeToDecorate, PersistentList<Activator<?>> activators) {
         return activators.map(when(a -> a.matches(typeToDecorate),
-                original -> activator(
+                original -> Activator.activator(
+                        type -> Types.matches(typeToDecorate, type),
                         (type, list) -> constructor.call(type, Sequences.cons(original, list)),
-                        destructor,
-                        type -> Types.matches(typeToDecorate, type))
+                        destructor
+                )
         ));
     }
 }

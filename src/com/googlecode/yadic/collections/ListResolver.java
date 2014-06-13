@@ -1,11 +1,12 @@
 package com.googlecode.yadic.collections;
 
 import com.googlecode.totallylazy.Sequence;
-import com.googlecode.totallylazy.Sequences;
 import com.googlecode.yadic.Resolver;
 import com.googlecode.yadic.resolvers.MissingResolver;
 
 import java.lang.reflect.Type;
+
+import static com.googlecode.totallylazy.Sequences.sequence;
 
 public class ListResolver implements Resolver<Object>, AutoCloseable {
     private final Sequence<Activator<?>> list;
@@ -13,7 +14,15 @@ public class ListResolver implements Resolver<Object>, AutoCloseable {
 
     private ListResolver(Iterable<? extends Activator<?>> list, Resolver<?> parent) {
         this.parent = parent;
-        this.list = Sequences.sequence(list);
+        this.list = sequence(list);
+    }
+
+    public static ListResolver listResolver(Activator<?>... list) {
+        return listResolver(new MissingResolver(), list);
+    }
+
+    public static ListResolver listResolver(Resolver<?> parent, Activator<?>... list) {
+        return listResolver(parent, sequence(list));
     }
 
     public static ListResolver listResolver(Iterable<? extends Activator<?>> list) {
