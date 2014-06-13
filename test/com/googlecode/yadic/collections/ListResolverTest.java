@@ -4,6 +4,7 @@ import com.googlecode.totallylazy.collections.PersistentList;
 import com.googlecode.yadic.ContainerException;
 import com.googlecode.yadic.Resolver;
 import com.googlecode.yadic.examples.*;
+import com.googlecode.yadic.generics.TypeFor;
 import org.junit.Test;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -12,6 +13,7 @@ import static com.googlecode.totallylazy.Assert.assertThat;
 import static com.googlecode.totallylazy.Predicates.*;
 import static com.googlecode.totallylazy.collections.PersistentList.constructors.list;
 import static com.googlecode.yadic.collections.Activator.activator;
+import static com.googlecode.yadic.collections.Activator.instance;
 import static com.googlecode.yadic.collections.ListResolver.listResolver;
 
 public class ListResolverTest {
@@ -75,9 +77,16 @@ public class ListResolverTest {
 
     @Test
     public void supportsInstance() throws Exception {
-        RootNode instance = new RootNode();
-        ListResolver resolver = listResolver(list(activator(RootNode.class).instance(instance)));
-        assertThat(resolver.resolve(RootNode.class), sameInstance(instance));
+        RootNode rootNode = new RootNode();
+        ListResolver resolver = listResolver(list(instance(rootNode)));
+        assertThat(resolver.resolve(RootNode.class), sameInstance(rootNode));
+    }
+
+    @Test
+    public void supportsInstanceWithSpecificInterface() throws Exception {
+        RootNode rootNode = new RootNode();
+        ListResolver resolver = listResolver(list(instance(rootNode).interfaces(Node.class)));
+        assertThat(resolver.resolve(Node.class), sameInstance(rootNode));
     }
 
     @Test
@@ -90,6 +99,18 @@ public class ListResolverTest {
         resolver.close();
         assertThat(called.get(), is(true));
         assertThat(instance.closed, is(false));
+    }
+
+    @Test
+    public void supportsGenerics() throws Exception {
+        Resolver resolver = listResolver(list(
+                instance("bob"),
+                instance(1),
+                activator(GenericType.class).types(new TypeFor<GenericType<Integer>>() { }),
+                activator(UsesGenericType.class)
+        ));
+        UsesGenericType genericType = (UsesGenericType) resolver.resolve(UsesGenericType.class);
+        assertThat(genericType.instance().instance(), is(1));
     }
 
 
