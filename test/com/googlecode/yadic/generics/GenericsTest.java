@@ -25,12 +25,8 @@ public class GenericsTest {
     public void containerShouldSupportGenericsDecoration() throws Exception {
         Container container = new SimpleContainer();
         container.addInstance(Integer.class, 1);
-        container.addType(new TypeFor<Instance<Integer>>() {
-        }.get(), new TypeFor<GenericType<Integer>>() {
-        }.get());
-        container.decorateType(new TypeFor<Instance<Integer>>() {
-        }.get(), new TypeFor<DecoratedGenericType<Integer>>() {
-        }.get());
+        container.addType(new TypeFor<Instance<Integer>>(){}.get(), GenericType.class);
+        container.decorateType(new TypeFor<Instance<Integer>>(){}.get(), DecoratedGenericType.class);
         Instance<Integer> instance = (Instance<Integer>) container.resolve(new TypeFor<Instance<Integer>>(){{}}.get());
         assertThat(instance, is(instanceOf(DecoratedGenericType.class)));
     }
@@ -39,8 +35,7 @@ public class GenericsTest {
     public void containerShouldSupportGenericWithWildCardOnConcrete() throws Exception {
         Container container = new SimpleContainer();
         container.addInstance(Integer.class, 1);
-        container.addType(new TypeFor<GenericType<?>>() {{
-        }}.get(), new TypeFor<GenericType<?>>() {{
+        container.addType(new TypeFor<GenericType<?>>(){}.get(), new TypeFor<GenericType<?>>() {{
         }}.get());
         GenericType<Integer> genericType = (GenericType<Integer>) container.resolve(new TypeFor<GenericType<Integer>>(){{}}.get());
         assertThat(genericType.instance(), is(1));

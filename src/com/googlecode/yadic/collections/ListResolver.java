@@ -28,7 +28,7 @@ public class ListResolver implements Resolver<Object>, AutoCloseable {
     public Object resolve(Type type) throws Exception {
         return list.
                 find(a -> a.matches(type)).
-                map(a -> (Object) a.apply(list)).
+                map(a -> (Object) a.apply(type, list)).
                 getOrElse(() -> parent.resolve(type));
     }
 
