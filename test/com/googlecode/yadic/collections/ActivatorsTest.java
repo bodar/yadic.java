@@ -16,4 +16,11 @@ public class ActivatorsTest {
         assertThat(listResolver(activator(types(Node.class), constructor(RootNode.class), destructor(RootNode.class))).
                 resolve(Node.class), instanceOf(RootNode.class));
     }
+
+    @Test
+    public void supportsConcete() throws Exception {
+        assertThat(listResolver(concrete(RootNode.class)).
+                resolve(RootNode.class), instanceOf(RootNode.class));
+    }
+
 }

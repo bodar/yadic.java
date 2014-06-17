@@ -11,6 +11,7 @@ import java.lang.reflect.Type;
 
 import static com.googlecode.totallylazy.Sequences.sequence;
 import static com.googlecode.totallylazy.Unchecked.cast;
+import static com.googlecode.yadic.collections.Activator.activator;
 import static com.googlecode.yadic.collections.ListResolver.listResolver;
 
 public interface Activators {
@@ -36,5 +37,9 @@ public interface Activators {
 
     static Predicate<Type> types(Iterable<? extends Type> types) {
         return type -> sequence(types).exists(i -> Types.matches(i, type));
+    }
+
+    static <T> Activator<T> concrete(Class<T> aClass) {
+        return activator(types(aClass), constructor(aClass), destructor(aClass));
     }
 }
