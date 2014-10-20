@@ -3,9 +3,9 @@ yadic.java
 
 Yet Another Dependency Injection Container (Java version)
 
-A _super small_ and _lightening fast_ *dependency injection* container for .Net and Java written in F# and ~~Scala~~ Java respectively.
+A _super small_ and _lightening fast_ *dependency injection* container for Java written in Java.
 
-The Java version has switched back to Java using [totallylazy](http://code.google.com/p/totallylazy/) for the nice functional parts.
+Yadic (.Net) is still on [Google Code](http://code.google.com/p/yadic/)*
 
 Yadic is now available for [Ruby](http://github.com/benbc/yadic.rb)
 
