@@ -22,5 +22,4 @@ Yadic is now available for [Ruby](http://github.com/benbc/yadic.rb)
 Maven repo  => http://repo.bodar.com/
 
 
-Thanks to [JProfiler](http://www.ej-technologies.com/products/jprofiler/overview.html) for providing an Open Source License 
-
+Thanks to [JProfiler](http://www.ej-technologies.com/products/jprofiler/overview.html) for providing an Open Source License
