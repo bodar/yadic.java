@@ -5,7 +5,7 @@ Yet Another Dependency Injection Container (Java version)
 
 A _super small_ and _lightening fast_ *dependency injection* container for Java written in Java.
 
-Yadic (.Net) is still on [Google Code](http://code.google.com/p/yadic/)*
+*Yadic (.Net) is still on [Google Code](http://code.google.com/p/yadic/)*
 
 Yadic is now available for [Ruby](http://github.com/benbc/yadic.rb)
 
