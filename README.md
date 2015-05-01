@@ -21,7 +21,7 @@ Yadic is now available for [Ruby](http://github.com/benbc/yadic.rb)
 
 Maven repo  => http://repo.bodar.com/
 
-== Versions ==
+##Versions##
 
  * V1.x = Stable - Java 7
  * V2.x = Development - Java 8
