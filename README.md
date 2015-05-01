@@ -23,8 +23,8 @@ Maven repo  => http://repo.bodar.com/
 
 ##Versions##
 
- * V1.x = Stable - Java 7
- * V2.x = Development - Java 8
+ * 1.x - Stable - Requires Java 7+
+ * 2.x - Development - Requires Java 8+
 
 
 
