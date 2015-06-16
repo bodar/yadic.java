@@ -1,12 +1,11 @@
 package com.googlecode.yadic.resolvers;
 
-import com.googlecode.totallylazy.Callable1;
 import com.googlecode.totallylazy.Callables;
+import com.googlecode.totallylazy.Function1;
 import com.googlecode.totallylazy.Option;
 import com.googlecode.totallylazy.Sequence;
 import com.googlecode.yadic.ContainerException;
 import com.googlecode.yadic.Resolver;
-import com.googlecode.yadic.generics.Types;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
@@ -60,25 +59,18 @@ public class StaticMethodResolver<T> implements Resolver<T> {
                 getOrElse(Callables.<T>callThrows(new ContainerException(format("Could not resolve %s using static factory methods- please check root exception for details", concreteClass.getName()), exceptions)));
     }
 
-    private Callable1<Method, Comparable> arity() {
-        return new Callable1<Method, Comparable>() {
-            @Override
-            public Comparable call(Method method) throws Exception {
-                return method.getParameterTypes().length;
-            }
-        };
+    private Function1<Method, Comparable> arity() {
+        return method -> method.getParameterTypes().length;
     }
 
-    private Callable1<Method, Option<Object>> firstSatisfiableMethod(final List<Exception> exceptions, final Type type) {
-        return new Callable1<Method, Option<Object>>() {
-            public Option<Object> call(Method method) throws Exception {
-                try {
-                    Object[] instances = convertParametersToInstances(resolver, type, concreteClass, sequence(method.getGenericParameterTypes()));
-                    return some(method.invoke(null, instances));
-                } catch (Exception e) {
-                    exceptions.add(e);
-                    return none();
-                }
+    private Function1<Method, Option<Object>> firstSatisfiableMethod(final List<Exception> exceptions, final Type type) {
+        return method -> {
+            try {
+                Object[] instances = convertParametersToInstances(resolver, type, concreteClass, sequence(method.getGenericParameterTypes()));
+                return some(method.invoke(null, instances));
+            } catch (Exception e) {
+                exceptions.add(e);
+                return none();
             }
         };
     }
