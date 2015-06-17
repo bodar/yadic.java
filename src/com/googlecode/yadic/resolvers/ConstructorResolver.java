@@ -1,6 +1,10 @@
 package com.googlecode.yadic.resolvers;
 
-import com.googlecode.totallylazy.*;
+import com.googlecode.totallylazy.Callable1;
+import com.googlecode.totallylazy.Callables;
+import com.googlecode.totallylazy.Option;
+import com.googlecode.totallylazy.Predicate;
+import com.googlecode.totallylazy.Sequence;
 import com.googlecode.yadic.ContainerException;
 import com.googlecode.yadic.Resolver;
 import com.googlecode.yadic.generics.TypeConverter;
@@ -48,25 +52,33 @@ public class ConstructorResolver<T> implements Resolver<T> {
     }
 
     private Predicate<? super Constructor<?>> constructorsWithUniqueParamTypes() {
-        return constructor -> {
-            final Sequence<Type> types = sequence(constructor.getGenericExceptionTypes());
-            return types.unique().equals(types);
-        };
-    }
-
-    private Function1<Constructor<?>, Option<Object>> firstSatisfiableConstructor(final List<Exception> exceptions, final Type type) {
-        return constructor -> {
-            try {
-                Object[] instances = TypeConverter.convertParametersToInstances(resolver, type, concreteClass, sequence(constructor.getGenericParameterTypes()));
-                return some(constructor.newInstance(instances));
-            } catch (Exception e) {
-                exceptions.add(e);
-                return none();
+        return new Predicate<Constructor<?>>() {
+            public boolean matches(Constructor<?> constructor) {
+                final Sequence<Type> types = sequence(constructor.getGenericExceptionTypes());
+                return types.unique().equals(types);
             }
         };
     }
 
-    private Function1<Constructor<?>, Integer> numberOfParameters() {
-        return constructor -> constructor.getParameterTypes().length;
+    private Callable1<Constructor<?>, Option<Object>> firstSatisfiableConstructor(final List<Exception> exceptions, final Type type) {
+        return new Callable1<Constructor<?>, Option<Object>>() {
+            public Option<Object> call(Constructor<?> constructor) throws Exception {
+                try {
+                    Object[] instances = TypeConverter.convertParametersToInstances(resolver, type, concreteClass, sequence(constructor.getGenericParameterTypes()));
+                    return some(constructor.newInstance(instances));
+                } catch (Exception e) {
+                    exceptions.add(e);
+                    return none();
+                }
+            }
+        };
+    }
+
+    private Callable1<Constructor<?>, Integer> numberOfParameters() {
+        return new Callable1<Constructor<?>, Integer>() {
+            public Integer call(Constructor<?> constructor) throws Exception {
+                return constructor.getParameterTypes().length;
+            }
+        };
     }
 }

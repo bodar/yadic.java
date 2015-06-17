@@ -1,7 +1,8 @@
 package com.googlecode.yadic.resolvers;
 
-import com.googlecode.totallylazy.Function0;
-import com.googlecode.totallylazy.Function1;
+import com.googlecode.totallylazy.Callable1;
+import com.googlecode.totallylazy.Returns;
+import com.googlecode.totallylazy.Function;
 import com.googlecode.yadic.ContainerException;
 import com.googlecode.yadic.Resolver;
 import com.googlecode.yadic.TypeMap;
@@ -18,11 +19,11 @@ public class Resolvers {
 
     public static <I, C extends I> Resolver<Object> decorator(final TypeMap typeMap, final Class<I> anInterface, final Class<C> concrete) {
         Resolver<Object> remove = typeMap.remove(anInterface);
-        return create(concrete, new DecoratorResolver<>(anInterface, remove, typeMap));
+        return create(concrete, new DecoratorResolver<Object>(anInterface, remove, typeMap));
     }
 
     public static Resolver<Object> decorator(final TypeMap typeMap, final Type anInterface, final Type concrete) {
-        return create(concrete, new DecoratorResolver<>(anInterface, typeMap.remove(anInterface), typeMap));
+        return create(concrete, new DecoratorResolver<Object>(anInterface, typeMap.remove(anInterface), typeMap));
     }
 
     public static <T, A extends Resolver<T>> Resolver<T> activator(final TypeMap creator, final Class<A> activator) {
@@ -41,49 +42,75 @@ public class Resolvers {
     }
 
     public static Resolver<Object> constructor(final Type concrete, final Resolver<?> resolver) {
-        return type -> new ConstructorResolver<>(resolver, concrete).resolve(type);
+        return new Resolver<Object>() {
+            public Object resolve(Type type) throws Exception {
+                return new ConstructorResolver<Object>(resolver, concrete).resolve(type);
+            }
+        };
     }
 
     public static Resolver<Object> staticMethod(final Type concrete, final Resolver<?> resolver) {
-        return type -> staticMethodResolver(resolver, concrete).resolve(type);
+        return new Resolver<Object>() {
+            public Object resolve(Type type) throws Exception {
+                return staticMethodResolver(resolver, concrete).resolve(type);
+            }
+        };
     }
 
     public static <T> Callable<T> asCallable(final Resolver<? extends T> resolver, final Type type) {
         return asFunction(resolver, type);
     }
 
-    public static <T> Function0<T> asFunction(final Resolver<? extends T> resolver, final Type type) {
+    public static <T> Returns<T> asFunction(final Resolver<? extends T> resolver, final Type type) {
         return asFunction1(resolver).deferApply(type);
     }
 
     public static Resolver<Object> listOf(final Resolver<?>... resolvers) {
-        return type -> {
-            List<Exception> exceptions = new ArrayList<>();
-            for (Resolver<?> resolver : resolvers) {
-                try {
-                    return resolver.resolve(type);
-                } catch (Exception e) {
-                    exceptions.add(e);
+        return new Resolver<Object>() {
+            public Object resolve(Type type) throws Exception {
+                List<Exception> exceptions = new ArrayList<Exception>();
+                for (Resolver<?> resolver : resolvers) {
+                    try {
+                        return resolver.resolve(type);
+                    } catch (Exception e) {
+                        exceptions.add(e);
+                    }
                 }
+                throw new ContainerException(type + " cannot be created", exceptions);
             }
-            throw new ContainerException(type + " cannot be created", exceptions);
         };
     }
 
-    public static <T> Function1<Type, T> asCallable1(final Resolver<? extends T> resolver) {
-        return resolver::resolve;
+    public static <T> Callable1<Type, T> asCallable1(final Resolver<? extends T> resolver) {
+        return new Callable1<Type, T>() {
+            public T call(Type type) throws Exception {
+                return resolver.resolve(type);
+            }
+        };
     }
 
-    public static <T> Function1<Type, T> asFunction1(final Resolver<? extends T> resolver) {
-        return resolver::resolve;
+    public static <T> Function<Type, T> asFunction1(final Resolver<? extends T> resolver) {
+        return new Function<Type, T>() {
+            public T call(Type type) throws Exception {
+                return resolver.resolve(type);
+            }
+        };
     }
 
     public static <T> Resolver<T> asResolver(final Callable<? extends T> activator) {
-        return ignored -> activator.call();
+        return new Resolver<T>() {
+            public T resolve(Type ignored) throws Exception {
+                return activator.call();
+            }
+        };
     }
 
-    public static <T> Resolver<T> asResolver(final Function1<Type, ? extends T> activator) {
-        return activator::call;
+    public static <T> Resolver<T> asResolver(final Callable1<Type, ? extends T> activator) {
+        return new Resolver<T>() {
+            public T resolve(Type type) throws Exception {
+                return activator.call(type);
+            }
+        };
     }
 
     public static <T> T resolve(Resolver<T> resolver, Type type) {
