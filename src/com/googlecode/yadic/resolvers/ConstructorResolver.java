@@ -1,6 +1,6 @@
 package com.googlecode.yadic.resolvers;
 
-import com.googlecode.totallylazy.Callable1;
+import com.googlecode.totallylazy.Function1;
 import com.googlecode.totallylazy.Callables;
 import com.googlecode.totallylazy.Option;
 import com.googlecode.totallylazy.Predicate;
@@ -60,8 +60,8 @@ public class ConstructorResolver<T> implements Resolver<T> {
         };
     }
 
-    private Callable1<Constructor<?>, Option<Object>> firstSatisfiableConstructor(final List<Exception> exceptions, final Type type) {
-        return new Callable1<Constructor<?>, Option<Object>>() {
+    private Function1<Constructor<?>, Option<Object>> firstSatisfiableConstructor(final List<Exception> exceptions, final Type type) {
+        return new Function1<Constructor<?>, Option<Object>>() {
             public Option<Object> call(Constructor<?> constructor) throws Exception {
                 try {
                     Object[] instances = TypeConverter.convertParametersToInstances(resolver, type, concreteClass, sequence(constructor.getGenericParameterTypes()));
@@ -74,8 +74,8 @@ public class ConstructorResolver<T> implements Resolver<T> {
         };
     }
 
-    private Callable1<Constructor<?>, Integer> numberOfParameters() {
-        return new Callable1<Constructor<?>, Integer>() {
+    private Function1<Constructor<?>, Integer> numberOfParameters() {
+        return new Function1<Constructor<?>, Integer>() {
             public Integer call(Constructor<?> constructor) throws Exception {
                 return constructor.getParameterTypes().length;
             }
