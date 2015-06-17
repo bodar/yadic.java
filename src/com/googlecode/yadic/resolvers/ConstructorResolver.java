@@ -52,33 +52,25 @@ public class ConstructorResolver<T> implements Resolver<T> {
     }
 
     private Predicate<? super Constructor<?>> constructorsWithUniqueParamTypes() {
-        return new Predicate<Constructor<?>>() {
-            public boolean matches(Constructor<?> constructor) {
-                final Sequence<Type> types = sequence(constructor.getGenericExceptionTypes());
-                return types.unique().equals(types);
-            }
+        return constructor -> {
+            final Sequence<Type> types = sequence(constructor.getGenericExceptionTypes());
+            return types.unique().equals(types);
         };
     }
 
     private Function1<Constructor<?>, Option<Object>> firstSatisfiableConstructor(final List<Exception> exceptions, final Type type) {
-        return new Function1<Constructor<?>, Option<Object>>() {
-            public Option<Object> call(Constructor<?> constructor) throws Exception {
-                try {
-                    Object[] instances = TypeConverter.convertParametersToInstances(resolver, type, concreteClass, sequence(constructor.getGenericParameterTypes()));
-                    return some(constructor.newInstance(instances));
-                } catch (Exception e) {
-                    exceptions.add(e);
-                    return none();
-                }
+        return constructor -> {
+            try {
+                Object[] instances = TypeConverter.convertParametersToInstances(resolver, type, concreteClass, sequence(constructor.getGenericParameterTypes()));
+                return some(constructor.newInstance(instances));
+            } catch (Exception e) {
+                exceptions.add(e);
+                return none();
             }
         };
     }
 
     private Function1<Constructor<?>, Integer> numberOfParameters() {
-        return new Function1<Constructor<?>, Integer>() {
-            public Integer call(Constructor<?> constructor) throws Exception {
-                return constructor.getParameterTypes().length;
-            }
-        };
+        return constructor -> constructor.getParameterTypes().length;
     }
 }

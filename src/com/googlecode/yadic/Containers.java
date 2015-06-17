@@ -25,14 +25,12 @@ public class Containers {
     }
 
     private static <I> TypeMap asResolver(final DecoratorResolver decoratorResolver, final Class<? extends Callable<? extends I>> activator) {
-        return new BaseTypeMap(new Resolver<Object>() {
-            public Object resolve(Type type) throws Exception {
-                if(Types.matches(type, activator)){
-                    return new SimpleContainer(decoratorResolver).create(activator);
-                }
-                return decoratorResolver.resolve(type);
-
+        return new BaseTypeMap(type -> {
+            if(Types.matches(type, activator)){
+                return new SimpleContainer(decoratorResolver).create(activator);
             }
+            return decoratorResolver.resolve(type);
+
         });
     }
 

@@ -48,10 +48,8 @@ public class CloseableTypeMap extends BaseTypeMap implements CloseableMap<Closea
         super.addType(type, concrete);
         if (isCloseable(concrete)) {
             final Resolver<Object> resolver = getResolver(type);
-            addCloseable(type, new Closeable() {
-                public void close() throws IOException {
-                    ((Closeable) Resolvers.resolve(resolver, type)).close();
-                }
+            addCloseable(type, () -> {
+                ((Closeable) Resolvers.resolve(resolver, type)).close();
             });
         }
         return this;
@@ -89,18 +87,16 @@ public class CloseableTypeMap extends BaseTypeMap implements CloseableMap<Closea
     }
 
     private Closeable closeActivator(final Type activator) {
-        return new Closeable() {
-            public void close() throws IOException {
-                try {
-                    Object instance = resolve(activator);
-                    ((Closeable) instance).close();
-                } catch (RuntimeException e) {
-                    throw e;
-                } catch (Exception e) {
-                    throw new IOException(e);
-                }
-
+        return () -> {
+            try {
+                Object instance = resolve(activator);
+                ((Closeable) instance).close();
+            } catch (RuntimeException e) {
+                throw e;
+            } catch (Exception e) {
+                throw new IOException(e);
             }
+
         };
     }
 
@@ -109,12 +105,7 @@ public class CloseableTypeMap extends BaseTypeMap implements CloseableMap<Closea
     }
 
     public static boolean isCloseable(Type aClass) {
-        return classOption(aClass).exists(new Predicate<Class<Object>>() {
-            @Override
-            public boolean matches(Class<Object> other) {
-                return Closeable.class.isAssignableFrom(other);
-            }
-        });
+        return classOption(aClass).exists(other -> Closeable.class.isAssignableFrom(other));
     }
 
     public CloseableTypeMap removeCloseable(Type type) {

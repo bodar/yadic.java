@@ -89,10 +89,8 @@ public class CloseableContainerTest {
     @Test
     public void addingANonClosableActivatorForAClosableTypeWillStillCloseOnShutdown() throws Exception {
         CloseableContainer container = CloseableContainer.closeableContainer();
-        container.addActivator(SomeClosableClass.class, new Callable<SomeClosableClass>() {
-            public SomeClosableClass call() throws Exception {
-                return new SomeClosableClass();
-            }
+        container.addActivator(SomeClosableClass.class, () -> {
+            return new SomeClosableClass();
         });
 
         final SomeClosableClass instance = container.get(SomeClosableClass.class);

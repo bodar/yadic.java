@@ -33,12 +33,7 @@ public class BaseTypeMapTest {
         TypeMap typeMap = new BaseTypeMap(new MissingResolver());
         
         typeMap.addType(GenericType.class, GenericType.class);
-        typeMap.addType(Integer.class, new Resolver<Integer>() {
-            @Override
-            public Integer resolve(Type type) throws Exception {
-                return 0;
-            }
-        });
+        typeMap.addType(Integer.class, type -> 0);
         typeMap.addType(Long.class, LongResolver.class);
 
         assertTrue(sequence(typeMap).containsAll(sequence(
