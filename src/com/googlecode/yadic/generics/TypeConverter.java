@@ -47,7 +47,7 @@ public class TypeConverter<T> implements Function1<Type, Type> {
     public static Map<TypeVariable, Type> typeMap(Type requiredType, Class concreteType) {
         return typeArgumentsOf(concreteType).
                 zip(typeArgumentsOf(requiredType)).
-                fold(new HashMap<TypeVariable, Type>(), Maps.<TypeVariable, Type>asMap());
+                fold(new HashMap<>(), Maps.<TypeVariable, Type>asMap());
     }
 
     public static Sequence<Type> typeArgumentsOf(Type type) {
