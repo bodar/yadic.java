@@ -2,7 +2,6 @@ package com.googlecode.yadic.resolvers;
 
 import com.googlecode.totallylazy.Function1;
 import com.googlecode.totallylazy.Function0;
-import com.googlecode.totallylazy.Function;
 import com.googlecode.yadic.ContainerException;
 import com.googlecode.yadic.Resolver;
 import com.googlecode.yadic.TypeMap;
@@ -89,8 +88,8 @@ public class Resolvers {
         };
     }
 
-    public static <T> Function<Type, T> asFunction1(final Resolver<? extends T> resolver) {
-        return new Function<Type, T>() {
+    public static <T> Function1<Type, T> asFunction1(final Resolver<? extends T> resolver) {
+        return new Function1<Type, T>() {
             public T call(Type type) throws Exception {
                 return resolver.resolve(type);
             }
