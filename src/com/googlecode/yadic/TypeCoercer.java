@@ -11,9 +11,9 @@ import java.util.List;
 
 import static com.googlecode.totallylazy.Arrays.empty;
 import static com.googlecode.totallylazy.Callables.callThrows;
-import static com.googlecode.totallylazy.Methods.genericParameterTypes;
-import static com.googlecode.totallylazy.Methods.genericReturnType;
-import static com.googlecode.totallylazy.Methods.modifier;
+import static com.googlecode.totallylazy.reflection.Methods.genericParameterTypes;
+import static com.googlecode.totallylazy.reflection.Methods.genericReturnType;
+import static com.googlecode.totallylazy.reflection.Methods.modifier;
 import static com.googlecode.totallylazy.Option.none;
 import static com.googlecode.totallylazy.Option.some;
 import static com.googlecode.totallylazy.Predicates.not;

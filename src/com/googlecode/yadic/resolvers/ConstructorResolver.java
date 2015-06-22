@@ -17,7 +17,7 @@ import java.util.List;
 import static com.googlecode.totallylazy.Arrays.exists;
 import static com.googlecode.totallylazy.Callables.cast;
 import static com.googlecode.totallylazy.Callables.descending;
-import static com.googlecode.totallylazy.Constructors.genericParameterTypes;
+import static com.googlecode.totallylazy.reflection.Constructors.genericParameterTypes;
 import static com.googlecode.totallylazy.Option.none;
 import static com.googlecode.totallylazy.Option.some;
 import static com.googlecode.totallylazy.Predicates.not;
