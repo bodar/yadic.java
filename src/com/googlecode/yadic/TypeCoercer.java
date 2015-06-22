@@ -48,14 +48,12 @@ public class TypeCoercer implements Resolver<Object> {
     }
 
     private Function1<Method, Option<Object>> firstSatisfiableMethod(final List<Exception> exceptions) {
-        return new Function1<Method, Option<Object>>() {
-            public Option<Object> call(Method method) throws Exception {
-                try {
-                    return some(method.invoke(instance));
-                } catch (Exception e) {
-                    exceptions.add(e);
-                    return none();
-                }
+        return method -> {
+            try {
+                return some(method.invoke(instance));
+            } catch (Exception e) {
+                exceptions.add(e);
+                return none();
             }
         };
     }

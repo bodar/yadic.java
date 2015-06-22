@@ -78,19 +78,11 @@ public class Types {
     }
 
     public static Predicate<? super Pair<Type, Type>> equalTo() {
-        return new Predicate<Pair<Type, Type>>() {
-            public boolean matches(Pair<Type, Type> pair) {
-                return equalTo(pair.first(), pair.second());
-            }
-        };
+        return pair -> equalTo(pair.first(), pair.second());
     }
 
     public static Predicate<? super Type> equalTo(final Type type) {
-        return new Predicate<Type>() {
-            public boolean matches(Type other) {
-                return equalTo(type, other);
-            }
-        };
+        return other -> equalTo(type, other);
     }
 
     public static boolean matches(Type concrete, Type possibleWildCard) {
@@ -152,19 +144,11 @@ public class Types {
     }
 
     public static Predicate<? super Pair<Type, Type>> matches() {
-        return new Predicate<Pair<Type, Type>>() {
-            public boolean matches(Pair<Type, Type> pair) {
-                return Types.matches(pair.first(), pair.second());
-            }
-        };
+        return pair -> matches(pair.first(), pair.second());
     }
 
     public static Predicate<? super Type> matches(final Type type) {
-        return new Predicate<Type>() {
-            public boolean matches(Type other) {
-                return Types.matches(type, other);
-            }
-        };
+        return other -> matches(type, other);
     }
 
 

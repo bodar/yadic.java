@@ -41,19 +41,11 @@ public class Resolvers {
     }
 
     public static Resolver<Object> constructor(final Type concrete, final Resolver<?> resolver) {
-        return new Resolver<Object>() {
-            public Object resolve(Type type) throws Exception {
-                return new ConstructorResolver<Object>(resolver, concrete).resolve(type);
-            }
-        };
+        return type -> new ConstructorResolver<Object>(resolver, concrete).resolve(type);
     }
 
     public static Resolver<Object> staticMethod(final Type concrete, final Resolver<?> resolver) {
-        return new Resolver<Object>() {
-            public Object resolve(Type type) throws Exception {
-                return staticMethodResolver(resolver, concrete).resolve(type);
-            }
-        };
+        return type -> staticMethodResolver(resolver, concrete).resolve(type);
     }
 
     public static <T> Callable<T> asCallable(final Resolver<? extends T> resolver, final Type type) {
@@ -65,51 +57,33 @@ public class Resolvers {
     }
 
     public static Resolver<Object> listOf(final Resolver<?>... resolvers) {
-        return new Resolver<Object>() {
-            public Object resolve(Type type) throws Exception {
-                List<Exception> exceptions = new ArrayList<Exception>();
-                for (Resolver<?> resolver : resolvers) {
-                    try {
-                        return resolver.resolve(type);
-                    } catch (Exception e) {
-                        exceptions.add(e);
-                    }
+        return type -> {
+            List<Exception> exceptions = new ArrayList<Exception>();
+            for (Resolver<?> resolver : resolvers) {
+                try {
+                    return resolver.resolve(type);
+                } catch (Exception e) {
+                    exceptions.add(e);
                 }
-                throw new ContainerException(type + " cannot be created", exceptions);
             }
+            throw new ContainerException(type + " cannot be created", exceptions);
         };
     }
 
     public static <T> Function1<Type, T> asCallable1(final Resolver<? extends T> resolver) {
-        return new Function1<Type, T>() {
-            public T call(Type type) throws Exception {
-                return resolver.resolve(type);
-            }
-        };
+        return resolver::resolve;
     }
 
     public static <T> Function1<Type, T> asFunction1(final Resolver<? extends T> resolver) {
-        return new Function1<Type, T>() {
-            public T call(Type type) throws Exception {
-                return resolver.resolve(type);
-            }
-        };
+        return resolver::resolve;
     }
 
     public static <T> Resolver<T> asResolver(final Callable<? extends T> activator) {
-        return new Resolver<T>() {
-            public T resolve(Type ignored) throws Exception {
-                return activator.call();
-            }
-        };
+        return ignored -> activator.call();
     }
 
     public static <T> Resolver<T> asResolver(final Function1<Type, ? extends T> activator) {
-        return new Resolver<T>() {
-            public T resolve(Type type) throws Exception {
-                return activator.call(type);
-            }
-        };
+        return activator::call;
     }
 
     public static <T> T resolve(Resolver<T> resolver, Type type) {

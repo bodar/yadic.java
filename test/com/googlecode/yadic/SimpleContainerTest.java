@@ -101,12 +101,10 @@ public class SimpleContainerTest {
         final int[] count = {0};
         Container container = new SimpleContainer();
 
-        container.addActivator(Node.class, new Callable<Node>() {
-            public Node call() throws Exception {
-                count[0]++;
-                return new RootNode();
+        container.addActivator(Node.class, () -> {
+            count[0]++;
+            return new RootNode();
 
-            }
         });
 
         container.get(Node.class);
@@ -120,11 +118,9 @@ public class SimpleContainerTest {
         Container container = new SimpleContainer();
 
         final int[] count = {0};
-        container.addActivator(Node.class, sleepy(new Callable<Node>() {
-            public Node call() throws Exception {
-                count[0]++;
-                return new RootNode();
-            }
+        container.addActivator(Node.class, sleepy(() -> {
+            count[0]++;
+            return new RootNode();
         }, 10));
 
         Sequence<Object> results = callConcurrently(asCallable(container, Node.class), asCallable(container, Node.class));
@@ -218,12 +214,10 @@ public class SimpleContainerTest {
     @Test
     public void shouldCallParentResolverWhenItemNotFound() {
         final boolean[] wasCalled = {false};
-        Container container = new SimpleContainer(new Resolver() {
-            public Object resolve(Type type) throws Exception {
-                wasCalled[0] = true;
-                return null;
+        Container container = new SimpleContainer(type -> {
+            wasCalled[0] = true;
+            return null;
 
-            }
         });
         container.get(Node.class);
 
@@ -265,10 +259,8 @@ public class SimpleContainerTest {
     @Test(expected = ContainerException.class)
     public void resolveShouldThrowExceptionIfActivatorBlowsUp() throws Exception {
         Container container = new SimpleContainer();
-        container.addActivator(GrandChildNode.class, new Callable<GrandChildNode>() {
-            public GrandChildNode call() throws Exception {
-                throw new Exception();
-            }
+        container.addActivator(GrandChildNode.class, () -> {
+            throw new Exception();
         });
         container.resolve(GrandChildNode.class);
         fail("should have thrown exception");
@@ -331,11 +323,9 @@ public class SimpleContainerTest {
     @Test
     public void shouldSupportUserDefinedResolver() {
         final int[] count = {0};
-        Container container = new SimpleContainer(new Resolver() {
-            public Object resolve(Type type) throws Exception {
-                count[0]++;
-                return new RootNode();
-            }
+        Container container = new SimpleContainer(type -> {
+            count[0]++;
+            return new RootNode();
         });
         container.add(ChildNode.class);
         assertNotNull(container.get(ChildNode.class));
@@ -401,16 +391,12 @@ public class SimpleContainerTest {
         Container container = new SimpleContainer();
         container.add(ManyStringsClass3.class);
         container.addType(new TypeFor<List<String>>() {
-        }.get(), new Resolver<List<String>>() {
-            public List<String> resolve(Type type) throws Exception {
-                return list("hello", "world");
-            }
+        }.get(), type -> {
+            return list("hello", "world");
         });
         container.addType(new TypeFor<List<Integer>>() {
-        }.get(), new Resolver<List<Integer>>() {
-            public List<Integer> resolve(Type type) throws Exception {
-                return list(666, 69);
-            }
+        }.get(), type -> {
+            return list(666, 69);
         });
         container.get(ManyStringsClass3.class);
     }

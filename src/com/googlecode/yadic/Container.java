@@ -25,12 +25,7 @@ public interface Container extends TypeMap {
 
     class functions{
         public static <T> Function1<Container, T> get(final Class<T> aClass) {
-            return new Function1<Container, T>() {
-                @Override
-                public T call(Container container) throws Exception {
-                    return container.get(aClass);
-                }
-            };
+            return container -> container.get(aClass);
         }
     }
 }
