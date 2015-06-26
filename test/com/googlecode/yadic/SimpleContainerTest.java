@@ -1,7 +1,7 @@
 package com.googlecode.yadic;
 
 import com.googlecode.totallylazy.Sequence;
-import com.googlecode.totallylazy.functions.CountingCallable;
+import com.googlecode.totallylazy.functions.CountingFunction0;
 import com.googlecode.yadic.examples.ChildNode;
 import com.googlecode.yadic.examples.DecorateNodeActivator;
 import com.googlecode.yadic.examples.DecoratedNode;
@@ -18,7 +18,7 @@ import java.util.List;
 
 import static com.googlecode.totallylazy.Arrays.list;
 import static com.googlecode.totallylazy.Callers.callConcurrently;
-import static com.googlecode.totallylazy.functions.SleepyCallable.sleepy;
+import static com.googlecode.totallylazy.functions.SleepyFunction0.sleepy;
 import static com.googlecode.yadic.resolvers.Resolvers.asCallable;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -333,7 +333,7 @@ public class SimpleContainerTest {
     @Test
     public void shouldSupportDifferentCallables() {
         Container container = new SimpleContainer();
-        CountingCallable<Integer> count = CountingCallable.counting();
+        CountingFunction0<Integer> count = CountingFunction0.counting();
         container.addActivator(Integer.class, count);
         assertNotNull(container.get(Integer.class));
         assertEquals(1, count.count());
