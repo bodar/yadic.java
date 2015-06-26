@@ -1,7 +1,7 @@
 package com.googlecode.yadic.resolvers;
 
-import com.googlecode.totallylazy.Function1;
-import com.googlecode.totallylazy.Callables;
+import com.googlecode.totallylazy.functions.Function1;
+import com.googlecode.totallylazy.functions.Callables;
 import com.googlecode.totallylazy.Option;
 import com.googlecode.totallylazy.Sequence;
 import com.googlecode.yadic.ContainerException;
@@ -13,8 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.googlecode.totallylazy.Arrays.exists;
-import static com.googlecode.totallylazy.Callables.cast;
-import static com.googlecode.totallylazy.Callables.descending;
+import static com.googlecode.totallylazy.functions.Callables.cast;
+import static com.googlecode.totallylazy.functions.Callables.descending;
 import static com.googlecode.totallylazy.reflection.Methods.genericParameterTypes;
 import static com.googlecode.totallylazy.reflection.Methods.genericReturnType;
 import static com.googlecode.totallylazy.reflection.Methods.modifier;

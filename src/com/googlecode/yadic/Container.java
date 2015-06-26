@@ -1,6 +1,6 @@
 package com.googlecode.yadic;
 
-import com.googlecode.totallylazy.Function1;
+import com.googlecode.totallylazy.functions.Function1;
 
 import java.util.concurrent.Callable;
 

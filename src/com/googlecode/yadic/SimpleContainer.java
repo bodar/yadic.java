@@ -6,7 +6,7 @@ import com.googlecode.yadic.resolvers.Resolvers;
 import java.lang.reflect.Type;
 import java.util.concurrent.Callable;
 
-import static com.googlecode.totallylazy.Functions.returns;
+import static com.googlecode.totallylazy.functions.Functions.returns;
 import static com.googlecode.yadic.resolvers.Resolvers.*;
 
 public class SimpleContainer extends DelegatingTypeMap implements Container {

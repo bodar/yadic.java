@@ -1,6 +1,6 @@
 package com.googlecode.yadic;
 
-import com.googlecode.totallylazy.Function1;
+import com.googlecode.totallylazy.functions.Function1;
 import com.googlecode.totallylazy.Option;
 import com.googlecode.totallylazy.Sequence;
 
@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.googlecode.totallylazy.Arrays.empty;
-import static com.googlecode.totallylazy.Callables.callThrows;
+import static com.googlecode.totallylazy.functions.Callables.callThrows;
 import static com.googlecode.totallylazy.reflection.Methods.genericParameterTypes;
 import static com.googlecode.totallylazy.reflection.Methods.genericReturnType;
 import static com.googlecode.totallylazy.reflection.Methods.modifier;

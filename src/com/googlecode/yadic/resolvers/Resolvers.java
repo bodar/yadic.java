@@ -1,7 +1,7 @@
 package com.googlecode.yadic.resolvers;
 
-import com.googlecode.totallylazy.Function1;
-import com.googlecode.totallylazy.Function0;
+import com.googlecode.totallylazy.functions.Function1;
+import com.googlecode.totallylazy.functions.Function0;
 import com.googlecode.yadic.ContainerException;
 import com.googlecode.yadic.Resolver;
 import com.googlecode.yadic.TypeMap;

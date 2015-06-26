@@ -1,6 +1,7 @@
 package com.googlecode.yadic;
 
 import com.googlecode.totallylazy.*;
+import com.googlecode.totallylazy.functions.Callables;
 import com.googlecode.totallylazy.predicates.LogicalPredicate;
 import com.googlecode.yadic.resolvers.ProgrammerErrorResolver;
 import com.googlecode.yadic.resolvers.Resolvers;
@@ -10,7 +11,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import static com.googlecode.totallylazy.Callables.first;
+import static com.googlecode.totallylazy.functions.Callables.first;
 import static com.googlecode.totallylazy.Option.none;
 import static com.googlecode.totallylazy.Option.some;
 import static com.googlecode.totallylazy.Predicates.where;

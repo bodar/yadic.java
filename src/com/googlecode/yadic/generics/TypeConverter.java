@@ -1,6 +1,6 @@
 package com.googlecode.yadic.generics;
 
-import com.googlecode.totallylazy.Function1;
+import com.googlecode.totallylazy.functions.Function1;
 import com.googlecode.totallylazy.Maps;
 import com.googlecode.totallylazy.Sequence;
 import com.googlecode.yadic.Resolver;
