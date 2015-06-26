@@ -1,7 +1,7 @@
 package com.googlecode.yadic;
 
 import com.googlecode.totallylazy.Sequence;
-import com.googlecode.totallylazy.callables.CountingCallable;
+import com.googlecode.totallylazy.functions.CountingCallable;
 import com.googlecode.yadic.examples.ChildNode;
 import com.googlecode.yadic.examples.DecorateNodeActivator;
 import com.googlecode.yadic.examples.DecoratedNode;
@@ -14,13 +14,11 @@ import com.googlecode.yadic.examples.RootNode;
 import com.googlecode.yadic.generics.TypeFor;
 import org.junit.Test;
 
-import java.lang.reflect.Type;
 import java.util.List;
-import java.util.concurrent.Callable;
 
 import static com.googlecode.totallylazy.Arrays.list;
 import static com.googlecode.totallylazy.Callers.callConcurrently;
-import static com.googlecode.totallylazy.callables.SleepyCallable.sleepy;
+import static com.googlecode.totallylazy.functions.SleepyCallable.sleepy;
 import static com.googlecode.yadic.resolvers.Resolvers.asCallable;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
