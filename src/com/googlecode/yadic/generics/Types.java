@@ -3,7 +3,7 @@ package com.googlecode.yadic.generics;
 import com.googlecode.totallylazy.Objects;
 import com.googlecode.totallylazy.Option;
 import com.googlecode.totallylazy.Pair;
-import com.googlecode.totallylazy.Predicate;
+import com.googlecode.totallylazy.predicates.Predicate;
 import com.googlecode.totallylazy.Sequence;
 import com.googlecode.totallylazy.Unchecked;
 import com.googlecode.totallylazy.numbers.Numbers;
@@ -15,7 +15,6 @@ import java.lang.reflect.WildcardType;
 import static com.googlecode.totallylazy.Option.none;
 import static com.googlecode.totallylazy.Option.some;
 import static com.googlecode.totallylazy.Sequences.sequence;
-import static com.googlecode.totallylazy.Unchecked.cast;
 
 public class Types {
     public static ParameterizedType parameterizedType(final Type rawType, final Type... typeArguments) {

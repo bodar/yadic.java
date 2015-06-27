@@ -3,6 +3,8 @@ package com.googlecode.yadic;
 import com.googlecode.totallylazy.*;
 import com.googlecode.totallylazy.functions.Callables;
 import com.googlecode.totallylazy.predicates.LogicalPredicate;
+import com.googlecode.totallylazy.predicates.Predicate;
+import com.googlecode.totallylazy.predicates.Predicates;
 import com.googlecode.yadic.resolvers.ProgrammerErrorResolver;
 import com.googlecode.yadic.resolvers.Resolvers;
 
@@ -14,7 +16,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import static com.googlecode.totallylazy.functions.Callables.first;
 import static com.googlecode.totallylazy.Option.none;
 import static com.googlecode.totallylazy.Option.some;
-import static com.googlecode.totallylazy.Predicates.where;
+import static com.googlecode.totallylazy.predicates.Predicates.where;
 import static com.googlecode.totallylazy.Sequences.sequence;
 import static com.googlecode.yadic.generics.Types.matches;
 import static com.googlecode.yadic.resolvers.LazyResolver.lazy;

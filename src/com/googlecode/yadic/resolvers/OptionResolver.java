@@ -1,7 +1,7 @@
 package com.googlecode.yadic.resolvers;
 
 import com.googlecode.totallylazy.Option;
-import com.googlecode.totallylazy.Predicate;
+import com.googlecode.totallylazy.predicates.Predicate;
 import com.googlecode.totallylazy.Sequence;
 import com.googlecode.yadic.ContainerException;
 import com.googlecode.yadic.Resolver;

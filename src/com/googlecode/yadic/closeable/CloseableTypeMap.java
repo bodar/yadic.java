@@ -1,7 +1,6 @@
 package com.googlecode.yadic.closeable;
 
 import com.googlecode.totallylazy.Closeables;
-import com.googlecode.totallylazy.Predicate;
 import com.googlecode.yadic.BaseTypeMap;
 import com.googlecode.yadic.Resolver;
 import com.googlecode.yadic.TypeMap;
