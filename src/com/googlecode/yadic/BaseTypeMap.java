@@ -18,7 +18,7 @@ import static com.googlecode.totallylazy.Option.none;
 import static com.googlecode.totallylazy.Option.some;
 import static com.googlecode.totallylazy.predicates.Predicates.where;
 import static com.googlecode.totallylazy.Sequences.sequence;
-import static com.googlecode.yadic.generics.Types.matches;
+import static com.googlecode.totallylazy.reflection.Types.matches;
 import static com.googlecode.yadic.resolvers.LazyResolver.lazy;
 import static com.googlecode.yadic.resolvers.Resolvers.activator;
 import static com.googlecode.yadic.resolvers.Resolvers.decorator;

@@ -23,8 +23,8 @@ import static com.googlecode.totallylazy.Option.some;
 import static com.googlecode.totallylazy.predicates.Predicates.not;
 import static com.googlecode.totallylazy.predicates.Predicates.where;
 import static com.googlecode.totallylazy.Sequences.sequence;
-import static com.googlecode.yadic.generics.Types.classOf;
-import static com.googlecode.yadic.generics.Types.matches;
+import static com.googlecode.totallylazy.reflection.Types.classOf;
+import static com.googlecode.totallylazy.reflection.Types.matches;
 import static java.lang.String.format;
 
 public class ConstructorResolver<T> implements Resolver<T> {

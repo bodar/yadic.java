@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-import static com.googlecode.yadic.generics.Types.classOf;
+import static com.googlecode.totallylazy.reflection.Types.classOf;
 import static com.googlecode.yadic.resolvers.StaticMethodResolver.staticMethodResolver;
 
 public class Resolvers {

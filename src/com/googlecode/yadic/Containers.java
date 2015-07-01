@@ -1,11 +1,9 @@
 package com.googlecode.yadic;
 
 import com.googlecode.yadic.closeable.CloseableContainer;
-import com.googlecode.yadic.generics.Types;
+import com.googlecode.totallylazy.reflection.Types;
 import com.googlecode.yadic.resolvers.DecoratorResolver;
-import com.googlecode.yadic.resolvers.MissingResolver;
 
-import java.lang.reflect.Type;
 import java.util.concurrent.Callable;
 
 import static com.googlecode.yadic.resolvers.Resolvers.activator;

@@ -5,9 +5,9 @@ import com.googlecode.totallylazy.Option;
 import com.googlecode.yadic.examples.GenericType;
 import org.junit.Test;
 
-import static com.googlecode.yadic.generics.Types.equalTo;
-import static com.googlecode.yadic.generics.Types.matches;
-import static com.googlecode.yadic.generics.Types.parameterizedType;
+import static com.googlecode.totallylazy.reflection.Types.equalTo;
+import static com.googlecode.totallylazy.reflection.Types.matches;
+import static com.googlecode.totallylazy.reflection.Types.parameterizedType;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 

@@ -3,7 +3,7 @@ package com.googlecode.yadic.resolvers;
 import com.googlecode.totallylazy.Unchecked;
 import com.googlecode.yadic.Resolver;
 import com.googlecode.yadic.TypeMap;
-import com.googlecode.yadic.generics.Types;
+import com.googlecode.totallylazy.reflection.Types;
 
 import java.lang.reflect.Type;
 

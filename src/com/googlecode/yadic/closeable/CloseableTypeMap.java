@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static com.googlecode.totallylazy.Sequences.sequence;
-import static com.googlecode.yadic.generics.Types.classOption;
+import static com.googlecode.totallylazy.reflection.Types.classOption;
 
 public class CloseableTypeMap extends BaseTypeMap implements CloseableMap<CloseableTypeMap> {
     private final Map<Type, Closeable> mightClose = new ConcurrentHashMap<Type, Closeable>();

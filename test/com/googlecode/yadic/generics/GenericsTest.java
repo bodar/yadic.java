@@ -14,7 +14,7 @@ import com.googlecode.yadic.resolvers.OptionResolver;
 import org.junit.Test;
 
 import static com.googlecode.totallylazy.predicates.Predicates.always;
-import static com.googlecode.yadic.generics.Types.parameterizedType;
+import static com.googlecode.totallylazy.reflection.Types.parameterizedType;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
