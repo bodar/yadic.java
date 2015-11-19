@@ -11,7 +11,7 @@ import com.googlecode.yadic.examples.Node;
 import com.googlecode.yadic.examples.NodeActivator;
 import com.googlecode.yadic.examples.NodeResolver;
 import com.googlecode.yadic.examples.RootNode;
-import com.googlecode.yadic.generics.TypeFor;
+import com.googlecode.totallylazy.reflection.TypeFor;
 import org.junit.Test;
 
 import java.util.List;

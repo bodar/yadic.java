@@ -1,6 +1,7 @@
 package com.googlecode.yadic.generics;
 
 import com.googlecode.totallylazy.Option;
+import com.googlecode.totallylazy.reflection.TypeFor;
 import com.googlecode.yadic.Container;
 import com.googlecode.yadic.SimpleContainer;
 import com.googlecode.yadic.examples.DecoratedGenericType;

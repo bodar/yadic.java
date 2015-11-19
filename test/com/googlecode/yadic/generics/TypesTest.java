@@ -2,6 +2,7 @@ package com.googlecode.yadic.generics;
 
 import com.googlecode.totallylazy.Either;
 import com.googlecode.totallylazy.Option;
+import com.googlecode.totallylazy.reflection.TypeFor;
 import com.googlecode.yadic.examples.GenericType;
 import org.junit.Test;
 

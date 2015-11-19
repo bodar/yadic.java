@@ -1,5 +1,6 @@
 package com.googlecode.yadic.generics;
 
+import com.googlecode.totallylazy.reflection.TypeFor;
 import com.googlecode.yadic.examples.Instance;
 import org.junit.Test;
 
