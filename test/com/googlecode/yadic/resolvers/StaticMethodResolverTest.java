@@ -44,6 +44,17 @@ public class StaticMethodResolverTest {
         assertThat(staticMethodClass.constructedBy, is("myStaticMethodClass2"));
     }
 
+    @Test
+    public void sortOrderIsStableWhenMultipleMethodsExistWithTheSameArity() throws Exception {
+        StaticMethodResolver<MyStaticMethodClass> resolver = StaticMethodResolver
+            .staticMethodResolver(
+                containerWith("foobar").addInstance(Integer.class, 1).addInstance(Boolean.class, Boolean.TRUE),
+                MyStaticMethodClass.class);
+        MyStaticMethodClass staticMethodClass = resolver.resolve(MyStaticMethodClass.class);
+        assertThat(staticMethodClass, is(notNullValue()));
+        assertThat(staticMethodClass.constructedBy, is("myStaticMethodClass2"));
+    }
+
     @Test(expected = ContainerException.class)
     public void ignoresSelfReferencingStaticMethods() throws Exception {
         Container resolver = new SimpleContainer();
