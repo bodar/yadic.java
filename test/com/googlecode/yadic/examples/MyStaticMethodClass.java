@@ -11,6 +11,10 @@ public class MyStaticMethodClass {
         return new MyStaticMethodClass("myStaticMethodClass1");
     }
 
+    public static MyStaticMethodClass myStaticMethodClass2a(String parameter1, Boolean parameter2) {
+        return new MyStaticMethodClass("myStaticMethodClass2a");
+    }
+
     public static MyStaticMethodClass myStaticMethodClass2(String parameter1, Integer parameter2) {
         return new MyStaticMethodClass("myStaticMethodClass2");
     }
