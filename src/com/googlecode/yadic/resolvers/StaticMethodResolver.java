@@ -20,10 +20,13 @@ import static com.googlecode.totallylazy.reflection.Methods.genericReturnType;
 import static com.googlecode.totallylazy.reflection.Methods.modifier;
 import static com.googlecode.totallylazy.Option.none;
 import static com.googlecode.totallylazy.Option.some;
+import static com.googlecode.totallylazy.comparators.Comparators.ascending;
+import static com.googlecode.totallylazy.comparators.Comparators.comparators;
 import static com.googlecode.totallylazy.predicates.Predicates.not;
 import static com.googlecode.totallylazy.predicates.Predicates.where;
 import static com.googlecode.totallylazy.Sequences.sequence;
 import static com.googlecode.yadic.generics.TypeConverter.convertParametersToInstances;
+import static com.googlecode.totallylazy.reflection.Methods.methodName;
 import static com.googlecode.totallylazy.reflection.Types.classOf;
 import static com.googlecode.totallylazy.reflection.Types.matches;
 import static java.lang.String.format;
@@ -49,7 +52,7 @@ public class StaticMethodResolver<T> implements Resolver<T> {
                 filter(modifier(PUBLIC).and(modifier(STATIC)).
                         and(where(genericReturnType(), matches(type)).
                                 and(where(genericParameterTypes(), not(exists(matches(type))))))).
-                sortBy(descending(arity()));
+                sortBy(comparators(descending(arity()), ascending(methodName())));
 
         if (methods.isEmpty()) {
             throw new ContainerException(concreteClass.getName() + " does not have any public static methods that return " + type);
