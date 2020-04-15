@@ -4,10 +4,10 @@ set -e
 JAVA_VERSION=6
 JAVA_OPTS="-XX:+TieredCompilation -Djava.net.useSystemProxies=true ${JAVA_OPTS}"
 BUILD_NUMBER=${BUILD_NUMBER-dev.build}
-version=180
+version=1.10
 artifact=jcompilo
 group=com/googlecode/${artifact}
-repo=repo.bodar.com
+repo=dl.bintray.com/bodar/maven
 dir=lib/
 jar=${dir}${artifact}.jar
 pack=${dir}${artifact}.pack.gz
